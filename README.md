@@ -14,7 +14,7 @@ required).
   DETAILS, REGISTRATION DETAILS for PRC and SCFHS) with the MSR letterhead.
 - Exports standardized documents:
   - **DOCX** download (works everywhere).
-  - **PDF** download (requires LibreOffice installed locally — see below).
+  - **PDF** download (generated in-app with reportlab, works everywhere).
 - Saves a candidate profile summary text file per CV.
 - Side-by-side view of raw ingested text vs. the structured CV profile.
 
@@ -43,16 +43,13 @@ python -m venv .venv
 
 Open the printed local URL (default http://localhost:8501).
 
-### PDF export (local only)
+### PDF export
 
-PDF generation relies on **LibreOffice** (`soffice`). Install it so the app
-can convert DOCX to PDF:
+PDF is generated in-app with **reportlab**, so it works in every environment
+(local and cloud) — no LibreOffice required.
 
-- macOS: `brew install --cask libreoffice`
-- Windows/Linux: install LibreOffice from https://www.libreoffice.org
-
-If LibreOffice is not installed, DOCX export and parsing still work and the
-app simply disables the PDF button.
+> LibreOffice is only needed if you want to upload legacy `.doc` files for
+> parsing; DOCX, PDF, and TXT uploads work without it.
 
 ## Deploy as a web app
 
@@ -66,6 +63,4 @@ This repository is configured for **Streamlit Community Cloud**:
 
 You get a live URL such as `https://<your-app>.streamlit.app`.
 
-> Note: Streamlit Community Cloud has **no LibreOffice**, so PDF export is
-> disabled in the hosted version. DOCX download, parsing, and the review UI
-> all work in the cloud.
+DOCX and PDF export, parsing, and the full review UI all work in the cloud.

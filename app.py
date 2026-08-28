@@ -531,37 +531,174 @@ def generate_docx_document(profile_data, output_path, photo_bytes=None, logo_pat
 
     doc.save(output_path)
 
-def convert_docx_to_pdf(docx_bytes, last_name, first_name):
-    import tempfile
-    soffice_bin = get_soffice_path()
-    if not soffice_bin:
-        return None
-        
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_docx_path = os.path.join(temp_dir, "input.docx")
-        temp_pdf_path = os.path.join(temp_dir, "input.pdf")
-        
-        with open(temp_docx_path, "wb") as f:
-            f.write(docx_bytes)
-            
-        cmd = [
-            soffice_bin,
-            "--headless",
-            "-env:UserInstallation=file:///" + os.path.join(temp_dir, "soffice_profile"),
-            "--convert-to",
-            "pdf",
-            "--outdir",
-            temp_dir,
-            temp_docx_path
-        ]
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        
-        if os.path.exists(temp_pdf_path):
-            with open(temp_pdf_path, "rb") as f:
-                pdf_bytes = f.read()
-            return pdf_bytes
-            
-    return None
+
+def _pdf_form_section(story, title, pairs):
+    from reportlab.lib import colors
+    from reportlab.platypus import Paragraph, Table, TableStyle, Spacer
+    from reportlab.lib.styles import ParagraphStyle
+
+    section_style = ParagraphStyle('sec', fontName='Helvetica-Bold', fontSize=12,
+                                   spaceBefore=8, spaceAfter=3, textColor=colors.HexColor('#003333'))
+    label_style = ParagraphStyle('lbl', fontName='Helvetica-Bold', fontSize=10)
+    value_style = ParagraphStyle('val', fontName='Helvetica', fontSize=10)
+
+    story.append(Paragraph(title, section_style))
+    rows = []
+    for k, v in pairs:
+        rows.append([Paragraph(f"<b>{k}</b>", label_style), Paragraph((v or " "), value_style)])
+    table = Table(rows, colWidths=[2.6 * 72, 5.0 * 72])
+    table.setStyle(TableStyle([
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    story.append(table)
+    story.append(Spacer(1, 6))
+
+
+def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=None):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import inch
+    from reportlab.lib import colors
+    from reportlab.pdfgen import canvas
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, KeepTogether
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.enums import TA_CENTER
+
+    if not logo_path:
+        logo_path = LOGO_PATH
+
+    margin = 36  # ~0.5in
+    ch = 0.68 * inch
+    header_pad = 1.35 * inch
+
+    def _draw_header(c, _doc):
+        w, h = A4
+        c.saveState()
+        if os.path.exists(logo_path):
+            try:
+                c.drawImage(logo_path, margin, h - margin - ch,
+                            width=2.0 * inch, height=ch, preserveAspectRatio=True, anchor='sw')
+            except Exception:
+                pass
+        ty = h - margin - 14
+        for txt, f in [("A Leading Recruitment Agency", 'Helvetica-Bold'),
+                       ("For Medical Professionals", 'Helvetica'),
+                       ("DMW-657-LB-10132025-R", 'Helvetica')]:
+            c.setFont(f, 11)
+            c.drawRightString(w - margin, ty, txt)
+            ty -= 13
+        c.setStrokeColor(colors.HexColor('#009999'))
+        c.setLineWidth(1.2)
+        c.setDash(1, 3)
+        c.line(margin, h - margin - ch - 8, w - margin, h - margin - ch - 8)
+        c.restoreState()
+
+    doc = SimpleDocTemplate(output_path, pagesize=A4,
+                            leftMargin=margin, rightMargin=margin,
+                            topMargin=header_pad, bottomMargin=margin,
+                            title="Curriculum Vitae", author="MSR CV Processing Studio")
+
+    story = []
+    last_name = profile_data.get("lastName", "LAST NAME")
+    first_name = profile_data.get("firstName", "FIRST NAME")
+    details = profile_data.get("details", {})
+
+    name_style = ParagraphStyle('nm', fontName='Helvetica-Bold', fontSize=13,
+                                alignment=TA_CENTER, spaceAfter=8, textColor=colors.black)
+    story.append(Paragraph(
+        f"<u>{last_name.upper()}, {first_name.upper()}, MIDDLE NAME</u>", name_style))
+
+    if photo_bytes:
+        try:
+            from reportlab.lib.utils import ImageReader
+            img = ImageReader(io.BytesIO(photo_bytes))
+            iw, ih = img.getSize()
+            tw = 1.4 * inch
+            th = tw * ih / iw
+            pt = Table([['', Image(io.BytesIO(photo_bytes), width=tw, height=th)]],
+                       colWidths=[doc.width - tw, tw])
+            pt.setStyle(TableStyle([
+                ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (0, 0), (0, 0), doc.width - 2.4 * 72),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                ('TOPPADDING', (0, 0), (-1, -1), 0),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+            ]))
+            story.append(pt)
+            story.append(Spacer(1, 4))
+        except Exception:
+            pass
+
+    experience = details.get("experience", [])
+    if not experience:
+        experience = [{"employer": " ", "position": " ", "duration": " ", "duties": []}]
+    for exp in experience:
+        _pdf_form_section(story, "EXPERIENCE SUMMARY", [
+            ("Name of Employer", exp.get("employer", " ")),
+            ("Bed Capacity", exp.get("bedCapacity", " ")),
+            ("Area of Exposure", exp.get("areaExposure", " ")),
+            ("Position", exp.get("position", " ")),
+            ("Duration", exp.get("duration", " ")),
+        ])
+        duty_label = Paragraph("Duties and Responsibilities:", ParagraphStyle(
+            'dl', fontName='Helvetica-Bold', fontSize=10.5))
+        story.append(duty_label)
+        story.append(Spacer(1, 2))
+        for duty in exp.get("duties", []):
+            story.append(Paragraph(f"\u2022 {duty}", ParagraphStyle(
+                'dd', fontName='Helvetica', fontSize=10, leftIndent=12)))
+        story.append(Spacer(1, 4))
+
+    _pdf_form_section(story, "PERSONAL DETAILS", [
+        ("Date of Birth", details.get("dob", " ")),
+        ("Nationality", details.get("nationality", " ")),
+        ("Gender", details.get("gender", " ")),
+        ("Marital Status", details.get("maritalStatus", " ")),
+        ("Religion", details.get("religion", " ")),
+        ("Height", details.get("height", " ")),
+        ("Weight", details.get("weight", " ")),
+        ("BMI", details.get("bmi", " ")),
+    ])
+
+    _pdf_form_section(story, "PASSPORT DETAILS", [
+        ("Passport No.", details.get("passportNo", " ")),
+        ("Place of Issue", details.get("placeOfIssue", " ")),
+        ("Date of Issue", details.get("dateOfIssue", " ")),
+        ("Date of Expiry", details.get("dateOfExpiry", " ")),
+    ])
+
+    education = details.get("education", [])
+    if education:
+        school = education[0].get("school", " ")
+        qualification = education[0].get("qualification", " ")
+    else:
+        school, qualification = " ", " "
+    _pdf_form_section(story, "EDUCATIONAL DETAILS", [
+        ("College/University Attended", school),
+        ("Qualification", qualification),
+        ("Graduation Date", " "),
+    ])
+
+    _pdf_form_section(story, "REGISTRATION DETAILS", [
+        ("Registration Authority", "Professional Regulation Commission"),
+        ("Registration No.", details.get("prcRegNo", " ")),
+        ("Registration Date", details.get("prcRegDate", " ")),
+        ("Validity Date", details.get("prcValidity", " ")),
+    ])
+    _pdf_form_section(story, "REGISTRATION DETAILS", [
+        ("Registration Authority", "Saudi Commission for Health Specialties"),
+        ("Registration No.", details.get("scfhsRegNo", " ")),
+        ("Registration Date", details.get("scfhsRegDate", " ")),
+        ("Validity Date", details.get("scfhsValidity", " ")),
+    ])
+
+    doc.build(story, onFirstPage=_draw_header, onLaterPages=_draw_header)
+
 
 def extract_name_offline(raw_text):
     lines = [line.strip() for line in raw_text.split('\n') if line.strip()]
@@ -1011,10 +1148,17 @@ if uploaded_files:
                     
                 # 6. Pre-generate PDF for candidate
                 pdf_bytes = None
-                soffice_bin = get_soffice_path()
-                if soffice_bin:
-                    status_text.markdown(f"⏳ **Processing file {idx+1} of {len(uploaded_files)}**: Generating PDF for `{file_name}`...")
-                    pdf_bytes = convert_docx_to_pdf(docx_bytes, last_name, first_name)
+                status_text.markdown(f"⏳ **Processing file {idx+1} of {len(uploaded_files)}**: Generating PDF for `{file_name}`...")
+                try:
+                    import tempfile as _tf
+                    with _tf.TemporaryDirectory() as _dir:
+                        _pdf_path = os.path.join(_dir, f"{last_name}_{first_name}_Standardized.pdf")
+                        generate_pdf_direct(profile_data, _pdf_path, photo_bytes=photo_bytes)
+                        with open(_pdf_path, "rb") as pf:
+                            pdf_bytes = pf.read()
+                except Exception as pdf_err:
+                    print(f"PDF generation error: {pdf_err}")
+                    pdf_bytes = None
                     
                 # 7. Cache result
                 st.session_state.batch_results[file_name] = {
@@ -1179,21 +1323,22 @@ if uploaded_files:
                         key=f"dl_pdf_{selected_filename}"
                     )
                 else:
-                    soffice_bin = get_soffice_path()
-                    if not soffice_bin:
-                        st.warning("⚠️ LibreOffice (soffice) not found in system paths. PDF Export is disabled.")
-                    else:
-                        if st.button("📄 Generate PDF Export", key=f"gen_pdf_{selected_filename}", help="Compile and format the PDF using LibreOffice"):
-                            with st.spinner("Generating PDF via LibreOffice (may take a few seconds)..."):
-                                try:
-                                    compiled_pdf = convert_docx_to_pdf(docx_bytes, last_name, first_name)
-                                    if compiled_pdf:
-                                        st.session_state.batch_results[selected_filename]["pdf_bytes"] = compiled_pdf
-                                        st.rerun()
-                                    else:
-                                        st.error("Failed to generate PDF document.")
-                                except Exception as e:
-                                    st.error(f"Error generating PDF: {e}")
+                    if st.button("📄 Generate PDF Export", key=f"gen_pdf_{selected_filename}", help="Generate and download the CV as a PDF"):
+                        with st.spinner("Generating PDF..."):
+                            try:
+                                import tempfile as _tf
+                                with _tf.TemporaryDirectory() as _dir:
+                                    _pdf_path = os.path.join(_dir, f"{last_name}_{first_name}_Standardized.pdf")
+                                    generate_pdf_direct(data, _pdf_path, photo_bytes=photo_bytes)
+                                    with open(_pdf_path, "rb") as pf:
+                                        compiled_pdf = pf.read()
+                                if compiled_pdf:
+                                    st.session_state.batch_results[selected_filename]["pdf_bytes"] = compiled_pdf
+                                    st.rerun()
+                                else:
+                                    st.error("Failed to generate PDF document.")
+                            except Exception as e:
+                                st.error(f"Error generating PDF: {e}")
                                     
         # Display failures if any
         errors = [
