@@ -527,6 +527,24 @@ def _pdf_form_section(story, title, pairs):
     story.append(Spacer(1, 4))
 
 
+@st.cache_data(show_spinner=False)
+def _white_background_logo(logo_path=None):
+    if not logo_path:
+        logo_path = LOGO_PATH
+    try:
+        from PIL import Image
+        import io as _io
+        img = Image.open(logo_path).convert("RGBA")
+        bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+        bg.alpha_composite(img)
+        buf = _io.BytesIO()
+        bg.convert("RGB").save(buf, format="PNG")
+        return buf.getvalue()
+    except Exception:
+        with open(logo_path, "rb") as f:
+            return f.read()
+
+
 def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=None):
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.units import inch
@@ -548,7 +566,9 @@ def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=N
         c.saveState()
         if os.path.exists(logo_path):
             try:
-                c.drawImage(logo_path, margin, h - margin - ch,
+                from reportlab.lib.utils import ImageReader
+                logo_data = _white_background_logo(logo_path)
+                c.drawImage(ImageReader(io.BytesIO(logo_data)), margin, h - margin - ch,
                             width=2.0 * inch, height=ch, preserveAspectRatio=True, anchor='sw')
             except Exception:
                 pass
@@ -559,10 +579,6 @@ def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=N
             c.setFont(f, 11)
             c.drawRightString(w - margin, ty, txt)
             ty -= 13
-        c.setStrokeColor(colors.HexColor('#009999'))
-        c.setLineWidth(1.2)
-        c.setDash(1, 3)
-        c.line(margin, h - margin - ch - 8, w - margin, h - margin - ch - 8)
         c.restoreState()
 
     doc = SimpleDocTemplate(output_path, pagesize=A4,
