@@ -522,9 +522,7 @@ def _pdf_form_section(story, title, pairs):
     story.append(Paragraph(title, section_style))
     for k, v in pairs:
         story.append(Paragraph(f"<b>{k}:</b>&nbsp;&nbsp;{(v or ' ')}", field_style))
-        story.append(HRFlowable(width='100%', thickness=0.7, color=colors.black,
-                                dash=(1, 2), spaceBefore=1, spaceAfter=4))
-    story.append(Spacer(1, 4))
+        story.append(Spacer(1, 4))
 
 
 @st.cache_data(show_spinner=False)
@@ -594,7 +592,7 @@ def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=N
     name_style = ParagraphStyle('nm', fontName='Helvetica-Bold', fontSize=13,
                                 alignment=TA_CENTER, spaceAfter=8, textColor=colors.black)
     story.append(Paragraph(
-        f"<u>{last_name.upper()}, {first_name.upper()}, MIDDLE NAME</u>", name_style))
+        f"{last_name.upper()}, {first_name.upper()}, MIDDLE NAME", name_style))
 
     if photo_bytes:
         try:
