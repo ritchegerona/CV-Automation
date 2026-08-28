@@ -1,0 +1,13 @@
+[theme]
+primaryColor = "#6366F1"
+backgroundColor = "#F8FAFC"
+secondaryBackgroundColor = "#F1F5F9"
+textColor = "#0F172A"
+font = "sans serif"
+
+[server]
+headless = false
+enableCORS = false
+enableXsrfProtection = false
+maxUploadSize = 20
+baseUrlPath = "CV_Automation_by_CHIE"

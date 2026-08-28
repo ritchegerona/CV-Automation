@@ -1,0 +1,37 @@
+# Secrets
+.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# OS
+.DS_Store
+*~
+.#*
+*.~*
+
+# Editors / locks
+.vscode/
+.idea/
+
+# Streamlit / runtime
+.streamlit/credentials.toml
+
+# Generated CV outputs
+Candidate CV Summary/
+*.docx.tmp
+*.pdf.tmp
+
+# Installer build artifacts
+Installer/**/dist/
+Installer/**/build/
+Installer/**/test_dmg/
+*.dmg
+*.exe
