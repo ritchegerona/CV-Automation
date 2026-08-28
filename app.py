@@ -1,5 +1,7 @@
 import os
 import io
+import re
+import zipfile
 import subprocess
 import shutil
 import streamlit as st
@@ -217,6 +219,7 @@ def parse_doc(file_bytes, filename):
         else:
             raise Exception("Converted .docx file not found in temporary directory.")
 
+@st.cache_data(show_spinner=False)
 def get_soffice_path():
     soffice_path = shutil.which("soffice")
     if soffice_path:
@@ -744,7 +747,6 @@ def extract_name_offline(raw_text):
     return full_name_upper, last_name, first_name
 
 def calculate_years_exp_offline(raw_text):
-    import re
     from datetime import datetime
     current_year = datetime.now().year
     
@@ -787,7 +789,6 @@ def calculate_years_exp_offline(raw_text):
     return max(1, total_years)
 
 def structure_cv_offline(raw_text):
-    import re
     lines = raw_text.split('\n')
     sections = {
         "Contact Information": [],
@@ -922,9 +923,10 @@ def structure_cv_offline(raw_text):
 def generate_summary_offline(raw_text, years_exp):
     titles = ["Nurse", "Engineer", "Developer", "Accountant", "Manager", "Teacher", "Administrator", "Technician", "Analyst", "Therapist", "Specialist"]
     detected_title = "Professional"
+    lower_text = raw_text.lower()
     
     for title in titles:
-        if title.lower() in raw_text.lower():
+        if title.lower() in lower_text:
             detected_title = title
             break
             
@@ -935,7 +937,6 @@ def generate_summary_offline(raw_text, years_exp):
     return f"{s1} {s2} {s3}"
 
 def extract_medical_details(raw_text):
-    import re
     lines = [l.strip() for l in raw_text.split('\n') if l.strip()]
     text = raw_text
     d = {
@@ -1043,6 +1044,15 @@ def offline_parse_cv(raw_text):
         "auditedCvMarkdown": cv_markdown,
         "details": details
     }
+
+
+@st.cache_data(show_spinner=False)
+def build_export_zip(items: tuple) -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for name, data in items:
+            zf.writestr(name, data)
+    return buf.getvalue()
 
 # --- FILE UPLOADER ---
 uploaded_files = st.file_uploader(
@@ -1206,32 +1216,25 @@ if uploaded_files:
                     st.markdown(f"<div class='sidebar-metric'><div class='metric-value'>{error_count}</div><div class='metric-label'>Errors/Failures</div></div>", unsafe_allow_html=True)
                 
                 # Zip DOCX files
-                import zipfile
-                docx_zip_buffer = io.BytesIO()
-                with zipfile.ZipFile(docx_zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-                    for filename, res in st.session_state.batch_results.items():
-                        if res["status"] == "Success":
-                            res_data = res["profile_data"]
-                            zip_file.writestr(
-                                f"{res_data.get('lastName', 'Lastname')}, {res_data.get('firstName', 'Firstname')} - CV.docx",
-                                res["docx_bytes"]
-                            )
-                docx_zip_bytes = docx_zip_buffer.getvalue()
+                docx_zip_items = tuple(
+                    (f"{res['profile_data'].get('lastName', 'Lastname')}, {res['profile_data'].get('firstName', 'Firstname')} - CV.docx",
+                     res["docx_bytes"])
+                    for filename, res in st.session_state.batch_results.items()
+                    if res["status"] == "Success"
+                )
+                docx_zip_bytes = build_export_zip(docx_zip_items) if docx_zip_items else None
                 
                 # Zip PDF files
                 pdf_zip_bytes = None
-                compiled_pdf_count = sum(1 for res in st.session_state.batch_results.values() if res["status"] == "Success" and res["pdf_bytes"] is not None)
-                if compiled_pdf_count > 0:
-                    pdf_zip_buffer = io.BytesIO()
-                    with zipfile.ZipFile(pdf_zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-                        for filename, res in st.session_state.batch_results.items():
-                            if res["status"] == "Success" and res["pdf_bytes"] is not None:
-                                res_data = res["profile_data"]
-                                zip_file.writestr(
-                                    f"{res_data.get('lastName', 'Lastname')}, {res_data.get('firstName', 'Firstname')} - CV.pdf",
-                                    res["pdf_bytes"]
-                                )
-                    pdf_zip_bytes = pdf_zip_buffer.getvalue()
+                pdf_zip_items = tuple(
+                    (f"{res['profile_data'].get('lastName', 'Lastname')}, {res['profile_data'].get('firstName', 'Firstname')} - CV.pdf",
+                     res["pdf_bytes"])
+                    for filename, res in st.session_state.batch_results.items()
+                    if res["status"] == "Success" and res["pdf_bytes"] is not None
+                )
+                if pdf_zip_items:
+                    pdf_zip_bytes = build_export_zip(pdf_zip_items)
+                compiled_pdf_count = len(pdf_zip_items)
                 
                 st.markdown("<div class='section-header'>Batch Exports</div>", unsafe_allow_html=True)
                 b_col1, b_col2 = st.columns(2)
