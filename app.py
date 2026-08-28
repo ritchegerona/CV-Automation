@@ -263,69 +263,43 @@ def extract_picture(file_bytes, file_ext, temp_docx_path=None):
         print(f"Error extracting picture: {e}")
     return None
 
-def _add_label_value(doc, label, value, table=None, row=None):
-    if table is not None and row is not None:
-        c0 = row.cells[0]
-        c0.text = ""
-        p0 = c0.paragraphs[0]
-        r0 = p0.add_run(label)
-        r0.bold = True
-        r0.font.name = 'Arial'
-        r0.font.size = Pt(10.5)
-        c1 = row.cells[1]
-        c1.text = ""
-        p1 = c1.paragraphs[0]
-        r1 = p1.add_run(value or " ")
-        r1.font.name = 'Arial'
-        r1.font.size = Pt(10.5)
-    else:
-        p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(1)
-        p.paragraph_format.space_after = Pt(1)
-        r0 = p.add_run(f"{label}: ")
-        r0.bold = True
-        r0.font.name = 'Arial'
-        r0.font.size = Pt(10.5)
-        r1 = p.add_run(value or " ")
-        r1.font.name = 'Arial'
-        r1.font.size = Pt(10.5)
-
-
-def _set_table_borders(table):
+def _add_form_field(doc, label, value):
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
-    tblPr = table._tbl.tblPr
-    borders = OxmlElement('w:tblBorders')
-    for edge in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
-        el = OxmlElement(f'w:{edge}')
-        el.set(qn('w:val'), 'single')
-        el.set(qn('w:sz'), '4')
-        el.set(qn('w:space'), '0')
-        el.set(qn('w:color'), '000000')
-        borders.append(el)
-    tblPr.append(borders)
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(2)
+    p.paragraph_format.space_after = Pt(2)
+    r0 = p.add_run(f"{label}: ")
+    r0.bold = True
+    r0.font.name = 'Arial'
+    r0.font.size = Pt(10.5)
+    r1 = p.add_run(value or " ")
+    r1.font.name = 'Arial'
+    r1.font.size = Pt(10.5)
+    pPr = p._p.get_or_add_pPr()
+    pBdr = OxmlElement('w:pBdr')
+    bottom = OxmlElement('w:bottom')
+    bottom.set(qn('w:val'), 'dotted')
+    bottom.set(qn('w:sz'), '4')
+    bottom.set(qn('w:space'), '1')
+    bottom.set(qn('w:color'), '000000')
+    pBdr.append(bottom)
+    pPr.append(pBdr)
 
 
 def _add_form_table(doc, title, pairs):
     # Section title
     tp = doc.add_paragraph()
-    tp.paragraph_format.space_before = Pt(8)
+    tp.paragraph_format.space_before = Pt(10)
     tp.paragraph_format.space_after = Pt(2)
     tr = tp.add_run(title)
     tr.bold = True
     tr.font.name = 'Arial'
     tr.font.size = Pt(12)
     tr.font.color.rgb = RGBColor(0x00, 0x33, 0x33)
-    # Details table (label/value rows)
-    t = doc.add_table(rows=len(pairs), cols=2)
-    t.autofit = True
-    try:
-        t.style = 'Table Grid'
-    except Exception:
-        _set_table_borders(t)
-    for i, (k, v) in enumerate(pairs):
-        _add_label_value(doc, k, v, table=t, row=t.rows[i])
-    doc.add_paragraph().paragraph_format.space_after = Pt(0)
+    # Details as clean fill-in form fields (no visible table grid)
+    for k, v in pairs:
+        _add_form_field(doc, k, v)
 
 
 def _build_document(logo_path):
@@ -537,29 +511,20 @@ def generate_docx_document(profile_data, output_path, photo_bytes=None, logo_pat
 
 def _pdf_form_section(story, title, pairs):
     from reportlab.lib import colors
-    from reportlab.platypus import Paragraph, Table, TableStyle, Spacer
+    from reportlab.platypus import Paragraph, HRFlowable, Spacer
     from reportlab.lib.styles import ParagraphStyle
 
     section_style = ParagraphStyle('sec', fontName='Helvetica-Bold', fontSize=12,
-                                   spaceBefore=8, spaceAfter=3, textColor=colors.HexColor('#003333'))
-    label_style = ParagraphStyle('lbl', fontName='Helvetica-Bold', fontSize=10)
-    value_style = ParagraphStyle('val', fontName='Helvetica', fontSize=10)
+                                   spaceBefore=10, spaceAfter=4, textColor=colors.HexColor('#003333'))
+    field_style = ParagraphStyle('fld', fontName='Helvetica', fontSize=10.5,
+                                 spaceBefore=3, spaceAfter=1)
 
     story.append(Paragraph(title, section_style))
-    rows = []
     for k, v in pairs:
-        rows.append([Paragraph(f"<b>{k}</b>", label_style), Paragraph((v or " "), value_style)])
-    table = Table(rows, colWidths=[2.6 * 72, 5.0 * 72])
-    table.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('LEFTPADDING', (0, 0), (-1, -1), 6),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (0, 0), (-1, -1), 4),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    ]))
-    story.append(table)
-    story.append(Spacer(1, 6))
+        story.append(Paragraph(f"<b>{k}:</b>&nbsp;&nbsp;{(v or ' ')}", field_style))
+        story.append(HRFlowable(width='100%', thickness=0.7, color=colors.black,
+                                dash=(1, 2), spaceBefore=1, spaceAfter=4))
+    story.append(Spacer(1, 4))
 
 
 def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=None):
