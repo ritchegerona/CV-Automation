@@ -1677,6 +1677,5 @@ else:
                 "<div class='feature-card'><div class='feature-icon'><span class='m m-soft'>track_changes</span></div><div class='feature-title'>GCC Standard</div><div class='feature-desc'>Outputs structured, corporate-aligned CVs matching the official template.</div></div>"
                 "<div class='feature-card'><div class='feature-icon'><span class='m m-soft'>inventory_2</span></div><div class='feature-title'>Batch Export</div><div class='feature-desc'>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</div></div>"
                 "</div>", unsafe_allow_html=True)
-    st.markdown("<div style='margin-top:2.5rem;font-size:0.85rem;color:#94A3B8;'><span class='m m-soft' style='vertical-align:text-bottom;'>code</span> Developed by <strong>Ritche Gerona</strong></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
