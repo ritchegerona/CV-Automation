@@ -249,31 +249,31 @@ st.markdown("""
        ========================================================= */
     [data-testid="stSidebar"] {
         background: #0b1120; color: #b0bcdb; border-right: none;
-        min-width: 224px; padding: 14px 12px 22px;
+        min-width: 250px; padding: 20px 16px 30px;
     }
-    [data-testid="stSidebar"] .block-container { padding-top: 0.25rem; padding-right: 6px; padding-left: 6px; }
+    [data-testid="stSidebar"] .block-container { padding-top: 0.5rem; padding-right: 8px; padding-left: 8px; }
     [data-testid="stSidebarCollapseButton"], [data-testid="stSidebarCollapsedControl"] { display: none !important; }
     [data-testid="collapsedControl"] { display: none !important; }
 
-    .sb-logo { display: flex; align-items: center; gap: 9px; margin-bottom: 4px; }
+    .sb-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
     .sb-logo-icon {
-        font-size: 17px; color: #2b6bff; background: rgba(43,107,255,0.15);
-        padding: 6px; border-radius: 9px; line-height: 1;
+        font-size: 22px; color: #2b6bff; background: rgba(43,107,255,0.15);
+        padding: 9px; border-radius: 12px; line-height: 1;
     }
-    .sb-logo-name { font-size: 17px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+    .sb-logo-name { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
     .sb-logo-name span { color: #2b6bff; }
     .sb-subtitle {
-        font-size: 11px; color: #6d7a9e; margin: 2px 0 14px; padding-left: 10px;
-        border-left: 3px solid #2b6bff; font-weight: 400; line-height: 1.45;
+        font-size: 12px; color: #6d7a9e; margin: 4px 0 26px; padding-left: 12px;
+        border-left: 3px solid #2b6bff; font-weight: 400; line-height: 1.5;
     }
     .sb-subtitle strong { color: #d0d9f0; font-weight: 500; }
-    .sb-system-divider { height: 1px; background: #1e2940; margin: 9px 2px 7px; }
-    .sb-bottom-label { font-size: 10px; font-weight: 600; color: #4b5880; text-transform: uppercase; letter-spacing: 0.7px; padding: 5px 10px 2px; }
+    .sb-system-divider { height: 1px; background: #1e2940; margin: 14px 2px 10px; }
+    .sb-bottom-label { font-size: 11px; font-weight: 600; color: #4b5880; text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 12px 4px; }
     .sb-system-link {
-        display: flex; align-items: center; gap: 12px; padding: 7px 10px; border-radius: 8px;
-        color: #b0bcdb; font-size: 13px; font-weight: 500;
+        display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px;
+        color: #b0bcdb; font-size: 14px; font-weight: 500;
     }
-    .sb-system-link i { width: 17px; font-size: 14px; text-align: center; color: #5f6d92; }
+    .sb-system-link i { width: 20px; font-size: 16px; text-align: center; color: #5f6d92; }
     .sb-system-link:hover { background: rgba(43,107,255,0.08); color: #ffffff; }
     .sb-system-link:hover i { color: #2b6bff; }
 
@@ -281,18 +281,18 @@ st.markdown("""
     [data-testid="stRadio"] > div { gap: 3px; }
     [data-testid="stRadio"] [role="radiogroup"] { gap: 3px; }
     [data-testid="stRadio"] label {
-        display: flex; align-items: center; gap: 12px; height: 36px;
+        display: flex; align-items: center; gap: 14px; height: 46px;
         width: 100%; max-width: 100%;
-        padding: 0 12px !important; border-radius: 8px !important;
-        font-size: 13.5px !important; font-weight: 600 !important; color: #dce4f7 !important;
+        padding: 0 14px !important; border-radius: 10px !important;
+        font-size: 14px !important; font-weight: 500 !important; color: #b0bcdb !important;
         transition: background 0.2s !important; cursor: pointer; margin: 0 !important;
     }
-    [data-testid="stRadio"] label:hover { background: rgba(43,107,255,0.14) !important; color: #ffffff !important; }
-    [data-testid="stRadio"] label:has(input:checked) { background: rgba(43,107,255,0.18) !important; color: #ffffff !important; }
+    [data-testid="stRadio"] label:hover { background: rgba(43,107,255,0.08) !important; color: #ffffff !important; }
+    [data-testid="stRadio"] label:has(input:checked) { background: rgba(43,107,255,0.12) !important; color: #ffffff !important; }
     [data-testid="stRadio"] label > div:first-child { display: none; }
     [data-testid="stRadio"] label::before {
         font-family: 'Font Awesome 6 Free', sans-serif; font-weight: 900;
-        font-size: 13px; width: 16px; text-align: center; color: #aab8da;
+        font-size: 15px; width: 20px; text-align: center; color: #5f6d92;
     }
     [data-testid="stRadio"] label:nth-child(1)::before { content: '\f1ec'; } /* chart-pie */
     [data-testid="stRadio"] label:nth-child(2)::before { content: '\f1da'; } /* clock-rotate-left */
@@ -303,19 +303,19 @@ st.markdown("""
     [data-testid="stRadio"] label:hover::before { color: #2b6bff; }
     .sb-metric {
         background: transparent; border: none; border-radius: var(--radius);
-        padding: 3px 2px; margin-bottom: 0.4rem; color: #b0bcdb;
+        padding: 6px 4px; margin-bottom: 0.6rem; color: #b0bcdb;
     }
-    .sb-metric-val { font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1; }
-    .sb-metric-lbl { font-size: 10px; color: #6d7a9e; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; font-weight: 600; }
-    .sb-progress { height: 4px; background: #1e2940; border-radius: 999px; overflow: hidden; margin-top: 6px; max-width: 100%; }
+    .sb-metric-val { font-size: 30px; font-weight: 700; color: #ffffff; line-height: 1; }
+    .sb-metric-lbl { font-size: 11px; color: #6d7a9e; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; font-weight: 600; }
+    .sb-progress { height: 5px; background: #1e2940; border-radius: 999px; overflow: hidden; margin-top: 8px; max-width: 100%; }
     .sb-progress > div { height: 100%; background: #2b6bff; border-radius: 999px; transition: width 0.4s ease; }
-    .sb-status-card { display: flex; align-items: flex-start; gap: 0.5rem; background: #111a2e; border: 1px solid #1e2940; border-radius: 9px; padding: 0.5rem 0.65rem; margin-bottom: 0.4rem; }
-    .sb-status-ic { width: 18px; height: 18px; border-radius: 50%; background: rgba(34,197,94,0.15); color: #22c55e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
-    .sb-status-ic .m { font-size: 0.7rem; color: #22c55e; }
-    .sb-status-card strong { display: block; font-size: 0.76rem; color: #e8edf8; font-weight: 600; }
-    .sb-status-card span { font-size: 0.7rem; color: #5f8f7a; line-height: 1.4; }
+    .sb-status-card { display: flex; align-items: flex-start; gap: 0.6rem; background: #111a2e; border: 1px solid #1e2940; border-radius: 12px; padding: 0.7rem 0.85rem; margin-bottom: 0.6rem; }
+    .sb-status-ic { width: 22px; height: 22px; border-radius: 50%; background: rgba(34,197,94,0.15); color: #22c55e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+    .sb-status-ic .m { font-size: 0.8rem; color: #22c55e; }
+    .sb-status-card strong { display: block; font-size: 0.8rem; color: #e8edf8; font-weight: 600; }
+    .sb-status-card span { font-size: 0.74rem; color: #5f8f7a; line-height: 1.4; }
     .sb-status-card span.miss { color: #f4648c; }
-    .sb-copyright { font-size: 0.7rem; color: #4b5880; padding: 2px 2px; line-height: 1.4; }
+    .sb-copyright { font-size: 0.74rem; color: #4b5880; padding: 4px 4px; line-height: 1.5; }
 
     /* Sidebar text readability (sidebar is always navy bg) */
     [data-testid="stSidebar"] .sb-subtitle,
@@ -330,15 +330,6 @@ st.markdown("""
     [data-testid="stSidebar"] .sb-status-card span.miss { color: #ff8aa8 !important; }
     [data-testid="stSidebar"] .sb-copyright { color: #8b9ac0 !important; }
     [data-testid="stSidebar"] .sb-status-card .sb-status-ic span.m { color: #34d780 !important; }
-    /* Navigation labels (unreadable at low contrast — force readable) */
-    [data-testid="stSidebar"] [data-testid="stRadio"] label { color: #dce4f7 !important; }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover,
-    [data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) { color: #ffffff !important; }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label::before { color: #aab8da !important; }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label:hover::before,
-    [data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked)::before { color: #2b6bff !important; }
-    [data-testid="stSidebar"] [data-testid="stRadio"] label p,
-    [data-testid="stSidebar"] [data-testid="stRadio"] label span { color: inherit !important; }
 
     /* =========================================================
        CARDS / BADGES / CHIPS
@@ -551,58 +542,6 @@ st.markdown("""
         .feature-grid { grid-template-columns: 1fr; }
     }
     .stColumn .stButton > button { width: 100%; }
-
-    /* =========================================================
-       SAAS POLISH  (hero, panels, result cards, footer)
-       ========================================================= */
-    .hero { padding: 8px 0 22px; margin-bottom: 20px; }
-    .hero-kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--brand); background: var(--brand-light); padding: 5px 14px; border-radius: 999px; margin-bottom: 14px; }
-    .hero-title { font-size: 40px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
-    .hero-title span { color: var(--brand); }
-    .hero-underline { height: 5px; width: 118px; background: linear-gradient(90deg, var(--brand), #7ba2ff, transparent); border-radius: 999px; margin-top: 16px; }
-    .hero-sub { font-size: 16px; color: var(--text-secondary); margin-top: 14px; max-width: 660px; line-height: 1.6; }
-    .hero-actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .panel { width: 100%; }
-    .result-card { background: var(--bg-card); border: 1px solid var(--border-soft); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
-    .result-card.green { border-left-color: var(--green); }
-    .result-card.amber { border-left-color: var(--amber); }
-    .result-card .rc-title { font-size: 15px; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .result-card .rc-body { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
-
-    .tip-panel { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px; }
-    .tip-panel .tp-title { font-size: 13px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .tip-panel .tp-title .m { color: var(--brand); }
-    .tip-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px; }
-    .tip-item .m { font-size: 16px; color: var(--brand); margin-top: 1px; }
-
-    .app-footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border-soft); text-align: center; font-size: 13px; color: var(--text-muted); }
-    .app-footer .h { color: #e91e63; }
-
-    .sidebar-upload { background:#111a2e; border:1px solid #1e2940; border-radius:10px; padding:11px 10px; margin: 6px 0 4px; }
-    .sidebar-upload .su-title { font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:9px; display:flex; align-items:center; gap:7px; }
-    .sidebar-upload .su-title .m { color:#2b6bff; }
-    .sidebar-upload [data-testid="stFileUploaderDropzone"] {
-        background:#0f1e3d !important; border:1.5px dashed #4568c7 !important; border-radius:9px !important;
-        padding:12px 10px !important; min-height: 74px !important;
-    }
-    .sidebar-upload [data-testid="stFileUploaderDropzone"]:hover { border-color:#2b6bff !important; background:#12263f !important; }
-    .sidebar-upload [data-testid="stFileUploaderDropzone"] button {
-        background:#2b6bff !important; color:#fff !important; border:none !important;
-        border-radius:999px !important; font-weight:600 !important; font-size:12px !important; height:auto !important; padding:5px 14px !important;
-    }
-    .sidebar-upload [data-testid="stFileUploaderDropzone"] button:hover { background:#3b7bff !important; }
-    .sidebar-upload [data-testid="stFileUploaderDropzone"] small { font-size:12px !important; color:#c3ceea !important; font-weight:600 !important; }
-    .sidebar-upload .sidebar-divider { height:1px; background:#1e2940; margin:10px 0; }
-    .sidebar-upload .sidebar-divider + .stButton, .sidebar-upload .stButton { margin-top: 4px; }
-
-    [data-testid="stSidebar"] [data-testid="stToggle"] { padding-top: 2px; padding-bottom: 2px; }
-    [data-testid="stSidebar"] [data-testid="stToggle"] label { padding: 2px 0; gap: 10px; }
-    [data-testid="stSidebar"] .stCaption, [data-testid="stSidebar"] [data-testid="stCaptionContainer"] { margin-top: 2px !important; font-size: 11px !important; }
-    [data-testid="stSidebar"] .block-container > div { margin-top: 0.15rem; margin-bottom: 0.15rem; }
-
-    .stButton > button, .stDownloadButton > button { padding: 0.6rem 1.1rem; }
-    .stButton > button:hover, .stDownloadButton > button:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: var(--brand); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -680,14 +619,6 @@ if st.session_state.get("dark_mode", False):
         color:#e9eff7; background-color:#151d2d !important;
     }
     .stSelectbox [data-baseweb="select"] > div { border-color:#26314a !important; }
-
-    .hero-title { color:#e9eff7 !important; }
-    .hero-kicker { background:#0f1e3d !important; color:#7ba2ff !important; }
-    .hero-sub { color:#96a4b8 !important; }
-    .result-card, .tip-panel { background:#151d2d !important; border-color:#26314a !important; }
-    .result-card .rc-title, .tip-panel .tp-title { color:#e9eff7 !important; }
-    .result-card .rc-body, .tip-item { color:#96a4b8 !important; }
-    .app-footer { border-top-color:#26314a !important; color:#7a879b !important; }
     </style>""", unsafe_allow_html=True)
 
 
@@ -742,58 +673,6 @@ with st.sidebar:
         label_visibility="collapsed",
         on_change=lambda: setattr(st.session_state, "view", st.session_state.nav_select),
     )
-
-    st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
-
-    # --- UPLOAD & CONFIG (control panel) ---
-    st.markdown("""<div class='sidebar-upload'>
-      <div class='su-title'><span class='m'>cloud_upload</span> Upload CVs</div>""", unsafe_allow_html=True)
-
-    cv_uploader_key = f"cv_uploader_{st.session_state.uploader_key}"
-    uploaded_files = st.file_uploader(
-        "Upload raw CVs",
-        type=["pdf", "docx", "doc", "txt"],
-        accept_multiple_files=True,
-        help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
-        key=cv_uploader_key,
-        label_visibility="collapsed",
-    )
-
-    uploaded_photo = None
-    if uploaded_files and len(uploaded_files) == 1:
-        uploaded_photo = st.file_uploader(
-            "Custom profile photo (JPEG/PNG)",
-            type=["jpg", "jpeg", "png"],
-            help="Optional — if omitted, the studio will try to extract the candidate photo from the raw CV.",
-            key=f"photo_uploader_{st.session_state.uploader_key}",
-        )
-
-    st.markdown("<div class='sidebar-divider'></div>", unsafe_allow_html=True)
-
-    _u1, _u2 = st.columns([1, 1])
-    with _u1:
-        st.markdown("##### Batch")
-        if uploaded_files:
-            if st.button(":material/close:" " Clear", key="clear_files_btn", help="Clear all uploaded files", use_container_width=True):
-                st.session_state.uploader_key += 1
-                for _k in ["batch_results", "selected_candidate_idx"]:
-                    if _k in st.session_state:
-                        del st.session_state[_k]
-                st.rerun()
-    with _u2:
-        process_btn = st.button(":material/auto_fix_high:" " Standardize", key="sb_process_btn", type="primary", use_container_width=True, disabled=not uploaded_files)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # --- PREFERENCES (config widgets) ---
-    st.markdown("<div class='sb-bottom-label'>Preferences</div>", unsafe_allow_html=True)
-    if "pref_auto_pdf" not in st.session_state:
-        st.session_state.pref_auto_pdf = True
-    if "pref_save_profiles" not in st.session_state:
-        st.session_state.pref_save_profiles = True
-    st.toggle("Auto-generate PDF per candidate", key="pref_auto_pdf")
-    st.toggle("Save local profile .txt files", key="pref_save_profiles")
-    st.caption("Preferences persist for the current session.")
 
     st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
     st.markdown("<div class='sb-bottom-label'>System</div>", unsafe_allow_html=True)
@@ -878,39 +757,31 @@ def _profile_dialog():
     st.write(f"**Processed this session:** {st.session_state.processed_count}")
     st.write(f"**Theme:** {'Dark' if st.session_state.dark_mode else 'Light'}")
 
-# --- HERO HEADER + action controls ---
-_hx1, _hx2 = st.columns([9, 3], vertical_alignment="center")
-with _hx1:
-    st.markdown("""<div class='hero'>
-      <span class='hero-kicker'><i class='fas fa-bolt'></i> Enterprise CV Automation</span>
-      <div class='hero-title'>GCC <span>CV Studio</span></div>
-      <div class='hero-underline'></div>
-      <div class='hero-sub'>Parse, standardize, and export GCC-aligned, corporate-ready resumes — fully offline, in batch.</div>
-    </div>""", unsafe_allow_html=True)
-with _hx2:
-    st.markdown("<div class='hero-actions'>", unsafe_allow_html=True)
-    _ha1, _ha2, _ha3, _ha4, _ha5 = st.columns([1, 1, 1, 1, 2], vertical_alignment="center")
-    with _ha1:
-        if st.button(":material/share:", key="share_btn", help="Share this app", use_container_width=True):
-            _share_dialog()
-    with _ha2:
-        theme_clicked = st.button(
-            ":material/dark_mode:" if not st.session_state.dark_mode else ":material/light_mode:",
-            key="theme_toggle_btn",
-            help="Toggle dark mode",
-            use_container_width=True,
-        )
-    with _ha3:
-        if st.button(":material/notifications:", key="notif_btn", help="Notifications", use_container_width=True):
-            _notifications_dialog()
-    with _ha4:
-        if st.button(":material/person:", key="profile_btn", help="Profile", use_container_width=True):
-            _profile_dialog()
-    with _ha5:
-        st.markdown("<span class='tb-badge'><i class='fas fa-circle-check' style='color:#2b6bff;'></i> v2.4.1</span>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("<div class='app-top-spacer' style='height:4px;'></div>", unsafe_allow_html=True)
+# --- TOP BAR (reference design + functional controls) ---
+_tb_title, _tb_share, _tb_theme, _tb_notif, _tb_prof, _tb_badge, _tb_av = st.columns([8, 1, 1, 1, 1, 2, 1], vertical_alignment="center")
+with _tb_title:
+    st.markdown("""<div class='tb-title'>CV Studio</div>
+<div class='tb-sub'>Parse, standardize, and export GCC-aligned resumes</div>""", unsafe_allow_html=True)
+with _tb_share:
+    if st.button(":material/share:", key="share_btn", help="Share this app", use_container_width=True):
+        _share_dialog()
+with _tb_theme:
+    theme_clicked = st.button(
+        ":material/dark_mode:" if not st.session_state.dark_mode else ":material/light_mode:",
+        key="theme_toggle_btn",
+        help="Toggle dark mode",
+        use_container_width=True,
+    )
+with _tb_notif:
+    if st.button(":material/notifications:", key="notif_btn", help="Notifications", use_container_width=True):
+        _notifications_dialog()
+with _tb_prof:
+    if st.button(":material/person:", key="profile_btn", help="Profile", use_container_width=True):
+        _profile_dialog()
+with _tb_badge:
+    st.markdown("<span class='tb-badge'><i class='fas fa-circle-check' style='color:#2b6bff;'></i> v2.4.1</span>", unsafe_allow_html=True)
+with _tb_av:
+    st.markdown("<div class='tb-avatar'>RG</div>", unsafe_allow_html=True)
 
 if theme_clicked:
     st.session_state.dark_mode = not st.session_state.dark_mode
@@ -1867,7 +1738,7 @@ def build_export_zip(items: tuple) -> bytes:
 _VIEW = st.session_state.view
 
 if _VIEW == "Dashboard":
-    # --- STATS ROW (full width) ---
+    # --- STATS ROW ---
     _total = st.session_state.processed_count
     summary_exists = os.path.exists(SUMMARY_DIR)
     gcc_exists = os.path.exists(GCC_TEMPLATE_PATH)
@@ -1883,166 +1754,230 @@ if _VIEW == "Dashboard":
       </div>
     </div>""", unsafe_allow_html=True)
 
-    # Uploads now live in the sidebar (the control panel)
-    uploaded_files = st.session_state.get(cv_uploader_key)
-    uploaded_photo = None
-    if uploaded_files and len(uploaded_files) == 1:
-        uploaded_photo = st.session_state.get(f"photo_uploader_{st.session_state.uploader_key}")
-
-    # --- 70/30 MULTI-PANEL: content vs tips/stats ---
-    _main_col, _side_col = st.columns([7, 3], gap="large")
-    _last = st.session_state.get("last_parse", "—")
-
-    with _side_col:
-        st.markdown("""<div class='tip-panel'>
-          <div class='tp-title'><span class='m'>tips_and_updates</span> How it works</div>
-          <div class='tip-item'><span class='m'>upload_file</span><div>Upload raw CVs in the sidebar — PDF, DOCX, DOC or TXT.</div></div>
-          <div class='tip-item'><span class='m'>auto_fix_high</span><div>Hit <strong>Standardize</strong> to parse and convert them to the GCC standard.</div></div>
-          <div class='tip-item'><span class='m'>manage_search</span><div>Inspect the structured profile side-by-side with the raw text.</div></div>
-          <div class='tip-item'><span class='m'>file_download</span><div>Export each candidate as DOCX and PDF, or bundle them as a ZIP.</div></div>
-        </div>""", unsafe_allow_html=True)
-
-        st.markdown(f"""<div class='tip-panel'>
-          <div class='tp-title'><span class='m'>insights</span> Session stats</div>
-          <div style='font-size:15px;font-weight:700;color:var(--text-dark);'>Last parse: {_last}</div>
-          <div style='font-size:13px;color:var(--text-muted);margin-top:6px;'>{len(uploaded_files or [])} file(s) currently in queue.</div>
-          <div style='margin-top:10px;'><span class='pill ok'><span class='m' style='font-size:0.8em'>verified_user</span> 100% offline</span></div>
-        </div>""", unsafe_allow_html=True)
-
-        st.markdown("""<div class='tip-panel'>
-          <div class='tp-title'><span class='m'>bolt</span> Pro tip</div>
-          <div style='font-size:13px;color:var(--text-muted);line-height:1.55;'>
-            For a single CV, optionally upload a clean profile photo in the sidebar so the standardized document uses it directly.
+    # --- STUDIO CARD (header + upload merged into one card) ---
+    with st.container(key="studio_card"):
+        st.markdown("""<div class='studio-header'>
+          <div class='title-group'>
+            <h3>CV Processing &amp; Standardization Studio</h3>
+            <p>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</p>
+          </div>
+          <div class='template-badge'><i class='fas fa-file-word'></i> GCC_CV_FORMAT.doc</div>
+        </div>
+        <div class='dz-guide'>
+          <div class='dz-ic'><i class='fas fa-cloud-arrow-up'></i></div>
+          <h4>Drop your CV files here</h4>
+          <p>or click to browse &mdash; supports multiple files</p>
+          <div class='formats'>
+            <span class='format-tag'><i class='fas fa-file-pdf'></i> PDF</span>
+            <span class='format-tag'><i class='fas fa-file-word'></i> DOCX</span>
+            <span class='format-tag'><i class='fas fa-file'></i> DOC</span>
+            <span class='format-tag'><i class='fas fa-file-lines'></i> TXT</span>
           </div>
         </div>""", unsafe_allow_html=True)
 
-    with _main_col:
-        # --- UPLOAD QUEUE / PREVIEW (still in sidebar, but queue previewed here) ---
-        if uploaded_files:
-            st.markdown("<div class='page-section'><span class='m m-soft'>upload_file</span> Upload Queue</div>", unsafe_allow_html=True)
-            st.markdown("<div class='workflow'>"
-                        "<span class='wf-label'>Pipeline</span>"
-                        "<span class='wf-step done'>Upload</span><span class='wf-arrow'>→</span>"
-                        "<span class='wf-step done'>Parse</span><span class='wf-arrow'>→</span>"
-                        "<span class='wf-step'>Validate</span><span class='wf-arrow'>→</span>"
-                        "<span class='wf-step'>Standardize</span><span class='wf-arrow'>→</span>"
-                        "<span class='wf-step'>Generate</span><span class='wf-arrow'>→</span>"
-                        "<span class='wf-step'>Export</span>"
-                        "</div>", unsafe_allow_html=True)
+        uploaded_files = st.file_uploader(
+            "Upload raw CVs",
+            type=["pdf", "docx", "doc", "txt"],
+            accept_multiple_files=True,
+            help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
+            key=f"cv_uploader_{st.session_state.uploader_key}",
+            label_visibility="collapsed",
+        )
+
+        # --- FEATURE GRID (9 cards) ---
+        st.markdown("""<div class='feature-grid'>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-microchip'></i></span><h5>Local Parser</h5><p>Fully offline parsing &mdash; no external AI or internet required.</p><span class='ftag'><i class='fas fa-shield-halved'></i>Offline</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-flag'></i></span><h5>GCC Standard</h5><p>Outputs structured, corporate-aligned CVs matching the official template.</p><span class='ftag blue'><i class='fas fa-check'></i>Compliant</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-box-archive'></i></span><h5>Batch Export</h5><p>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</p><span class='ftag gold'><i class='fas fa-file-zipper'></i>Bulk</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-lock'></i></span><h5>Secure &amp; Private</h5><p>Your data stays local. Always. 100% compliant.</p><span class='ftag'><i class='fas fa-check-circle'></i>100% Compliant</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-bolt'></i></span><h5>Fast &amp; Reliable</h5><p>Lightning-fast parsing with minimal resource usage.</p><span class='ftag blue'>Manage app</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-brain'></i></span><h5>Smart Parsing</h5><p>Extracts data accurately from any CV format.</p><span class='ftag gold'>AI-ready</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-layer-group'></i></span><h5>Template Driven</h5><p>Uses GCC standard template for consistency.</p><span class='ftag blue'>Structured</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-database'></i></span><h5>Data Security</h5><p>Your data stays local. Always.</p><span class='ftag'><i class='fas fa-lock'></i>Local</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-arrow-trend-up'></i></span><h5>Bulk Processing</h5><p>Process multiple CVs in one go.</p><span class='ftag gold'><i class='fas fa-arrow-up'></i>Batch</span></div>
+        </div>""", unsafe_allow_html=True)
+
+        # --- BOTTOM META ---
+        _ql = len(uploaded_files or [])
+        _last = st.session_state.get("last_parse", "—")
+        st.markdown(f"""<div class='bottom-meta'>
+          <div class='left'>
+            <span><i class='fas fa-circle-check' style='color:#22c55e;'></i> System ready</span>
+            <span class='pill'><i class='fas fa-clock'></i> Last parse: {_last}</span>
+            <span><i class='fas fa-files'></i> {_ql} files in queue</span>
+          </div>
+          <div class='right'>
+            <i class='fas fa-shield-halved' title='100% secure'></i>
+            <i class='fas fa-circle-nodes' title='Offline mode'></i>
+            <span style='font-weight:500;'>v2.4.1</span>
+          </div>
+        </div>""", unsafe_allow_html=True)
+
+    # --- UPLOAD QUEUE ---
+    if uploaded_files:
+        st.markdown("<div class='page-section'><span class='m m-soft'>upload_file</span> Upload Queue</div>", unsafe_allow_html=True)
+        st.markdown("<div class='workflow'>"
+                    "<span class='wf-label'>Pipeline</span>"
+                    "<span class='wf-step done'>Upload</span><span class='wf-arrow'>→</span>"
+                    "<span class='wf-step done'>Parse</span><span class='wf-arrow'>→</span>"
+                    "<span class='wf-step'>Validate</span><span class='wf-arrow'>→</span>"
+                    "<span class='wf-step'>Standardize</span><span class='wf-arrow'>→</span>"
+                    "<span class='wf-step'>Generate</span><span class='wf-arrow'>→</span>"
+                    "<span class='wf-step'>Export</span>"
+                    "</div>", unsafe_allow_html=True)
+        col_file, col_clear = st.columns([6, 1])
+        with col_file:
             st.markdown(f"<div style='font-size:0.9rem;font-weight:600;color:var(--text-dark);margin-bottom:0.6rem;'><span style='color:var(--brand);'>{len(uploaded_files)}</span> file(s) ready to process</div>", unsafe_allow_html=True)
+        with col_clear:
+            if st.button(":material/close:" " Clear", key="clear_files_btn", help="Clear all uploaded files"):
+                st.session_state.uploader_key += 1
+                for key in ["batch_results", "selected_candidate_idx"]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                st.rerun()
 
-            ficon_map = {"pdf": "picture_as_pdf", "docx": "description", "doc": "article", "txt": "text_snippet"}
-            for _uf in uploaded_files:
-                _ext = _uf.name.split(".")[-1].lower()
-                _bcls = {"pdf": "badge-pdf", "docx": "badge-docx", "doc": "badge-doc", "txt": "badge-txt"}.get(_ext, "badge-txt")
-                _size_kb = _uf.size / 1024 if _uf.size else 0
-                _size_str = f"{_size_kb:.1f} KB" if _size_kb < 1024 else f"{_size_kb/1024:.2f} MB"
-                _fic = ficon_map.get(_ext, "description")
-                st.markdown(
-                    f"<div class='file-row fade-in'>"
-                    f"<div class='f-icon'><span class='m'>{_fic}</span></div>"
-                    f"<div style='flex:1;'><div class='f-name'>{_uf.name}</div><div class='f-size'>{_ext.upper()} · {_size_str}</div></div>"
-                    f"<div class='f-status'><span class='format-badge {_bcls}'>{_ext.upper()}</span></div>"
-                    f"</div>", unsafe_allow_html=True)
+        ficon_map = {"pdf": "picture_as_pdf", "docx": "description", "doc": "article", "txt": "text_snippet"}
+        for _uf in uploaded_files:
+            _ext = _uf.name.split(".")[-1].lower()
+            _bcls = {"pdf": "badge-pdf", "docx": "badge-docx", "doc": "badge-doc", "txt": "badge-txt"}.get(_ext, "badge-txt")
+            _size_kb = _uf.size / 1024 if _uf.size else 0
+            _size_str = f"{_size_kb:.1f} KB" if _size_kb < 1024 else f"{_size_kb/1024:.2f} MB"
+            _fic = ficon_map.get(_ext, "description")
+            st.markdown(
+                f"<div class='file-row fade-in'>"
+                f"<div class='f-icon'><span class='m'>{_fic}</span></div>"
+                f"<div style='flex:1;'><div class='f-name'>{_uf.name}</div><div class='f-size'>{_ext.upper()} · {_size_str}</div></div>"
+                f"<div class='f-status'><span class='format-badge {_bcls}'>{_ext.upper()}</span></div>"
+                f"</div>", unsafe_allow_html=True)
 
-            st.markdown("<div class='privacy-note' style='margin:0.9rem 0;'><span class='m'>verified_user</span> Local parser is used for all CVs. No external AI or internet connection required.</div>", unsafe_allow_html=True)
+        # Photo Uploader (only visible if a single CV is uploaded)
+        uploaded_photo = None
+        if len(uploaded_files) == 1:
+            uploaded_photo = st.file_uploader(
+                "Upload a custom profile photo (JPEG or PNG)",
+                type=["jpg", "jpeg", "png"],
+                help="If not provided, the studio will automatically attempt to extract the candidate photo from the raw CV.",
+                key=f"photo_uploader_{st.session_state.uploader_key}"
+            )
 
-        # --- PROCESSING via st.status ---
-        if uploaded_files and process_btn:
+        # Action button to trigger processing
+        st.markdown("<div class='privacy-note' style='margin:0.9rem 0;'><span class='m'>verified_user</span> Local parser is used for all CVs. No external AI or internet connection required.</div>", unsafe_allow_html=True)
+
+        col_btn_space, col_btn_act = st.columns([5, 1])
+        with col_btn_act:
+            process_btn = st.button(":material/auto_fix_high:" "  Standardize & Export", type="primary", use_container_width=True)
+
+        if process_btn:
             st.session_state.batch_results = {}
+            progress_bar = st.progress(0.0)
+            status_text = st.empty()
+
             fname_badge = {"pdf": "badge-pdf", "docx": "badge-docx", "doc": "badge-doc", "txt": "badge-txt"}
-            with st.status("Standardizing CVs...", expanded=True) as status:
-                for idx, file in enumerate(uploaded_files):
-                    file_name = file.name
-                    file_ext = file_name.split(".")[-1].lower()
-                    file_bytes = file.read()
-                    file.seek(0)
-                    _bc = fname_badge.get(file_ext, "badge-txt")
+            for idx, file in enumerate(uploaded_files):
+                file_name = file.name
+                file_ext = file_name.split(".")[-1].lower()
+                file_bytes = file.read()
+                file.seek(0)
 
+                _pc = st.empty()
+                _bc = fname_badge.get(file_ext, "badge-txt")
+                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'><span class='m m-soft'>description</span> {file_name}</span><span class='process-card-status status-processing pulse'><span class='m'>progress_activity</span> PROCESSING</span></div>", unsafe_allow_html=True)
+                status_text.markdown(f"**Processing file {idx+1} of {len(uploaded_files)}**: `{file_name}`...")
+                progress_bar.progress(idx / len(uploaded_files))
+
+                try:
+                    # 1. Parse raw text
+                    if file_ext == "docx":
+                        raw_text = parse_docx(file_bytes)
+                    elif file_ext == "doc":
+                        raw_text, doc_docx_bytes = parse_doc(file_bytes, file_name)
+                        st.session_state.doc_docx_bytes = doc_docx_bytes
+                    elif file_ext == "pdf":
+                        raw_text = parse_pdf(file_bytes)
+                    else:
+                        raw_text = parse_txt(file_bytes)
+
+                    # 2. Extract profile data (local parser)
+                    profile_data = offline_parse_cv(raw_text)
+                    # 3. Retrieve or extract profile picture
+                    photo_bytes = None
+                    if len(uploaded_files) == 1 and uploaded_photo is not None:
+                        photo_bytes = uploaded_photo.read()
+                    else:
+                        if file_ext == "doc" and 'doc_docx_bytes' in locals():
+                            photo_bytes = extract_picture(doc_docx_bytes, "docx")
+                        else:
+                            photo_bytes = extract_picture(file_bytes, file_ext)
+
+                    # 4. Pre-generate DOCX using the template
+                    last_name = profile_data.get("lastName", "Lastname")
+                    first_name = profile_data.get("firstName", "Firstname")
+
+                    import tempfile
+                    docx_bytes = None
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        temp_docx_out = os.path.join(temp_dir, f"{last_name}_{first_name}_Standardized.docx")
+                        generate_docx_document(profile_data, temp_docx_out, photo_bytes=photo_bytes)
+                        with open(temp_docx_out, "rb") as doc_f:
+                            docx_bytes = doc_f.read()
+
+                    # 5. Save candidate profile text file locally
+                    years_exp = profile_data.get("yearsOfExperience", 0)
+                    exec_summary = profile_data.get("executiveSummary", "")
+                    profile_filename = f"{last_name}, {first_name}.txt"
+                    profile_filepath = os.path.join(SUMMARY_DIR, profile_filename)
+                    profile_content = (
+                        f"Candidate: {last_name}, {first_name}\n"
+                        f"Total Experience: {years_exp} Years\n"
+                        f"Summary: {exec_summary}\n"
+                    )
+                    with open(profile_filepath, "w", encoding="utf-8") as f:
+                        f.write(profile_content)
+
+                    # 6. Pre-generate PDF for candidate
+                    pdf_bytes = None
+                    status_text.markdown(f"**Processing file {idx+1} of {len(uploaded_files)}**: Generating PDF for `{file_name}`...")
                     try:
-                        if file_ext == "docx":
-                            raw_text = parse_docx(file_bytes)
-                        elif file_ext == "doc":
-                            raw_text, doc_docx_bytes = parse_doc(file_bytes, file_name)
-                            st.session_state.doc_docx_bytes = doc_docx_bytes
-                        elif file_ext == "pdf":
-                            raw_text = parse_pdf(file_bytes)
-                        else:
-                            raw_text = parse_txt(file_bytes)
-
-                        profile_data = offline_parse_cv(raw_text)
-                        photo_bytes = None
-                        if len(uploaded_files) == 1 and uploaded_photo is not None:
-                            photo_bytes = uploaded_photo.read()
-                        else:
-                            if file_ext == "doc" and 'doc_docx_bytes' in locals():
-                                photo_bytes = extract_picture(doc_docx_bytes, "docx")
-                            else:
-                                photo_bytes = extract_picture(file_bytes, file_ext)
-
-                        last_name = profile_data.get("lastName", "Lastname")
-                        first_name = profile_data.get("firstName", "Firstname")
-
-                        import tempfile
-                        docx_bytes = None
-                        with tempfile.TemporaryDirectory() as temp_dir:
-                            temp_docx_out = os.path.join(temp_dir, f"{last_name}_{first_name}_Standardized.docx")
-                            generate_docx_document(profile_data, temp_docx_out, photo_bytes=photo_bytes)
-                            with open(temp_docx_out, "rb") as doc_f:
-                                docx_bytes = doc_f.read()
-
-                        years_exp = profile_data.get("yearsOfExperience", 0)
-                        exec_summary = profile_data.get("executiveSummary", "")
-                        profile_filename = f"{last_name}, {first_name}.txt"
-                        profile_filepath = os.path.join(SUMMARY_DIR, profile_filename)
-                        profile_content = (
-                            f"Candidate: {last_name}, {first_name}\n"
-                            f"Total Experience: {years_exp} Years\n"
-                            f"Summary: {exec_summary}\n"
-                        )
-                        with open(profile_filepath, "w", encoding="utf-8") as f:
-                            f.write(profile_content)
-
+                        import tempfile as _tf
+                        with _tf.TemporaryDirectory() as _dir:
+                            _pdf_path = os.path.join(_dir, f"{last_name}_{first_name}_Standardized.pdf")
+                            generate_pdf_direct(profile_data, _pdf_path, photo_bytes=photo_bytes)
+                            with open(_pdf_path, "rb") as pf:
+                                pdf_bytes = pf.read()
+                    except Exception as pdf_err:
+                        print(f"PDF generation error: {pdf_err}")
                         pdf_bytes = None
-                        st.write(f"Generating PDF for `{file_name}`...")
-                        try:
-                            import tempfile as _tf
-                            with _tf.TemporaryDirectory() as _dir:
-                                _pdf_path = os.path.join(_dir, f"{last_name}_{first_name}_Standardized.pdf")
-                                generate_pdf_direct(profile_data, _pdf_path, photo_bytes=photo_bytes)
-                                with open(_pdf_path, "rb") as pf:
-                                    pdf_bytes = pf.read()
-                        except Exception as pdf_err:
-                            print(f"PDF generation error: {pdf_err}")
-                            pdf_bytes = None
 
-                        st.session_state.batch_results[file_name] = {
-                            "profile_data": profile_data,
-                            "raw_text": raw_text,
-                            "photo_bytes": photo_bytes,
-                            "docx_bytes": docx_bytes,
-                            "pdf_bytes": pdf_bytes,
-                            "status": "Success"
-                        }
-                    except Exception as e:
-                        st.session_state.batch_results[file_name] = {
-                            "status": "Error",
-                            "error_message": str(e)
-                        }
+                    # 7. Cache result
+                    st.session_state.batch_results[file_name] = {
+                        "profile_data": profile_data,
+                        "raw_text": raw_text,
+                        "photo_bytes": photo_bytes,
+                        "docx_bytes": docx_bytes,
+                        "pdf_bytes": pdf_bytes,
+                        "status": "Success"
+                    }
+                    _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'><span class='m m-soft'>description</span> {file_name}</span><span class='process-card-status status-success'><span class='m'>check_circle</span> SUCCESS</span></div>", unsafe_allow_html=True)
+                except Exception as e:
+                    st.session_state.batch_results[file_name] = {
+                        "status": "Error",
+                        "error_message": str(e)
+                    }
+                    _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'><span class='m m-soft'>description</span> {file_name}</span><span class='process-card-status status-error'><span class='m'>cancel</span> ERROR</span></div>", unsafe_allow_html=True)
 
-                st.session_state.processed_count += len(uploaded_files)
-                _okn = sum(1 for r in st.session_state.batch_results.values() if r.get("status") == "Success")
-                _errn = sum(1 for r in st.session_state.batch_results.values() if r.get("status") == "Error")
-                if _errn:
-                    status.update(label=f"{_okn} CV(s) processed. {_errn} failed.", state="error", expanded=False)
-                    st.toast(f"{_okn} CV(s) processed. {_errn} failed.", icon="⚠️")
-                else:
-                    status.update(label=f"{_okn} CV(s) processed successfully.", state="complete", expanded=False)
-                    st.toast(f"{_okn} CV(s) processed successfully.", icon="✅")
+            progress_bar.progress(1.0)
+            status_text.markdown(f"**Batch processing completed!** Processed {len(uploaded_files)} files.")
+            st.session_state.processed_count += len(uploaded_files)
+            _okn = sum(1 for r in st.session_state.batch_results.values() if r.get("status") == "Success")
+            _errn = sum(1 for r in st.session_state.batch_results.values() if r.get("status") == "Error")
+            if _errn:
+                st.toast(f"{_okn} CV(s) processed. {_errn} failed.", icon="⚠️")
+            else:
+                st.toast(f"{_okn} CV(s) processed successfully.", icon="✅")
             st.session_state.last_parse = datetime.now().strftime("%H:%M")
             st.rerun()
 
-        # --- RESULTS / PREVIEWS ---
+        # Check if we have processed data in state
         if "batch_results" in st.session_state and len(st.session_state.batch_results) > 0:
             # Filter successful candidates
             success_candidates = {
@@ -2096,8 +2031,7 @@ if _VIEW == "Dashboard":
                             data=docx_zip_bytes,
                             file_name="GCC_Standardized_CVs_Word.zip",
                             mime="application/zip",
-                            key="dl_docx_zip",
-                            use_container_width=True,
+                            key="dl_docx_zip"
                         )
                     with b_col2:
                         if compiled_pdf_count > 0:
@@ -2106,8 +2040,7 @@ if _VIEW == "Dashboard":
                                 data=pdf_zip_bytes,
                                 file_name="GCC_Standardized_CVs_PDF.zip",
                                 mime="application/zip",
-                                key="dl_pdf_zip",
-                                use_container_width=True,
+                                key="dl_pdf_zip"
                             )
                         else:
                             st.info("Compile PDFs for individual candidates below, then download them as a batch ZIP here.")
@@ -2225,8 +2158,7 @@ if _VIEW == "Dashboard":
                         data=docx_bytes,
                         file_name=f"{last_name}, {first_name} - CV.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        key=f"dl_docx_{selected_filename}",
-                        use_container_width=True,
+                        key=f"dl_docx_{selected_filename}"
                     )
 
                 with exp_col2:
@@ -2236,29 +2168,24 @@ if _VIEW == "Dashboard":
                             data=pdf_bytes,
                             file_name=f"{last_name}, {first_name} - CV.pdf",
                             mime="application/pdf",
-                            key=f"dl_pdf_{selected_filename}",
-                            use_container_width=True,
+                            key=f"dl_pdf_{selected_filename}"
                         )
                     else:
-                        if st.button("Generate PDF Export", key=f"gen_pdf_{selected_filename}", help="Generate and download the CV as a PDF", use_container_width=True):
-                            with st.status("Generating PDF...", expanded=True) as st_pdf:
+                        if st.button("Generate PDF Export", key=f"gen_pdf_{selected_filename}", help="Generate and download the CV as a PDF"):
+                            with st.spinner("Generating PDF..."):
                                 try:
                                     import tempfile as _tf
                                     with _tf.TemporaryDirectory() as _dir:
                                         _pdf_path = os.path.join(_dir, f"{last_name}_{first_name}_Standardized.pdf")
-                                        _st.write(f"Compiling PDF for `{full_name}`...")
                                         generate_pdf_direct(data, _pdf_path, photo_bytes=photo_bytes)
                                         with open(_pdf_path, "rb") as pf:
                                             compiled_pdf = pf.read()
                                     if compiled_pdf:
                                         st.session_state.batch_results[selected_filename]["pdf_bytes"] = compiled_pdf
-                                        st_pdf.update(label="PDF ready", state="complete", expanded=False)
                                         st.rerun()
                                     else:
-                                        st_pdf.update(label="Failed to generate PDF", state="error")
                                         st.error("Failed to generate PDF document.")
                                 except Exception as e:
-                                    st_pdf.update(label="PDF generation error", state="error")
                                     st.error(f"Error generating PDF: {e}")
                 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -2272,13 +2199,13 @@ if _VIEW == "Dashboard":
                 st.markdown("<div class='page-section'><span class='m' style='color:var(--red)'>warning</span> Processing Failures</div>", unsafe_allow_html=True)
                 for filename, err in errors:
                     st.error(f"**{filename}**: {err}")
-        elif not uploaded_files:
-            # --- DASHBOARD EMPTY STATE (nothing uploaded yet) ---
-            st.markdown("<div class='state-block fade-in' style='margin-top:1.5rem;'>"
-                        "<div class='state-icon'><span class='m'>upload_file</span></div>"
-                        "<div class='state-title'>Ready to Process</div>"
-                        "<div class='state-desc'>Upload one or more candidate CVs in the sidebar to begin standardized GCC CV generation.</div>"
-                        "</div>", unsafe_allow_html=True)
+    else:
+        # --- DASHBOARD EMPTY STATE (nothing uploaded yet) ---
+        st.markdown("<div class='state-block fade-in' style='margin-top:1.5rem;'>"
+                    "<div class='state-icon'><span class='m'>upload_file</span></div>"
+                    "<div class='state-title'>Ready to Process</div>"
+                    "<div class='state-desc'>Upload one or more candidate CVs above to begin standardized GCC CV generation.</div>"
+                    "</div>", unsafe_allow_html=True)
 
 elif _VIEW == "Processing History":
     # --- PROCESSING HISTORY ---
@@ -2370,11 +2297,16 @@ elif _VIEW == "Settings":
                 "</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='page-section'><span class='m m-soft'>tune</span> Preferences</div>", unsafe_allow_html=True)
-    _auto = st.session_state.pref_auto_pdf
-    _save = st.session_state.pref_save_profiles
-    st.markdown(f"<div class='record-row'><div class='f-icon'><span class='m'>picture_as_pdf</span></div><div style='flex:1;'><div class='f-name'>Auto-generate PDF per candidate</div><div class='f-size'>{'Enabled' if _auto else 'Disabled'}</div></div></div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='record-row'><div class='f-icon'><span class='m'>description</span></div><div style='flex:1;'><div class='f-name'>Save local profile .txt files</div><div class='f-size'>{'Enabled' if _save else 'Disabled'}</div></div></div>", unsafe_allow_html=True)
-    st.caption("Toggles for these preferences live in the sidebar control panel and persist for the current session.")
+    if "pref_auto_pdf" not in st.session_state:
+        st.session_state.pref_auto_pdf = True
+    if "pref_save_profiles" not in st.session_state:
+        st.session_state.pref_save_profiles = True
+    c_auto, c_save = st.columns(2)
+    with c_auto:
+        st.toggle("Auto-generate PDF per candidate", key="pref_auto_pdf")
+    with c_save:
+        st.toggle("Save local profile .txt files", key="pref_save_profiles")
+    st.caption("These preferences persist for the current session.")
 
     st.markdown("<div class='page-section'><span class='m m-soft'>storage</span> Paths</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='record-row'><div class='f-icon'><span class='m'>folder</span></div><div style='flex:1;'><div class='f-name'>Summary Folder</div><div class='f-size'>{SUMMARY_DIR}</div></div></div>", unsafe_allow_html=True)
