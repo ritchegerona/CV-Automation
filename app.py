@@ -7,6 +7,7 @@ import shutil
 import streamlit as st
 from docx import Document
 from docx.shared import Pt, RGBColor
+import base64
 
 # Set up page config
 st.set_page_config(
@@ -68,7 +69,7 @@ st.markdown("""
     .metric-value {
         font-size: 1.8rem;
         font-weight: 700;
-        color: #6366F1;
+        color: #199E95;
     }
     
     .metric-label {
@@ -81,10 +82,65 @@ st.markdown("""
     /* Instruction Box */
     .instruction-box {
         background-color: #EEF2F6;
-        border-left: 4px solid #6366F1;
+        border-left: 4px solid #199E95;
         padding: 1rem;
         border-radius: 0 8px 8px 0;
         margin-bottom: 1.5rem;
+    }
+
+    /* Brand header band mirroring the GCC template */
+    .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #FFFFFF;
+        border-bottom: 2px solid #009999;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .app-header-brand {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .app-header-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #0F172A;
+        line-height: 1.1;
+    }
+
+    .app-header-sub {
+        font-size: 0.9rem;
+        color: #64748B;
+    }
+
+    /* Metric cards (used in body results) */
+    .metric-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-top: 3px solid #199E95;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        text-align: center;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Small pill chips for profile details */
+    .chip {
+        display: inline-block;
+        background-color: rgba(25, 158, 149, 0.10);
+        color: #0B5F5A;
+        border: 1px solid rgba(25, 158, 149, 0.30);
+        border-radius: 999px;
+        padding: 0.2rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0.15rem 0.25rem 0.15rem 0;
     }
     
     /* Section dividers */
@@ -107,6 +163,10 @@ GCC_TEMPLATE_NAME = "GCC_CV_FORMAT.doc"
 GCC_TEMPLATE_PATH = os.path.join(WORKSPACE_DIR, GCC_TEMPLATE_NAME)
 LOGO_PATH = os.path.join(WORKSPACE_DIR, "GCC_Header.png")
 
+def _logo_base64():
+    with open(LOGO_PATH, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
 # Ensure the output summary directory exists
 os.makedirs(SUMMARY_DIR, exist_ok=True)
 
@@ -118,7 +178,7 @@ if "uploader_key" not in st.session_state:
 
 # --- SIDEBAR & SYSTEM METRICS ---
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/000000/resume.png", width=64)
+    st.image(LOGO_PATH, width=64)
     st.markdown("### **MSR CV Studio**")
     st.markdown("Enterprise CV Parser & Standardizer")
     st.write("---")
@@ -161,6 +221,16 @@ with st.expander("ℹ️ Local Execution & Project Instructions", expanded=False
 # --- HEADER TITLE ---
 st.markdown("<div class='dashboard-title'>CV Processing & Standardization Studio</div>", unsafe_allow_html=True)
 st.markdown("<div class='dashboard-subtitle'>Transform raw, unformatted CVs into corporate-aligned, polished resumes instantly.</div>", unsafe_allow_html=True)
+
+st.markdown(f"""<div class='app-header'>
+  <div class='app-header-brand'>
+    <img src=\"data:image/png;base64,{_logo_base64()}\" width=\"80\" style=\"border-radius:8px;\" />
+    <div>
+      <div class='app-header-title'>MSR CV Studio</div>
+      <div class='app-header-sub'>Enterprise CV Parser & Standardizer</div>
+    </div>
+  </div>
+</div>""", unsafe_allow_html=True)
 
 # Helper functions
 def parse_docx(file_bytes):
@@ -514,10 +584,10 @@ def _pdf_form_section(story, title, pairs):
     from reportlab.platypus import Paragraph, HRFlowable, Spacer
     from reportlab.lib.styles import ParagraphStyle
 
-    section_style = ParagraphStyle('sec', fontName='Helvetica-Bold', fontSize=12,
-                                   spaceBefore=10, spaceAfter=4, textColor=colors.HexColor('#003333'))
-    field_style = ParagraphStyle('fld', fontName='Helvetica', fontSize=10.5,
-                                 spaceBefore=3, spaceAfter=1)
+    section_style = ParagraphStyle('sec', fontName='Helvetica-Bold', fontSize=12.5,
+                                   spaceBefore=12, spaceAfter=5, textColor=colors.HexColor('#006666'))
+    field_style = ParagraphStyle('fld', fontName='Helvetica', fontSize=11,
+                                 leading=16, spaceBefore=2.5, spaceAfter=1, textColor=colors.black)
 
     story.append(Paragraph(title, section_style))
     for k, v in pairs:
@@ -632,8 +702,10 @@ def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=N
         story.append(duty_label)
         story.append(Spacer(1, 2))
         for duty in exp.get("duties", []):
-            story.append(Paragraph(f"\u2022 {duty}", ParagraphStyle(
-                'dd', fontName='Helvetica', fontSize=10, leftIndent=12)))
+            cleaned = re.sub(r'^[\s\u2022*\-\u2023\u25aa\u25cf]+', '', str(duty)).strip()
+            if cleaned:
+                story.append(Paragraph(f"\u2022 {cleaned}", ParagraphStyle(
+                    'dd', fontName='Helvetica', fontSize=10, leftIndent=12)))
         story.append(Spacer(1, 4))
 
     _pdf_form_section(story, "PERSONAL DETAILS", [
@@ -688,21 +760,54 @@ def extract_name_offline(raw_text):
     first_name = "Firstname"
     last_name = "Lastname"
     
-    # Check first 8 lines for a candidate name
+    skip_keywords = {
+        "cv", "resume", "curriculum vitae", "summary", "contact", "about me",
+        "experience", "education", "educational", "skills", "key skills",
+        "certifications", "certification", "licenses", "license", "references",
+        "referees", "personal details", "details", "personal", "information",
+        "passport details", "registration details", "employment history",
+        "professional experience", "training", "seminar", "additional",
+        "objective", "profile", "about", "gender", "civil status", "civil",
+        "religion", "nationality", "marital", "birth", "dob", "date of birth",
+        "height", "weight", "bmi", "passport", "registration", "validity",
+        "place of issue", "date of issue", "date of expiry", "expiry",
+        "college", "university", "school", "degree", "qualification",
+        "employer", "position", "duration", "duties", "bed capacity",
+        "area of exposure", "name of employer", "job description",
+        "duties and responsibilities", "general",
+        "name", "candidate", "referee", "credit", "character",
+        "tel", "telephone", "mobile", "email", "website", "linkedin",
+    }
+    address_keywords = {
+        "city", "philippines", "street", "road", "province", "zip",
+        "address", "brgy", "barangay", "block", "lot", "zone",
+        "region", "country", "location",
+    }
+    
     for line in lines[:8]:
         lower_line = line.lower()
-        # Skip lines that look like contact info, email, phone, web, headers
         if '@' in line or 'mailto' in line or 'http' in line or 'www' in line:
             continue
-        if any(char.isdigit() for char in line) and len(line) < 16: # Phone numbers or zip codes
+        if any(char.isdigit() for char in line) and len(line) < 16:
             continue
         if len(line) > 40:
             continue
-        # Skip common section headers if they appear early
-        if lower_line in ["cv", "resume", "curriculum vitae", "summary", "contact", "about me", "experience"]:
+        if ':' in line or ' : ' in line:
             continue
-        # Skip address/location lines
-        if any(kw in lower_line for kw in ["city", "philippines", "street", "road", "province", "zip", "address", "brgy", "barangay", "block", "lot", "zone"]):
+        if lower_line in skip_keywords:
+            continue
+        words = lower_line.replace(',', ' ').replace('.', ' ').split()
+        if words and all(w in skip_keywords or len(w) <= 1 for w in words):
+            continue
+        if any(kw in lower_line for kw in address_keywords):
+            continue
+        if line.isupper() and len(line) < 30 and ',' not in line:
+            continue
+        if any(lower_line.endswith(s) for s in [":", ".", ": ", ". ", "name", "candidate"]):
+            continue
+        name_tokens = re.sub(r'[.,]', ' ', line).split()
+        alpha_count = sum(1 for t in name_tokens if t.isalpha())
+        if alpha_count < 2:
             continue
         
         candidate_name = line
@@ -968,41 +1073,80 @@ def extract_medical_details(raw_text):
             break
     school = " "
     for l in lines:
-        if re.search(r'(University|College|School|Institute)\b', l) and len(l) < 80:
-            school = l
+        if re.search(r'(University|College)\b', l, re.IGNORECASE) and len(l) < 80 and "http" not in l.lower():
+            school = re.sub(r'^[\s\u2022*\-\u2023\u25aa\u25cf]+', '', l).strip()
             break
     if matched_edu:
         d["education"].append({"school": school, "qualification": matched_edu[0]})
     elif school != " ":
         d["education"].append({"school": school, "qualification": " "})
 
-    # Work experience blocks (employer, position, duration, duties)
-    exp_text_end = text
-    m = re.search(r'(?i)(EXPERIENCE SUMMARY|WORK EXPERIENCE|EMPLOYMENT HISTORY|PROFESSIONAL EXPERIENCE)', text)
-    if m:
-        exp_text_end = text[m.start():]
-    exp_year = r'(?:19\d{2}|20\d{2})\s*(?:-|–|—|to)\s*(?:(?:19\d{2}|20\d{2})|present|current)'
+    # Work experience blocks (template-style: Name of Employer / Bed Capacity /
+    # Area of Exposure / Position / Duration / Duties and Responsibilities)
+    exp_headers = ("EXPERIENCE SUMMARY", "WORK EXPERIENCE", "EMPLOYMENT HISTORY",
+                   "PROFESSIONAL EXPERIENCE", "PERSONAL DETAILS", "PASSPORT DETAILS",
+                   "EDUCATION", "EDUCATIONAL", "REGISTRATION", "REFEREES", "SKILLS",
+                   "CERTIFICATION", "LICENSES", "TRAINING", "SEMINAR", "ADDITIONAL")
+    section_re = re.compile(
+        r'^\s*(?:[\u2022*\-\u2023\u25aa\u25cf])?\s*'
+        r'(EXPERIENCE SUMMARY|WORK EXPERIENCE|EMPLOYMENT HISTORY|PROFESSIONAL EXPERIENCE|'
+        r'PERSONAL DETAILS|PASSPORT DETAILS|EDUCATIONAL BACKGROUND|EDUCATION|REGISTRATION DETAILS|'
+        r'REFERENCES|REFEREES|KEY SKILLS|SKILLS|CERTIFICATIONS\s*[&/]?\s*LICENSES|LICENSES|'
+        r'ADDITIONAL INFORMATION|TRAININGS?|SEMINARS?)\s*:?\s*$', re.IGNORECASE)
+    exp_year = re.compile(r'(?:19\d{2}|20\d{2})\s*(?:-|–|—|to)\s*(?:(?:19\d{2}|20\d{2})|present|current)', re.IGNORECASE)
+    exp_key = re.compile(
+        r'(?i)^(Name of Employer|Bed Capacity|Area of Exposure|Position Held?|Duration|'
+        r'Duties and Responsibilities|Job Description|General)\s*:?\s*(.*)$')
+    exp_label = re.compile(r'^[\s\u2022*\-\u2023\u25aa\u25cf]+')
+
     blocks = []
-    current_block = {}
-    duty_lines = []
+    in_exp = False
+    cur = None
+    duty_on = False
+    duties = []
     for l in lines:
-        if re.search(exp_year, l, re.IGNORECASE) and len(l) < 90:
-            if current_block:
-                current_block["duties"] = duty_lines[:10]
-                blocks.append(current_block)
-            pos = " "
-            pm = re.search(r'(Staff Nurse|Nurse|RN|Registered Nurse)', l, re.IGNORECASE)
-            if pm:
-                pos = pm.group(1)
-            current_block = {"employer": l, "position": pos, "duration": l}
-            duty_lines = []
-        elif "Area of Exposure" in l or "Bed Capacity" in l or "Name of Employer" in l:
+        s = exp_label.sub('', l).strip()
+        up = s.upper()
+        if section_re.match(s) or (len(s) < 45 and up.isupper() and any(h in up for h in exp_headers)):
+            if cur is not None and (cur.get("duration") or cur.get("employer")):
+                cur["duties"] = duties[:10]
+                blocks.append(cur)
+            cur = None
+            duties = []
+            duty_on = False
+            in_exp = bool(re.search(r'(EXPERIENCE|EMPLOYMENT|PROFESSIONAL EXPERIENCE)', up))
             continue
-        elif current_block and l:
-            duty_lines.append(l)
-    if current_block:
-        current_block["duties"] = duty_lines[:10]
-        blocks.append(current_block)
+        if not in_exp:
+            continue
+        km = exp_key.match(s)
+        if km:
+            k, v = (km.group(1).strip(), km.group(2).strip())
+            kl = k.lower().replace(" ", "")
+            if kl.startswith("nameofemployer"):
+                if cur is not None and (cur.get("employer") or cur.get("duration")):
+                    cur["duties"] = duties[:10]
+                    blocks.append(cur)
+                cur = {"employer": v or " "}
+                duty_on = False
+                duties = []
+            elif kl.startswith("bedcapacity"):
+                cur["bedCapacity"] = v or " "
+            elif kl.startswith("areaofexposure"):
+                cur["areaExposure"] = v or " "
+            elif kl.startswith("position"):
+                cur["position"] = v or " "
+            elif kl.startswith("duration"):
+                cur["duration"] = v or " "
+            elif kl.startswith("dutiesandresponsibilities") or kl.startswith("jobdescription") or kl.startswith("general"):
+                duty_on = True
+            continue
+        if cur is None:
+            cur = {}
+        if duty_on and s and len(s) > 2:
+            duties.append(s)
+    if cur is not None and (cur.get("duration") or cur.get("employer")):
+        cur["duties"] = duties[:10]
+        blocks.append(cur)
     if blocks:
         d["experience"] = blocks
     return d
@@ -1215,6 +1359,7 @@ if uploaded_files:
                     pdf_zip_bytes = build_export_zip(pdf_zip_items)
                 compiled_pdf_count = len(pdf_zip_items)
                 
+                st.markdown("<div class='premium-card'>", unsafe_allow_html=True)
                 st.markdown("<div class='section-header'>Batch Exports</div>", unsafe_allow_html=True)
                 b_col1, b_col2 = st.columns(2)
                 with b_col1:
@@ -1238,6 +1383,11 @@ if uploaded_files:
                         st.info("💡 Compile PDFs for individual candidates below, then download them as a batch ZIP here.")
                 
                 st.markdown("<div class='section-header'>Candidate Inspection & Single Export</div>", unsafe_allow_html=True)
+                if not is_batch:
+                    st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
+                    st.markdown("<div class='metric-value'>1</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='metric-label'>Candidate Processed</div>", unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
                 selected_filename = st.selectbox(
                     "🔍 Select Candidate Profile to Inspect:",
                     options=list(success_candidates.keys()),
