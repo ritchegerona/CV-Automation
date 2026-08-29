@@ -317,6 +317,20 @@ st.markdown("""
     .sb-status-card span.miss { color: #f4648c; }
     .sb-copyright { font-size: 0.74rem; color: #4b5880; padding: 4px 4px; line-height: 1.5; }
 
+    /* Sidebar text readability (sidebar is always navy bg) */
+    [data-testid="stSidebar"] .sb-subtitle,
+    [data-testid="stSidebar"] .sb-subtitle strong,
+    [data-testid="stSidebar"] .sb-system-link,
+    [data-testid="stSidebar"] .sb-status-card strong { color: #ffffff !important; }
+    [data-testid="stSidebar"] .sb-bottom-label,
+    [data-testid="stSidebar"] .sb-system-link i,
+    [data-testid="stSidebar"] .sb-metric-lbl,
+    [data-testid="stSidebar"] .sb-status-card span,
+    [data-testid="stSidebar"] .stat-label-sm { color: #c3ceea !important; }
+    [data-testid="stSidebar"] .sb-status-card span.miss { color: #ff8aa8 !important; }
+    [data-testid="stSidebar"] .sb-copyright { color: #8b9ac0 !important; }
+    [data-testid="stSidebar"] .sb-status-card .sb-status-ic span.m { color: #34d780 !important; }
+
     /* =========================================================
        CARDS / BADGES / CHIPS
        ========================================================= */
