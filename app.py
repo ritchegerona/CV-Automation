@@ -67,20 +67,6 @@ st.markdown("""
         max-width: 1400px;
     }
     
-    /* Premium Headers */
-    .dashboard-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #0F172A;
-        margin-bottom: 0.2rem;
-    }
-    
-    .dashboard-subtitle {
-        font-size: 1.05rem;
-        color: #64748B;
-        margin-bottom: 2rem;
-    }
-    
     /* Card Container */
     .premium-card {
         background-color: #FFFFFF;
@@ -311,9 +297,6 @@ with st.sidebar:
         st.info("Please place the official GCC CV format file `GCC_CV_FORMAT.doc` in your project root directory.")
 
 # --- HEADER TITLE ---
-st.markdown("<div class='dashboard-title'>CV Processing & Standardization Studio</div>", unsafe_allow_html=True)
-st.markdown("<div class='dashboard-subtitle'>Transform raw, unformatted CVs into corporate-aligned, polished resumes instantly.</div>", unsafe_allow_html=True)
-
 st.markdown(f"""<div class='app-header'>
   <div class='app-header-brand'>
     <img src=\"data:image/png;base64,{_logo_base64()}\" width=\"80\" style=\"border-radius:8px;\" />
