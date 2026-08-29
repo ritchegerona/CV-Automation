@@ -191,6 +191,13 @@ st.markdown("""
     .studio-card .studio-header .title-group p { font-size:14px; color:#6d7a9e; margin-top:4px; max-width:520px; }
     .studio-card .studio-header .template-badge { background:#eef4ff; color:#1e4fcf; padding:6px 20px; border-radius:30px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; white-space:nowrap; }
 
+    [data-testid="stKeyedContainer"].studio-card-wrap { background:#ffffff; border:1px solid #e8edf8; border-radius:20px; padding:34px 38px 38px; box-shadow:0 4px 18px rgba(0,0,0,0.04); margin-bottom:20px; }
+    [data-testid="stKeyedContainer"].studio-card-wrap [data-testid="stFileUploader"] { margin:0 0 18px; }
+    [data-testid="stKeyedContainer"].studio-card-wrap [data-testid="stVerticalBlockBorderWrapper"] { background:transparent !important; border:none !important; box-shadow:none !important; }
+    .studio-card .studio-header, [data-testid="stKeyedContainer"].studio-card-wrap .studio-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+    .studio-card .studio-header .title-group h3, [data-testid="stKeyedContainer"].studio-card-wrap .studio-header .title-group h3 { font-size:22px; font-weight:700; color:#0b1120; letter-spacing:-0.2px; }
+    .studio-card .studio-header .title-group p, [data-testid="stKeyedContainer"].studio-card-wrap .studio-header .title-group p { font-size:14px; color:#6d7a9e; margin-top:4px; max-width:520px; }
+
     .dz-guide { text-align:center; padding:6px 0 2px; }
     .dz-guide .dz-ic { width:68px; height:68px; background:#e8edf8; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:30px; color:#2b6bff; }
     .dz-guide h4 { font-size:20px; font-weight:600; color:#0b1120; margin-bottom:4px; }
@@ -507,7 +514,7 @@ st.markdown("""
     @media (max-width: 900px) {
         .feature-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         .stats-row { grid-template-columns: 1fr; }
-        .studio-card { padding: 24px 20px; }
+        .studio-card, [data-testid="stKeyedContainer"].studio-card-wrap { padding: 24px 20px; }
     }
     @media (max-width: 600px) {
         .feature-grid { grid-template-columns: 1fr 1fr; }
@@ -557,10 +564,13 @@ if st.session_state.get("dark_mode", False):
     [data-testid="stRadio"] label:has(input:checked) { background:rgba(43,107,255,0.12) !important; color:#ffffff !important; }
     [data-testid="stRadio"] label:has(input:checked)::before { color:#2b6bff !important; }
 
-    .stats-card, .status-card, .studio-card, .feature-card { background:#151d2d !important; border-color:#26314a !important; }
+    .stats-card, .status-card, .studio-card, .feature-card,
+    [data-testid="stKeyedContainer"].studio-card-wrap { background:#151d2d !important; border-color:#26314a !important; }
     .stats-card .label, .status-card .status-item .label, .studio-card .studio-header .title-group p,
+    [data-testid="stKeyedContainer"].studio-card-wrap .studio-header .title-group p,
     .feature-card p, .bottom-meta { color:#96a4b8 !important; }
     .stats-card .number, .status-card .status-item .value, .studio-card .studio-header .title-group h3,
+    [data-testid="stKeyedContainer"].studio-card-wrap .studio-header .title-group h3,
     .feature-card h5 { color:#e9eff7 !important; }
     .feature-card:hover { border-color:#2b6bff !important; box-shadow:0 6px 14px rgba(0,0,0,0.4) !important; }
     .status-card .status-item .value .highlight { color:#7ba2ff !important; }
@@ -1730,64 +1740,64 @@ if _VIEW == "Dashboard":
       </div>
     </div>""", unsafe_allow_html=True)
 
-    # --- STUDIO CARD ---
-    st.markdown("""<div class='studio-card'>
-      <div class='studio-header'>
-        <div class='title-group'>
-          <h3>CV Processing &amp; Standardization Studio</h3>
-          <p>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</p>
+    # --- STUDIO CARD (header + upload merged into one card) ---
+    with st.container(key="studio_card"):
+        st.markdown("""<div class='studio-header'>
+          <div class='title-group'>
+            <h3>CV Processing &amp; Standardization Studio</h3>
+            <p>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</p>
+          </div>
+          <div class='template-badge'><i class='fas fa-file-word'></i> GCC_CV_FORMAT.doc</div>
         </div>
-        <div class='template-badge'><i class='fas fa-file-word'></i> GCC_CV_FORMAT.doc</div>
-      </div>
-      <div class='dz-guide'>
-        <div class='dz-ic'><i class='fas fa-cloud-arrow-up'></i></div>
-        <h4>Drop your CV files here</h4>
-        <p>or click to browse &mdash; supports multiple files</p>
-        <div class='formats'>
-          <span class='format-tag'><i class='fas fa-file-pdf'></i> PDF</span>
-          <span class='format-tag'><i class='fas fa-file-word'></i> DOCX</span>
-          <span class='format-tag'><i class='fas fa-file'></i> DOC</span>
-          <span class='format-tag'><i class='fas fa-file-lines'></i> TXT</span>
-        </div>
-      </div>""", unsafe_allow_html=True)
+        <div class='dz-guide'>
+          <div class='dz-ic'><i class='fas fa-cloud-arrow-up'></i></div>
+          <h4>Drop your CV files here</h4>
+          <p>or click to browse &mdash; supports multiple files</p>
+          <div class='formats'>
+            <span class='format-tag'><i class='fas fa-file-pdf'></i> PDF</span>
+            <span class='format-tag'><i class='fas fa-file-word'></i> DOCX</span>
+            <span class='format-tag'><i class='fas fa-file'></i> DOC</span>
+            <span class='format-tag'><i class='fas fa-file-lines'></i> TXT</span>
+          </div>
+        </div>""", unsafe_allow_html=True)
 
-    uploaded_files = st.file_uploader(
-        "Upload raw CVs",
-        type=["pdf", "docx", "doc", "txt"],
-        accept_multiple_files=True,
-        help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
-        key=f"cv_uploader_{st.session_state.uploader_key}",
-        label_visibility="collapsed",
-    )
+        uploaded_files = st.file_uploader(
+            "Upload raw CVs",
+            type=["pdf", "docx", "doc", "txt"],
+            accept_multiple_files=True,
+            help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
+            key=f"cv_uploader_{st.session_state.uploader_key}",
+            label_visibility="collapsed",
+        )
 
-    # --- FEATURE GRID (9 cards) ---
-    st.markdown("""<div class='feature-grid'>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-microchip'></i></span><h5>Local Parser</h5><p>Fully offline parsing &mdash; no external AI or internet required.</p><span class='ftag'><i class='fas fa-shield-halved'></i>Offline</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-flag'></i></span><h5>GCC Standard</h5><p>Outputs structured, corporate-aligned CVs matching the official template.</p><span class='ftag blue'><i class='fas fa-check'></i>Compliant</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-box-archive'></i></span><h5>Batch Export</h5><p>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</p><span class='ftag gold'><i class='fas fa-file-zipper'></i>Bulk</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-lock'></i></span><h5>Secure &amp; Private</h5><p>Your data stays local. Always. 100% compliant.</p><span class='ftag'><i class='fas fa-check-circle'></i>100% Compliant</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-bolt'></i></span><h5>Fast &amp; Reliable</h5><p>Lightning-fast parsing with minimal resource usage.</p><span class='ftag blue'>Manage app</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-brain'></i></span><h5>Smart Parsing</h5><p>Extracts data accurately from any CV format.</p><span class='ftag gold'>AI-ready</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-layer-group'></i></span><h5>Template Driven</h5><p>Uses GCC standard template for consistency.</p><span class='ftag blue'>Structured</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-database'></i></span><h5>Data Security</h5><p>Your data stays local. Always.</p><span class='ftag'><i class='fas fa-lock'></i>Local</span></div>
-      <div class='feature-card'><span class='f-icon'><i class='fas fa-arrow-trend-up'></i></span><h5>Bulk Processing</h5><p>Process multiple CVs in one go.</p><span class='ftag gold'><i class='fas fa-arrow-up'></i>Batch</span></div>
-    </div>""", unsafe_allow_html=True)
+        # --- FEATURE GRID (9 cards) ---
+        st.markdown("""<div class='feature-grid'>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-microchip'></i></span><h5>Local Parser</h5><p>Fully offline parsing &mdash; no external AI or internet required.</p><span class='ftag'><i class='fas fa-shield-halved'></i>Offline</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-flag'></i></span><h5>GCC Standard</h5><p>Outputs structured, corporate-aligned CVs matching the official template.</p><span class='ftag blue'><i class='fas fa-check'></i>Compliant</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-box-archive'></i></span><h5>Batch Export</h5><p>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</p><span class='ftag gold'><i class='fas fa-file-zipper'></i>Bulk</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-lock'></i></span><h5>Secure &amp; Private</h5><p>Your data stays local. Always. 100% compliant.</p><span class='ftag'><i class='fas fa-check-circle'></i>100% Compliant</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-bolt'></i></span><h5>Fast &amp; Reliable</h5><p>Lightning-fast parsing with minimal resource usage.</p><span class='ftag blue'>Manage app</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-brain'></i></span><h5>Smart Parsing</h5><p>Extracts data accurately from any CV format.</p><span class='ftag gold'>AI-ready</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-layer-group'></i></span><h5>Template Driven</h5><p>Uses GCC standard template for consistency.</p><span class='ftag blue'>Structured</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-database'></i></span><h5>Data Security</h5><p>Your data stays local. Always.</p><span class='ftag'><i class='fas fa-lock'></i>Local</span></div>
+          <div class='feature-card'><span class='f-icon'><i class='fas fa-arrow-trend-up'></i></span><h5>Bulk Processing</h5><p>Process multiple CVs in one go.</p><span class='ftag gold'><i class='fas fa-arrow-up'></i>Batch</span></div>
+        </div>""", unsafe_allow_html=True)
 
-    # --- BOTTOM META ---
-    _ql = len(uploaded_files or [])
-    _last = st.session_state.get("last_parse", "—")
-    st.markdown(f"""<div class='bottom-meta'>
-      <div class='left'>
-        <span><i class='fas fa-circle-check' style='color:#22c55e;'></i> System ready</span>
-        <span class='pill'><i class='fas fa-clock'></i> Last parse: {_last}</span>
-        <span><i class='fas fa-files'></i> {_ql} files in queue</span>
-      </div>
-      <div class='right'>
-        <i class='fas fa-shield-halved' title='100% secure'></i>
-        <i class='fas fa-circle-nodes' title='Offline mode'></i>
-        <span style='font-weight:500;'>v2.4.1</span>
-      </div>
-    </div></div>""", unsafe_allow_html=True)
+        # --- BOTTOM META ---
+        _ql = len(uploaded_files or [])
+        _last = st.session_state.get("last_parse", "—")
+        st.markdown(f"""<div class='bottom-meta'>
+          <div class='left'>
+            <span><i class='fas fa-circle-check' style='color:#22c55e;'></i> System ready</span>
+            <span class='pill'><i class='fas fa-clock'></i> Last parse: {_last}</span>
+            <span><i class='fas fa-files'></i> {_ql} files in queue</span>
+          </div>
+          <div class='right'>
+            <i class='fas fa-shield-halved' title='100% secure'></i>
+            <i class='fas fa-circle-nodes' title='Offline mode'></i>
+            <span style='font-weight:500;'>v2.4.1</span>
+          </div>
+        </div>""", unsafe_allow_html=True)
 
     # --- UPLOAD QUEUE ---
     if uploaded_files:
