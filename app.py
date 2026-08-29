@@ -173,6 +173,19 @@ st.markdown("""
         position: absolute; right: 1px; bottom: 1px; width: 11px; height: 11px;
         border-radius: 50%; background: var(--green); border: 2px solid #fff;
     }
+    /* Toolbar action buttons rendered as circular icon buttons */
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button {
+        width: 44px !important; height: 44px !important; min-width: 44px !important;
+        padding: 0 !important; border-radius: 50%; display: inline-flex;
+        align-items: center; justify-content: center;
+        background: var(--bg-card) !important; border: 1px solid #DFE6ED !important;
+        color: var(--text-secondary) !important; font-size: 1.15rem;
+        box-shadow: none !important;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button:hover {
+        background: var(--bg-subtle) !important; color: var(--brand) !important;
+        border-color: var(--brand) !important; transform: none;
+    }
     .page-heading { margin: 0 0 var(--sp-2); }
     .page-title { font-size: 1.7rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.02em; line-height: 1.15; }
     .page-title .accent { color: var(--brand); }
@@ -190,14 +203,14 @@ st.markdown("""
     }
     [data-testid="stSidebar"] .block-container { padding-top: 1.25rem; }
     /* Keep native sidebar collapse/expand control visible & clickable */
-    [data-testid="stSidebarCollapsedControl"] {
-        z-index: 30 !important; pointer-events: auto !important; opacity: 1 !important;
+    [data-testid="stSidebarCollapseButton"] {
+        z-index: 40 !important; pointer-events: auto !important; opacity: 1 !important;
         background: var(--bg-card) !important;
         border: 1px solid #DFE6ED !important; border-radius: 8px !important;
         color: var(--text-secondary) !important;
     }
-    [data-testid="stSidebarCollapsedControl"]:hover {
-        color: var(--brand) !important; border-color: var(--brand) !important;
+    [data-testid="stSidebarCollapseButton"]:hover {
+        color: var(--brand) !important;
     }
 
     .sb-brand { display: flex; flex-direction: column; gap: 0.2rem; padding: 0 0.35rem 0.9rem; }
@@ -487,8 +500,12 @@ if st.session_state.get("dark_mode", False):
     [data-testid="stHeader"] { background:transparent !important; }
 
     .icon-btn { border-color:#26314A !important; }
-    .share-pill { border-color:#26314A !important; }
-    .toolbar-icon-btn { border-color:#26314A !important; background:#151D2D !important; }
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button {
+        background:#151D2D !important; border-color:#26314A !important; color:#96A4B8 !important;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button:hover {
+        background:#1C2537 !important; color:#2FB5AF !important; border-color:#2FB5AF !important;
+    }
     [data-testid="stSidebarCollapsedControl"] { background:#151D2D !important; border-color:#26314A !important; }
 
     [data-testid="stRadio"] label { color:#96A4B8 !important; }
@@ -620,12 +637,56 @@ with st.sidebar:
     st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
     st.markdown("<div style='font-size:0.74rem;color:var(--text-muted);padding:0 0.35rem;line-height:1.5;'>&copy; 2025 MSR CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
 
-# --- TOP TOOLBAR (contains functional theme toggle) ---
+# --- Toolbar action dialogs ---
+@st.dialog("Share this App")
+def _share_dialog():
+    _s_url = "https://github.com/ritchegerona/CV-Automation"
+    st.markdown("<div class='share-dlg'><span class='m' style='color:var(--brand);font-size:1.7rem;'>share</span><h4 style='margin:0 0 0.2rem;'>Share MSR CV Studio</h4><p style='margin:0;color:var(--text-muted);font-size:0.85rem;'>Invite teammates to this CV processing studio.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
+    st.caption("App link")
+    st.code(_s_url, language="text")
+    _email_target = st.text_input("Send to (optional)", placeholder="name@company.com")
+    st.download_button(
+        ":material/link:" "  Download share link (.txt)",
+        data=f"MSR CV Studio\nShare this link:\n{_s_url}",
+        file_name="msr-cv-studio-share.txt",
+        mime="text/plain",
+        use_container_width=True,
+    )
+
+@st.dialog("Notifications")
+def _notifications_dialog():
+    st.markdown("<h4 style='margin:0 0 0.6rem;'>Notifications</h4>", unsafe_allow_html=True)
+    _n = st.session_state.processed_count
+    if _n > 0:
+        st.success(f":material/task_alt:  {_n} CV(s) processed this session.")
+    else:
+        st.info(":material/inbox:  No notifications yet. Process a CV to see updates here.")
+    st.caption("All clear — no new alerts.")
+
+@st.dialog("Profile")
+def _profile_dialog():
+    st.markdown(f"""<div class='profile-hero'>
+      <div class='profile-hero-avatar'><span class='m'>person</span><span class='online-dot'></span></div>
+      <div>
+        <div class='profile-hero-name'>Ritche Gerona</div>
+        <div class='profile-hero-role'>Developer · MSR CV Studio</div>
+      </div>
+    </div>""", unsafe_allow_html=True)
+    st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
+    st.write("**Studio:** Enterprise CV Parser & Standardizer")
+    st.write(f"**Processed this session:** {st.session_state.processed_count}")
+    st.write(f"**Theme:** {'Dark' if st.session_state.dark_mode else 'Light'}")
+
+# --- TOP TOOLBAR (contains functional action buttons) ---
 with st.container(border=True):
-    _tc, _tn_c, _share_c, _notif_c, _av_c = st.columns([9, 1, 1, 1, 1], vertical_alignment="center")
+    _tc, _share_c, _tn_c, _notif_c, _av_c = st.columns([9, 1, 1, 1, 1], vertical_alignment="center")
     with _tc:
         st.markdown("""<div class='app-topbar-title'><span class='m m-soft' style='vertical-align:text-bottom;'>dashboard</span> MSR CV Studio</div>
 <div class='app-topbar-sub'>Enterprise CV Parser &amp; Standardizer</div>""", unsafe_allow_html=True)
+    with _share_c:
+        if st.button(":material/share:", key="share_btn", help="Share this app", use_container_width=True):
+            _share_dialog()
     with _tn_c:
         theme_clicked = st.button(
             ":material/dark_mode:" if not st.session_state.dark_mode else ":material/light_mode:",
@@ -633,12 +694,12 @@ with st.container(border=True):
             help="Toggle dark mode",
             use_container_width=True,
         )
-    with _share_c:
-        st.markdown("<div class='toolbar-icon-btn' title='Share' role='button' aria-label='Share' style='pointer-events:none;'><span class='m'>share</span> Share</div>", unsafe_allow_html=True)
     with _notif_c:
-        st.markdown("<div class='toolbar-icon-btn' title='Notifications' role='button' aria-label='Notifications' style='pointer-events:none;'><span class='m'>notifications</span></div>", unsafe_allow_html=True)
+        if st.button(":material/notifications:", key="notif_btn", help="Notifications", use_container_width=True):
+            _notifications_dialog()
     with _av_c:
-        st.markdown("<span class='profile-avatar' title='MSR' role='button' aria-label='Profile'><span class='m'>person</span><span class='online-dot'></span></span>", unsafe_allow_html=True)
+        if st.button(":material/person:", key="profile_btn", help="Profile", use_container_width=True):
+            _profile_dialog()
 
     if theme_clicked:
         st.session_state.dark_mode = not st.session_state.dark_mode
