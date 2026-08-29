@@ -185,9 +185,21 @@ st.markdown("""
     [data-testid="stSidebar"] { background: var(--bg-card); border-right: 1px solid var(--border-soft); position: relative; }
     [data-testid="stSidebar"]::before {
         content: ""; position: absolute; left: 0; top: 0; bottom: 0;
-        width: 6px; background: linear-gradient(190deg, #0E9F9A 0%, #34C9A0 100%); z-index: 5;
+        width: 6px; background: linear-gradient(190deg, #0E9F9A 0%, #34C9A0 100%);
+        z-index: 0; pointer-events: none;
     }
     [data-testid="stSidebar"] .block-container { padding-top: 1.25rem; }
+    /* Keep native sidebar collapse/expand control visible & clickable */
+    [data-testid="stSidebarCollapsedControl"] {
+        z-index: 30 !important; pointer-events: auto !important; opacity: 1 !important;
+        background: var(--bg-card) !important;
+        border: 1px solid #DFE6ED !important; border-radius: 8px !important;
+        color: var(--text-secondary) !important;
+    }
+    [data-testid="stSidebarCollapsedControl"]:hover {
+        color: var(--brand) !important; border-color: var(--brand) !important;
+    }
+
     .sb-brand { display: flex; flex-direction: column; gap: 0.2rem; padding: 0 0.35rem 0.9rem; }
     .sb-brand-name { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); line-height: 1.15; }
     .sb-brand-sub { font-size: 0.82rem; color: var(--text-secondary); font-weight: 500; }
@@ -456,6 +468,64 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# --- DARK MODE override (injected after light styles so tokens win) ---
+if st.session_state.get("dark_mode", False):
+    st.markdown("""<style>
+    :root {
+        --brand:#2FB5AF; --brand-dark:#26A6A0; --brand-soft:#123B3A; --brand-light:#0E2C2B; --brand-ink:#63D1CB;
+        --text-dark:#E9EFF7; --text-body:#C4CEDC; --text-secondary:#96A4B8; --text-muted:#7A879B; --text-faint:#64748B;
+        --bg-canvas:#0D1320; --bg-card:#151D2D; --bg-subtle:#1C2537;
+        --border:#26314A; --border-soft:#1E2840;
+        --green:#34D780; --green-soft:#0F2E20; --green-ink:#3FE08C;
+        --amber:#F5B85C; --amber-soft:#33250F;
+        --red:#F4648C; --red-soft:#33141F;
+        --gray:#8A94A6;
+        --shadow-sm:0 1px 3px rgba(0,0,0,0.45); --shadow:0 4px 18px rgba(0,0,0,0.5); --shadow-lg:0 8px 28px rgba(0,0,0,0.55);
+    }
+    [data-testid="stAppViewContainer"] { background-color:#0D1320 !important; }
+    [data-testid="stSidebar"] { background:#151D2D !important; border-right-color:#1E2840 !important; }
+    [data-testid="stHeader"] { background:transparent !important; }
+
+    .icon-btn { border-color:#26314A !important; }
+    .share-pill { border-color:#26314A !important; }
+    .toolbar-icon-btn { border-color:#26314A !important; background:#151D2D !important; }
+    [data-testid="stSidebarCollapsedControl"] { background:#151D2D !important; border-color:#26314A !important; }
+
+    [data-testid="stRadio"] label { color:#96A4B8 !important; }
+    [data-testid="stRadio"] label:hover { background:#1C2537 !important; }
+    [data-testid="stRadio"] label::before { color:#96A4B8 !important; }
+    [data-testid="stRadio"] label:has(input:checked) { background:#123B3A !important; color:#63D1CB !important; }
+    [data-testid="stRadio"] label:has(input:checked)::before { color:#2FB5AF !important; }
+    .sb-label { color:#7A879B; }
+    .sb-divider { border-top-color:#26314A; }
+    .sb-status-card { border-color:#26314A; }
+    .sb-progress { background:#26314A; }
+
+    .stFileUploader [data-testid="stFileUploaderDropzone"] {
+        background:linear-gradient(110deg,#0E2C2B 0%,#151D2D 50%,#0E2C2B 100%);
+        border-color:#2FB5AF;
+    }
+    .stFileUploader [data-testid="stFileUploaderDropzone"]:hover { background:#0F2E2D; }
+    .stFileUploader [data-testid="stFileUploaderDropzone"] button { background:#1C2537; border-color:#26314A; color:#2FB5AF; }
+    .stFileUploader [data-testid="stFileUploaderDropzone"] small { color:#C4CEDC; }
+
+    .card, .navbar, .process-card, .export-panel, .stat-card, .feature-card { background:#151D2D; border-color:#26314A; }
+    .feature-card:hover { border-color:#2FB5AF; }
+    .capability-chip, .pill, .badge { border-color:#26314A; }
+
+    .folder-sheet, .folder-main { box-shadow:0 3px 14px rgba(0,0,0,0.5); }
+    .profile-avatar .online-dot { border-color:#151D2D; }
+
+    .stExpander, [data-testid="stExpander"] { border-color:#26314A; }
+    .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab"] { color:#C4CEDC; }
+    input, [data-testid="stTextInput"] input, [data-testid="stTextArea"] textarea,
+    .stSelectbox [data-baseweb="select"] > div, .stNumberInput input {
+        color:#E9EFF7; background-color:#151D2D !important;
+    }
+    .stSelectbox [data-baseweb="select"] > div { border-color:#26314A !important; }
+    </style>""", unsafe_allow_html=True)
+
+
 # Define directories and file targets
 WORKSPACE_DIR = os.getcwd()
 SUMMARY_DIR = os.path.join(WORKSPACE_DIR, "Candidate CV Summary")
@@ -477,6 +547,8 @@ if "uploader_key" not in st.session_state:
     st.session_state.uploader_key = 0
 if "view" not in st.session_state:
     st.session_state.view = "Dashboard"
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
 
 # --- SIDEBAR (enterprise navigation) ---
 NAV_ITEMS = [
@@ -548,19 +620,29 @@ with st.sidebar:
     st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
     st.markdown("<div style='font-size:0.74rem;color:var(--text-muted);padding:0 0.35rem;line-height:1.5;'>&copy; 2025 MSR CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
 
-# --- TOP TOOLBAR ---
-st.markdown(f"""<div class='app-topbar'>
-  <div>
-    <div class='app-topbar-title'><span class='m m-soft' style='vertical-align:text-bottom;'>dashboard</span> MSR CV Studio</div>
-    <div class='app-topbar-sub'>Enterprise CV Parser &amp; Standardizer</div>
-  </div>
-  <div class='topbar-actions'>
-    <span class='icon-btn' title='Theme' aria-label='Theme' style='pointer-events:none;'><span class='m'>sunny</span></span>
-    <span class='share-pill' title='Share' role='button' aria-label='Share'><span class='m'>share</span> Share</span>
-    <span class='icon-btn' title='Notifications' role='button' aria-label='Notifications' style='pointer-events:none;'><span class='m'>notifications</span></span>
-    <span class='profile-avatar' title='MSR' role='button' aria-label='Profile'><span class='m'>person</span><span class='online-dot'></span></span>
-  </div>
-</div>""", unsafe_allow_html=True)
+# --- TOP TOOLBAR (contains functional theme toggle) ---
+with st.container(border=True):
+    _tc, _tn_c, _share_c, _notif_c, _av_c = st.columns([9, 1, 1, 1, 1], vertical_alignment="center")
+    with _tc:
+        st.markdown("""<div class='app-topbar-title'><span class='m m-soft' style='vertical-align:text-bottom;'>dashboard</span> MSR CV Studio</div>
+<div class='app-topbar-sub'>Enterprise CV Parser &amp; Standardizer</div>""", unsafe_allow_html=True)
+    with _tn_c:
+        theme_clicked = st.button(
+            ":material/dark_mode:" if not st.session_state.dark_mode else ":material/light_mode:",
+            key="theme_toggle_btn",
+            help="Toggle dark mode",
+            use_container_width=True,
+        )
+    with _share_c:
+        st.markdown("<div class='toolbar-icon-btn' title='Share' role='button' aria-label='Share' style='pointer-events:none;'><span class='m'>share</span> Share</div>", unsafe_allow_html=True)
+    with _notif_c:
+        st.markdown("<div class='toolbar-icon-btn' title='Notifications' role='button' aria-label='Notifications' style='pointer-events:none;'><span class='m'>notifications</span></div>", unsafe_allow_html=True)
+    with _av_c:
+        st.markdown("<span class='profile-avatar' title='MSR' role='button' aria-label='Profile'><span class='m'>person</span><span class='online-dot'></span></span>", unsafe_allow_html=True)
+
+    if theme_clicked:
+        st.session_state.dark_mode = not st.session_state.dark_mode
+        st.rerun()
 
 # Helper functions
 def parse_docx(file_bytes):
