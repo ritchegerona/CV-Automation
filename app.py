@@ -4,6 +4,7 @@ import re
 import zipfile
 import subprocess
 import shutil
+from datetime import datetime
 import streamlit as st
 from docx import Document
 from docx.shared import Pt, RGBColor
@@ -20,43 +21,48 @@ st.set_page_config(
 # Custom Styling (Slate background & Deep Indigo accents)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 
     /* =========================================================
        DESIGN TOKENS  (centralized so colors can be changed here)
        ========================================================= */
     :root {
-        --brand:        #0E9F9A;
-        --brand-dark:   #078C87;
-        --brand-soft:   #E8F7F5;
-        --brand-light:  #F3FBFA;
-        --brand-ink:    #078C87;
-        --text-dark:    #111827;
+        --brand:        #2b6bff;
+        --brand-dark:   #1e4fcf;
+        --brand-soft:   #eef4ff;
+        --brand-light:  #f0f5ff;
+        --brand-ink:    #1e4fcf;
+        --navy:         #0b1120;
+        --navy-soft:    #1e2940;
+        --navy-text:    #b0bcdb;
+        --navy-faint:   #5f6d92;
+        --navy-lab:     #4b5880;
+        --text-dark:    #0b1120;
         --text-body:    #334155;
-        --text-secondary:#60708A;
-        --text-muted:   #8491A5;
-        --text-faint:   #94A3B8;
-        --bg-canvas:    #F6F9FC;
-        --bg-card:      #FFFFFF;
-        --bg-subtle:    #F1F5F9;
-        --border:       #E1E8EF;
-        --border-soft:  #EDF1F5;
-        --green:        #22C55E;
-        --green-soft:   #EAF8F0;
+        --text-secondary:#6d7a9e;
+        --text-muted:   #8491a5;
+        --text-faint:   #94a3b8;
+        --bg-canvas:    #f4f6fc;
+        --bg-card:      #ffffff;
+        --bg-subtle:    #e8edf8;
+        --border:       #dce3ef;
+        --border-soft:  #e8edf8;
+        --green:        #22c55e;
+        --green-soft:   #e6f9ee;
         --green-ink:    #159447;
-        --amber:        #F59E0B;
-        --amber-soft:   #FFF7E8;
-        --red:          #E91E63;
-        --red-soft:     #FFF0F5;
-        --gray:         #6B7280;
-        --radii-sm:     8px;
-        --radius:       12px;
-        --radius-lg:    16px;
-        --radius-xl:    20px;
-        --shadow-sm:    0 1px 3px rgba(15,23,42,0.05);
-        --shadow:       0 4px 18px rgba(15,23,42,0.055);
-        --shadow-lg:    0 8px 28px rgba(15,23,42,0.10);
+        --amber:        #f59e0b;
+        --amber-soft:   #fef7e6;
+        --red:          #e91e63;
+        --red-soft:     #ffeaf2;
+        --gray:         #6b7280;
+        --radii-sm:     10px;
+        --radius:       16px;
+        --radius-lg:    20px;
+        --radius-xl:    24px;
+        --shadow-sm:    0 2px 10px rgba(0,0,0,0.04);
+        --shadow:       0 4px 18px rgba(0,0,0,0.05);
+        --shadow-lg:    0 8px 28px rgba(0,0,0,0.08);
         --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
         --sp-6: 24px; --sp-8: 32px; --sp-12: 48px; --sp-16: 64px;
         --trans: 0.2s ease;
@@ -135,145 +141,174 @@ st.markdown("""
     hr { border-color: var(--border-soft); }
 
     /* =========================================================
-       LAYOUT SHELL
+       LAYOUT SHELL / TOP BAR  (reference design)
        ========================================================= */
-    .app-topbar {
-        display: flex; align-items: center; justify-content: space-between;
-        background: var(--bg-card); border: 1px solid var(--border-soft);
-        border-radius: var(--radius); padding: 0.6rem 1.1rem; margin-bottom: var(--sp-6);
-        box-shadow: var(--shadow-sm);
+    .tb-title { font-size: 26px; font-weight: 700; color: #0b1120; letter-spacing: -0.4px; }
+    .tb-sub { font-size: 14px; color: #6d7a9e; margin-top: 2px; }
+    .tb-badge {
+        background: #e8edf8; padding: 6px 18px; border-radius: 30px; font-size: 13px;
+        font-weight: 500; color: #0b1120; display: inline-flex; align-items: center; gap: 8px;
+        white-space: nowrap;
     }
-    .app-topbar-title { font-size: 1.05rem; font-weight: 700; color: var(--text-dark); }
-    .app-topbar-sub { font-size: 0.78rem; color: var(--text-muted); }
-    .topbar-actions { display: flex; align-items: center; gap: 0.5rem; }
-    .icon-btn {
-        width: 44px; height: 44px; border-radius: 50%;
+    .tb-avatar {
+        width: 40px; height: 40px; border-radius: 50%; background: #2b6bff; color: #fff;
         display: inline-flex; align-items: center; justify-content: center;
-        background: var(--bg-card); color: var(--text-secondary);
-        border: 1px solid #DFE6ED; cursor: pointer;
-        font-size: 1.15rem; transition: all var(--trans); text-decoration: none;
+        font-weight: 600; font-size: 16px;
     }
-    .icon-btn:hover { background: var(--bg-subtle); color: var(--brand); border-color: var(--brand); }
-    .share-pill {
-        height: 44px; padding: 0 18px; border-radius: 999px;
-        display: inline-flex; align-items: center; gap: 0.45rem;
-        background: var(--bg-card); color: var(--text-secondary);
-        border: 1px solid #DFE6ED; cursor: pointer;
-        font-size: 0.85rem; font-weight: 600; transition: all var(--trans);
-    }
-    .share-pill:hover { background: var(--bg-subtle); color: var(--brand); border-color: var(--brand); }
-    .profile-avatar {
-        position: relative; width: 44px; height: 44px; border-radius: 50%;
-        background: var(--brand); color: #fff;
-        display: inline-flex; align-items: center; justify-content: center;
-        cursor: pointer;
-    }
-    .profile-avatar .m { color: #fff; font-size: 1.25rem; }
-    .profile-avatar .online-dot {
-        position: absolute; right: 1px; bottom: 1px; width: 11px; height: 11px;
-        border-radius: 50%; background: var(--green); border: 2px solid #fff;
-    }
-    /* Toolbar action buttons rendered as circular icon buttons */
-    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button {
-        width: 44px !important; height: 44px !important; min-width: 44px !important;
+    /* Top-bar icon-only action buttons rendered as circular icon buttons */
+    [data-testid="stAppViewContainer"] [data-testid="stButton"] > button:has(> span[class*="material"]:only-child) {
+        width: 42px !important; height: 42px !important; min-width: 42px !important;
         padding: 0 !important; border-radius: 50%; display: inline-flex;
         align-items: center; justify-content: center;
-        background: var(--bg-card) !important; border: 1px solid #DFE6ED !important;
-        color: var(--text-secondary) !important; font-size: 1.15rem;
-        box-shadow: none !important;
+        background: #ffffff !important; border: 1px solid #dce3ef !important;
+        color: #6d7a9e !important; font-size: 1.15rem; box-shadow: none !important;
     }
-    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button:hover {
-        background: var(--bg-subtle) !important; color: var(--brand) !important;
-        border-color: var(--brand) !important; transform: none;
+    [data-testid="stAppViewContainer"] [data-testid="stButton"] > button:has(> span[class*="material"]:only-child):hover {
+        background: #eef4ff !important; color: #2b6bff !important;
+        border-color: #2b6bff !important; transform: none;
     }
     .page-heading { margin: 0 0 var(--sp-2); }
+
+    /* =========================================================
+       DASHBOARD  (reference design)
+       ========================================================= */
+    .stats-row { display: grid; grid-template-columns: 180px 1fr; gap: 20px; margin-bottom: 28px; }
+    .stats-card { background:#ffffff; border-radius:16px; padding:20px 24px; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid #e8edf8; }
+    .stats-card .label { font-size:13px; font-weight:600; color:#6d7a9e; text-transform:uppercase; letter-spacing:0.5px; }
+    .stats-card .number { font-size:42px; font-weight:700; color:#0b1120; line-height:1.1; margin-top:2px; }
+    .stats-card .number span { font-size:18px; font-weight:400; color:#6d7a9e; margin-left:6px; }
+    .status-card { background:#ffffff; border-radius:16px; padding:20px 24px; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid #e8edf8; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; }
+    .status-card .status-item { display:flex; align-items:center; gap:12px; }
+    .status-card .status-item .dot { width:8px; height:8px; border-radius:50%; background:#22c55e; flex-shrink:0; }
+    .status-card .status-item .dot.inactive { background:#b0bcdb; }
+    .status-card .status-item .label { font-size:13px; color:#6d7a9e; font-weight:500; }
+    .status-card .status-item .value { font-size:14px; font-weight:600; color:#0b1120; }
+    .status-card .status-item .value .highlight { color:#2b6bff; }
+
+    .studio-card { background:#ffffff; border-radius:20px; padding:34px 38px 38px; box-shadow:0 4px 18px rgba(0,0,0,0.04); border:1px solid #e8edf8; margin-bottom:28px; }
+    .studio-card .studio-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:26px; }
+    .studio-card .studio-header .title-group h3 { font-size:22px; font-weight:700; color:#0b1120; letter-spacing:-0.2px; }
+    .studio-card .studio-header .title-group p { font-size:14px; color:#6d7a9e; margin-top:4px; max-width:520px; }
+    .studio-card .studio-header .template-badge { background:#eef4ff; color:#1e4fcf; padding:6px 20px; border-radius:30px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+
+    .dz-guide { text-align:center; padding:6px 0 2px; }
+    .dz-guide .dz-ic { width:68px; height:68px; background:#e8edf8; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:30px; color:#2b6bff; }
+    .dz-guide h4 { font-size:20px; font-weight:600; color:#0b1120; margin-bottom:4px; }
+    .dz-guide p { font-size:14px; color:#6d7a9e; margin-bottom:14px; }
+    .formats { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+    .formats .format-tag { background:#ffffff; border:1px solid #dce3ef; padding:5px 18px; border-radius:30px; font-size:13px; font-weight:600; color:#0b1120; display:inline-flex; align-items:center; gap:6px; transition:0.15s; }
+    .formats .format-tag i { color:#2b6bff; font-size:14px; }
+    .formats .format-tag:hover { border-color:#2b6bff; background:#f0f5ff; }
+
+    /* Native uploader styled as the reference drop-zone */
+    .studio-card [data-testid="stFileUploaderDropzone"] {
+        border:2px dashed #dce3ef !important; border-radius:16px !important;
+        background:#fafbff !important; padding:34px 20px !important;
+        transition:all 0.25s !important; text-align:center !important;
+    }
+    .studio-card [data-testid="stFileUploaderDropzone"]:hover {
+        border-color:#2b6bff !important; background:#f0f5ff !important;
+    }
+    [data-testid="stFileUploaderDropzone"] button {
+        background:#0b1120 !important; color:#fff !important; border:none !important;
+        padding:8px 32px !important; border-radius:30px !important; font-weight:600 !important; font-size:14px !important; height:auto !important;
+    }
+    [data-testid="stFileUploaderDropzone"] button:hover { background:#1a2640 !important; cursor:pointer; }
+    [data-testid="stFileUploaderDropzone"] small { font-size:15px !important; color:#0b1120 !important; font-weight:600 !important; }
+
+    .feature-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:18px; margin-top:26px; }
+    .feature-card { background:#ffffff; border-radius:16px; padding:22px 20px 20px; border:1px solid #e8edf8; transition:0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.02); }
+    .feature-card:hover { border-color:#cbd6e8; box-shadow:0 6px 14px rgba(0,0,0,0.05); transform:translateY(-3px); }
+    .feature-card .f-icon { font-size:20px; color:#2b6bff; margin-bottom:12px; display:inline-block; background:#eef4ff; padding:9px; border-radius:12px; line-height:1; width:44px; text-align:center; }
+    .feature-card h5 { font-size:15px; font-weight:600; color:#0b1120; margin-bottom:4px; }
+    .feature-card p { font-size:13px; color:#6d7a9e; line-height:1.5; margin-bottom:10px; }
+    .feature-card .ftag { display:inline-block; margin-top:2px; font-size:11px; font-weight:600; color:#22c55e; background:#e6f9ee; padding:2px 14px; border-radius:30px; letter-spacing:0.3px; }
+    .feature-card .ftag.blue { color:#1e4fcf; background:#eef4ff; }
+    .feature-card .ftag.gold { color:#b8860b; background:#fef7e6; }
+    .feature-card .ftag i { margin-right:4px; }
+
+    .bottom-meta { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:26px; padding-top:20px; border-top:1px solid #e8edf8; font-size:13px; color:#6d7a9e; }
+    .bottom-meta .left { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .bottom-meta .left .pill { background:#e8edf8; padding:4px 16px; border-radius:30px; font-weight:500; color:#0b1120; font-size:12px; }
+    .bottom-meta .right { display:flex; align-items:center; gap:16px; }
+    .bottom-meta .right i { color:#b0bcdb; }
     .page-title { font-size: 1.7rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.02em; line-height: 1.15; }
     .page-title .accent { color: var(--brand); }
     .page-sub { font-size: 0.95rem; color: var(--text-muted); margin: var(--sp-1) 0 0; max-width: 640px; line-height: 1.55; }
     .page-section { font-size: 1.02rem; font-weight: 700; color: var(--text-dark); margin: var(--sp-6) 0 var(--sp-3); display: flex; align-items: center; gap: 0.5rem; }
 
     /* =========================================================
-       SIDEBAR  (enterprise nav)
+       SIDEBAR  (dark navy, reference design)
        ========================================================= */
-    [data-testid="stSidebar"] { background: var(--bg-card); border-right: 1px solid var(--border-soft); position: relative; }
-    [data-testid="stSidebar"]::before {
-        content: ""; position: absolute; left: 0; top: 0; bottom: 0;
-        width: 6px; background: linear-gradient(190deg, #0E9F9A 0%, #34C9A0 100%);
-        z-index: 0; pointer-events: none;
+    [data-testid="stSidebar"] {
+        background: #0b1120; color: #b0bcdb; border-right: none;
+        min-width: 250px; padding: 20px 16px 30px;
     }
-    [data-testid="stSidebar"] .block-container { padding-top: 1.25rem; }
-    /* Keep native sidebar collapse/expand control visible & clickable */
-    [data-testid="stSidebarCollapseButton"] {
-        z-index: 40 !important; pointer-events: auto !important; opacity: 1 !important;
-        background: var(--bg-card) !important;
-        border: 1px solid #DFE6ED !important; border-radius: 8px !important;
-        color: var(--text-secondary) !important;
-    }
-    [data-testid="stSidebarCollapseButton"]:hover {
-        color: var(--brand) !important;
-    }
+    [data-testid="stSidebar"] .block-container { padding-top: 0.5rem; padding-right: 8px; padding-left: 8px; }
+    [data-testid="stSidebarCollapseButton"] { z-index: 40 !important; background: #0b1120 !important; border: 1px solid #1e2940 !important; color: #b0bcdb !important; }
+    [data-testid="stSidebarCollapseButton"]:hover { color: #2b6bff !important; }
 
-    .sb-brand { display: flex; flex-direction: column; gap: 0.2rem; padding: 0 0.35rem 0.9rem; }
-    .sb-brand-name { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); line-height: 1.15; }
-    .sb-brand-sub { font-size: 0.82rem; color: var(--text-secondary); font-weight: 500; }
-    .sb-dev-badge { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.55rem; background: var(--bg-subtle); border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.72rem; color: var(--text-muted); width: fit-content; }
-    .sb-dev-badge strong { font-weight: 700; color: var(--text-dark); }
-    .sb-divider { border: none; border-top: 1px solid #D9E0E8; margin: 1rem 0; width: 275px; }
-    .sb-label { font-size: 0.7rem; font-weight: 700; color: #61718A; text-transform: uppercase; letter-spacing: 0.08em; padding: 0 0.35rem; margin-bottom: 0.4rem; }
-    .sb-nav-item {
-        display: flex; align-items: center; gap: 0.65rem;
-        padding: 0.52rem 0.7rem; border-radius: var(--radius-sm);
-        color: var(--text-body); font-size: 0.88rem; font-weight: 600;
-        cursor: pointer; transition: all var(--trans); width: 100%; text-align: left;
-        border: 1px solid transparent; background: transparent;
+    .sb-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .sb-logo-icon {
+        font-size: 22px; color: #2b6bff; background: rgba(43,107,255,0.15);
+        padding: 9px; border-radius: 12px; line-height: 1;
     }
-    .sb-nav-item .m { color: var(--text-muted); font-size: 1.15rem; }
-    .sb-nav-item:hover { background: var(--bg-subtle); }
-    .sb-nav-item.active { background: var(--brand-soft); color: var(--brand-ink); }
-    .sb-nav-item.active .m { color: var(--brand); }
-    /* Radio used as enterprise nav (with Material icons) */
-    [data-testid="stRadio"] > div { gap: 2px; }
-    [data-testid="stRadio"] [role="radiogroup"] { gap: 2px; }
+    .sb-logo-name { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+    .sb-logo-name span { color: #2b6bff; }
+    .sb-subtitle {
+        font-size: 12px; color: #6d7a9e; margin: 4px 0 26px; padding-left: 12px;
+        border-left: 3px solid #2b6bff; font-weight: 400; line-height: 1.5;
+    }
+    .sb-subtitle strong { color: #d0d9f0; font-weight: 500; }
+    .sb-system-divider { height: 1px; background: #1e2940; margin: 14px 2px 10px; }
+    .sb-bottom-label { font-size: 11px; font-weight: 600; color: #4b5880; text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 12px 4px; }
+    .sb-system-link {
+        display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px;
+        color: #b0bcdb; font-size: 14px; font-weight: 500;
+    }
+    .sb-system-link i { width: 20px; font-size: 16px; text-align: center; color: #5f6d92; }
+    .sb-system-link:hover { background: rgba(43,107,255,0.08); color: #ffffff; }
+    .sb-system-link:hover i { color: #2b6bff; }
+
+    /* Radio used as the reference nav (dark) */
+    [data-testid="stRadio"] > div { gap: 3px; }
+    [data-testid="stRadio"] [role="radiogroup"] { gap: 3px; }
     [data-testid="stRadio"] label {
-        display: flex; align-items: center; gap: 0.6rem; height: 48px;
-        width: 275px; max-width: 100%;
-        padding: 0 14px !important; border-radius: 11px !important;
-        font-size: 0.9rem !important; font-weight: 500 !important; color: #52627A !important;
-        transition: background var(--trans) !important; cursor: pointer; margin: 0 !important;
+        display: flex; align-items: center; gap: 14px; height: 46px;
+        width: 100%; max-width: 100%;
+        padding: 0 14px !important; border-radius: 10px !important;
+        font-size: 14px !important; font-weight: 500 !important; color: #b0bcdb !important;
+        transition: background 0.2s !important; cursor: pointer; margin: 0 !important;
     }
-    [data-testid="stRadio"] label:hover { background: #F5F9FA !important; }
-    [data-testid="stRadio"] label:has(input:checked) {
-        background: var(--brand-soft) !important; color: var(--brand-ink) !important;
-        font-weight: 600 !important;
-    }
+    [data-testid="stRadio"] label:hover { background: rgba(43,107,255,0.08) !important; color: #ffffff !important; }
+    [data-testid="stRadio"] label:has(input:checked) { background: rgba(43,107,255,0.12) !important; color: #ffffff !important; }
     [data-testid="stRadio"] label > div:first-child { display: none; }
     [data-testid="stRadio"] label::before {
-        font-family: 'Material Symbols Outlined', sans-serif;
-        font-size: 1.3rem; line-height: 1; color: var(--text-secondary);
-        width: 22px; text-align: center;
-        font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        font-family: 'Font Awesome 6 Free', sans-serif; font-weight: 900;
+        font-size: 15px; width: 20px; text-align: center; color: #5f6d92;
     }
-    [data-testid="stRadio"] label:nth-child(1)::before { content: 'home'; }
-    [data-testid="stRadio"] label:nth-child(2)::before { content: 'history'; }
-    [data-testid="stRadio"] label:nth-child(3)::before { content: 'description'; }
-    [data-testid="stRadio"] label:nth-child(4)::before { content: 'settings'; }
-    [data-testid="stRadio"] label:nth-child(5)::before { content: 'help'; }
-    [data-testid="stRadio"] label:has(input:checked)::before { color: var(--brand); font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
-    [data-testid="stRadio"] [data-testid="stMarkdownContainer"] { flex: 1; }
+    [data-testid="stRadio"] label:nth-child(1)::before { content: '\f1ec'; } /* chart-pie */
+    [data-testid="stRadio"] label:nth-child(2)::before { content: '\f1da'; } /* clock-rotate-left */
+    [data-testid="stRadio"] label:nth-child(3)::before { content: '\f0c5'; } /* copy */
+    [data-testid="stRadio"] label:nth-child(4)::before { content: '\f1de'; } /* sliders */
+    [data-testid="stRadio"] label:nth-child(5)::before { content: '\f059'; } /* circle-question */
+    [data-testid="stRadio"] label:has(input:checked)::before { color: #2b6bff; }
+    [data-testid="stRadio"] label:hover::before { color: #2b6bff; }
     .sb-metric {
         background: transparent; border: none; border-radius: var(--radius);
-        padding: 0 0.35rem; margin-bottom: 0.75rem;
+        padding: 6px 4px; margin-bottom: 0.6rem; color: #b0bcdb;
     }
-    .sb-metric-val { font-size: 30px; font-weight: 700; color: var(--brand); line-height: 1; }
-    .sb-metric-lbl { font-size: 11px; color: #65748A; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; font-weight: 600; }
-    .sb-progress { height: 5px; background: #E7EDF3; border-radius: 999px; overflow: hidden; margin-top: 0.6rem; width: 275px; max-width: 100%; }
-    .sb-progress > div { height: 100%; background: var(--brand); border-radius: 999px; transition: width 0.4s ease; }
-    .sb-status-card { display: flex; align-items: flex-start; gap: 0.6rem; background: var(--bg-card); border: 1px solid #E0E7EF; border-radius: var(--radius); padding: 0.8rem 0.9rem; margin-bottom: 0.6rem; box-shadow: var(--shadow-sm); }
-    .sb-status-ic { width: 22px; height: 22px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
-    .sb-status-ic .m { font-size: 0.95rem; color: var(--green); }
-    .sb-status-card strong { display: block; font-size: 0.8rem; color: var(--text-dark); font-weight: 700; }
-    .sb-status-card span { font-size: 0.76rem; color: var(--green-ink); line-height: 1.4; }
-    .sb-status-card span.miss { color: var(--red); }
+    .sb-metric-val { font-size: 30px; font-weight: 700; color: #ffffff; line-height: 1; }
+    .sb-metric-lbl { font-size: 11px; color: #6d7a9e; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; font-weight: 600; }
+    .sb-progress { height: 5px; background: #1e2940; border-radius: 999px; overflow: hidden; margin-top: 8px; max-width: 100%; }
+    .sb-progress > div { height: 100%; background: #2b6bff; border-radius: 999px; transition: width 0.4s ease; }
+    .sb-status-card { display: flex; align-items: flex-start; gap: 0.6rem; background: #111a2e; border: 1px solid #1e2940; border-radius: 12px; padding: 0.7rem 0.85rem; margin-bottom: 0.6rem; }
+    .sb-status-ic { width: 22px; height: 22px; border-radius: 50%; background: rgba(34,197,94,0.15); color: #22c55e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+    .sb-status-ic .m { font-size: 0.8rem; color: #22c55e; }
+    .sb-status-card strong { display: block; font-size: 0.8rem; color: #e8edf8; font-weight: 600; }
+    .sb-status-card span { font-size: 0.74rem; color: #5f8f7a; line-height: 1.4; }
+    .sb-status-card span.miss { color: #f4648c; }
+    .sb-copyright { font-size: 0.74rem; color: #4b5880; padding: 4px 4px; line-height: 1.5; }
 
     /* =========================================================
        CARDS / BADGES / CHIPS
@@ -298,13 +333,13 @@ st.markdown("""
     /* =========================================================
        FEATURE / CAPABILITY
        ========================================================= */
-    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-    .feature-card { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 1.4rem 1.3rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; transition: transform var(--trans), box-shadow var(--trans); }
-    .feature-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--brand); }
-    .feature-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-    .feature-icon { width: 42px; height: 42px; border-radius: 10px; background: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.8rem; }
-    .feature-title { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.35rem; }
-    .feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.7rem; }
+    .category-view .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .category-view .feature-card { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 1.4rem 1.3rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; transition: transform var(--trans), box-shadow var(--trans); }
+    .category-view .feature-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--brand); }
+    .category-view .feature-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .category-view .feature-icon { width: 42px; height: 42px; border-radius: 10px; background: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.8rem; }
+    .category-view .feature-title { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.35rem; }
+    .category-view .feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.7rem; }
     .capability-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
     .capability { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0 0.9rem; border-left: 1px solid var(--border-soft); }
     .capability:first-child { border-left: none; padding-left: 0; }
@@ -470,12 +505,20 @@ st.markdown("""
        RESPONSIVE
        ========================================================= */
     @media (max-width: 900px) {
-        .feature-grid { grid-template-columns: 1fr; }
-        .capability-grid { grid-template-columns: repeat(2, 1fr); }
+        .feature-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .stats-row { grid-template-columns: 1fr; }
+        .studio-card { padding: 24px 20px; }
     }
     @media (max-width: 600px) {
-        .capability-grid { grid-template-columns: 1fr; }
-        .dropzone { padding: 1.75rem 1rem; }
+        .feature-grid { grid-template-columns: 1fr 1fr; }
+        .dz-guide { padding: 2px 0; }
+        .formats { gap: 6px; }
+        .formats .format-tag { font-size: 12px; padding: 4px 12px; }
+        .status-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .bottom-meta { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 420px) {
+        .feature-grid { grid-template-columns: 1fr; }
     }
     .stColumn .stButton > button { width: 100%; }
 </style>
@@ -485,7 +528,7 @@ st.markdown("""
 if st.session_state.get("dark_mode", False):
     st.markdown("""<style>
     :root {
-        --brand:#2FB5AF; --brand-dark:#26A6A0; --brand-soft:#123B3A; --brand-light:#0E2C2B; --brand-ink:#63D1CB;
+        --brand:#2b6bff; --brand-dark:#3b7bff; --brand-soft:#0f1e3d; --brand-light:#0a1730; --brand-ink:#7ba2ff;
         --text-dark:#E9EFF7; --text-body:#C4CEDC; --text-secondary:#96A4B8; --text-muted:#7A879B; --text-faint:#64748B;
         --bg-canvas:#0D1320; --bg-card:#151D2D; --bg-subtle:#1C2537;
         --border:#26314A; --border-soft:#1E2840;
@@ -495,51 +538,63 @@ if st.session_state.get("dark_mode", False):
         --gray:#8A94A6;
         --shadow-sm:0 1px 3px rgba(0,0,0,0.45); --shadow:0 4px 18px rgba(0,0,0,0.5); --shadow-lg:0 8px 28px rgba(0,0,0,0.55);
     }
-    [data-testid="stAppViewContainer"] { background-color:#0D1320 !important; }
-    [data-testid="stSidebar"] { background:#151D2D !important; border-right-color:#1E2840 !important; }
+    [data-testid="stAppViewContainer"] { background-color:#0d1320 !important; }
+    [data-testid="stSidebar"] { background:#0b1120 !important; }
     [data-testid="stHeader"] { background:transparent !important; }
 
-    .icon-btn { border-color:#26314A !important; }
-    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button {
-        background:#151D2D !important; border-color:#26314A !important; color:#96A4B8 !important;
+    .tb-title { color:#e9eff7 !important; }
+    .tb-badge { background:#1c2537 !important; color:#c4cedc !important; }
+    [data-testid="stAppViewContainer"] [data-testid="stButton"] > button:has(> span[class*="material"]:only-child) {
+        background:#151d2d !important; border-color:#26314a !important; color:#96a4b8 !important;
     }
-    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="stButton"] > button:hover {
-        background:#1C2537 !important; color:#2FB5AF !important; border-color:#2FB5AF !important;
+    [data-testid="stAppViewContainer"] [data-testid="stButton"] > button:has(> span[class*="material"]:only-child):hover {
+        background:#1c2537 !important; color:#2b6bff !important;
     }
-    [data-testid="stSidebarCollapsedControl"] { background:#151D2D !important; border-color:#26314A !important; }
 
-    [data-testid="stRadio"] label { color:#96A4B8 !important; }
-    [data-testid="stRadio"] label:hover { background:#1C2537 !important; }
-    [data-testid="stRadio"] label::before { color:#96A4B8 !important; }
-    [data-testid="stRadio"] label:has(input:checked) { background:#123B3A !important; color:#63D1CB !important; }
-    [data-testid="stRadio"] label:has(input:checked)::before { color:#2FB5AF !important; }
-    .sb-label { color:#7A879B; }
-    .sb-divider { border-top-color:#26314A; }
-    .sb-status-card { border-color:#26314A; }
-    .sb-progress { background:#26314A; }
+    [data-testid="stRadio"] label { color:#b0bcdb !important; }
+    [data-testid="stRadio"] label:hover { background:rgba(43,107,255,0.08) !important; }
+    [data-testid="stRadio"] label::before { color:#5f6d92 !important; }
+    [data-testid="stRadio"] label:has(input:checked) { background:rgba(43,107,255,0.12) !important; color:#ffffff !important; }
+    [data-testid="stRadio"] label:has(input:checked)::before { color:#2b6bff !important; }
 
-    .stFileUploader [data-testid="stFileUploaderDropzone"] {
-        background:linear-gradient(110deg,#0E2C2B 0%,#151D2D 50%,#0E2C2B 100%);
-        border-color:#2FB5AF;
+    .stats-card, .status-card, .studio-card, .feature-card { background:#151d2d !important; border-color:#26314a !important; }
+    .stats-card .label, .status-card .status-item .label, .studio-card .studio-header .title-group p,
+    .feature-card p, .bottom-meta { color:#96a4b8 !important; }
+    .stats-card .number, .status-card .status-item .value, .studio-card .studio-header .title-group h3,
+    .feature-card h5 { color:#e9eff7 !important; }
+    .feature-card:hover { border-color:#2b6bff !important; box-shadow:0 6px 14px rgba(0,0,0,0.4) !important; }
+    .status-card .status-item .value .highlight { color:#7ba2ff !important; }
+    .template-badge { background:#0f1e3d !important; color:#7ba2ff !important; }
+    .formats .format-tag { background:#151d2d !important; border-color:#26314a !important; color:#c4cedc !important; }
+    .formats .format-tag i { color:#2b6bff !important; }
+    .dz-guide h4 { color:#e9eff7 !important; }
+    .dz-guide p { color:#96a4b8 !important; }
+    .dz-guide .dz-ic { background:#1c2537 !important; color:#2b6bff !important; }
+    .bottom-meta .left .pill { background:#1c2537 !important; color:#c4cedc !important; }
+    .feature-card .ftag { background:#0f2e20 !important; color:#34d780 !important; }
+    .feature-card .ftag.blue { background:#0f1e3d !important; color:#7ba2ff !important; }
+    .feature-card .ftag.gold { background:#33250f !important; color:#f5b85c !important; }
+
+    .studio-card [data-testid="stFileUploaderDropzone"] {
+        background:linear-gradient(110deg,#0e1a2e 0%,#151d2d 50%,#0e1a2e 100%) !important;
+        border-color:#2b6bff !important;
     }
-    .stFileUploader [data-testid="stFileUploaderDropzone"]:hover { background:#0F2E2D; }
-    .stFileUploader [data-testid="stFileUploaderDropzone"] button { background:#1C2537; border-color:#26314A; color:#2FB5AF; }
-    .stFileUploader [data-testid="stFileUploaderDropzone"] small { color:#C4CEDC; }
+    .studio-card [data-testid="stFileUploaderDropzone"]:hover { background:#0f2036 !important; }
+    [data-testid="stFileUploaderDropzone"] button { background:#2b6bff !important; color:#fff !important; border-color:#2b6bff !important; }
+    [data-testid="stFileUploaderDropzone"] small { color:#c4cedc !important; }
 
-    .card, .navbar, .process-card, .export-panel, .stat-card, .feature-card { background:#151D2D; border-color:#26314A; }
-    .feature-card:hover { border-color:#2FB5AF; }
-    .capability-chip, .pill, .badge { border-color:#26314A; }
+    .card, .navbar, .process-card, .export-panel, .stat-card { background:#151d2d; border-color:#26314a; }
+    .capability-chip, .pill, .badge { border-color:#26314a; }
 
     .folder-sheet, .folder-main { box-shadow:0 3px 14px rgba(0,0,0,0.5); }
-    .profile-avatar .online-dot { border-color:#151D2D; }
 
-    .stExpander, [data-testid="stExpander"] { border-color:#26314A; }
-    .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab"] { color:#C4CEDC; }
+    .stExpander, [data-testid="stExpander"] { border-color:#26314a; }
+    .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab"] { color:#c4cedc; }
     input, [data-testid="stTextInput"] input, [data-testid="stTextArea"] textarea,
     .stSelectbox [data-baseweb="select"] > div, .stNumberInput input {
-        color:#E9EFF7; background-color:#151D2D !important;
+        color:#e9eff7; background-color:#151d2d !important;
     }
-    .stSelectbox [data-baseweb="select"] > div { border-color:#26314A !important; }
+    .stSelectbox [data-baseweb="select"] > div { border-color:#26314a !important; }
     </style>""", unsafe_allow_html=True)
 
 
@@ -577,17 +632,14 @@ NAV_ITEMS = [
 ]
 
 with st.sidebar:
-    # Brand
-    st.markdown(f"""<div class='sb-brand'>
-      <img src="data:image/png;base64,{_logo_base64()}" width="110" style="border-radius:10px;margin-bottom:0.85rem;"/>
-      <div class='sb-brand-name'>MSR CV Studio</div>
-      <div class='sb-brand-sub'>Enterprise CV Parser &amp; Standardizer</div>
-      <div class='sb-dev-badge'><span class='m' style='font-size:0.95rem;color:var(--brand);vertical-align:text-bottom;'>code</span> <span>Developed by <strong>Ritche Gerona</strong></span></div>
-    </div>""", unsafe_allow_html=True)
-    st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
+    # Logo + subtitle
+    st.markdown("""<div class='sb-logo'>
+      <div class='sb-logo-icon'><i class='fas fa-file-pen'></i></div>
+      <div class='sb-logo-name'>MSR <span>CV</span></div>
+    </div>
+    <div class='sb-subtitle'>Enterprise CV Parser &amp; Standardizer<br/><strong>Developed by Ritche Gerona</strong></div>""", unsafe_allow_html=True)
 
-    # Navigation
-    st.markdown("<div class='sb-label'>Menu</div>", unsafe_allow_html=True)
+    # Navigation (reference nav items via radio)
     nav_values = [lbl for _, lbl in NAV_ITEMS]
     st.radio(
         "Navigation",
@@ -598,10 +650,13 @@ with st.sidebar:
         on_change=lambda: setattr(st.session_state, "view", st.session_state.nav_select),
     )
 
-    st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-bottom-label'>System</div>", unsafe_allow_html=True)
+    st.markdown("""<div class='sb-system-link'><i class='fas fa-server'></i> Status</div>
+<div class='sb-system-link'><i class='fas fa-user-shield'></i> Security</div>""", unsafe_allow_html=True)
+    st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
 
     # Session stats
-    st.markdown("<div class='sb-label'>Stats</div>", unsafe_allow_html=True)
     _br = st.session_state.get("batch_results", {})
     _total_done = st.session_state.processed_count
     st.markdown(f"""<div class='sb-metric'>
@@ -617,10 +672,9 @@ with st.sidebar:
           <div class='stat-box' style='color:var(--red)'><div class='stat-number' style='color:var(--red)'>{_err}</div><div class='stat-label-sm'>Errors</div></div>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
 
     # System status
-    st.markdown("<div class='sb-label'>System Status</div>", unsafe_allow_html=True)
     summary_exists = os.path.exists(SUMMARY_DIR)
     gcc_exists = os.path.exists(GCC_TEMPLATE_PATH)
     st.markdown(f"""<div class='sb-status-card'>
@@ -634,8 +688,9 @@ with st.sidebar:
       <span>{'GCC_CV_FORMAT.doc is loaded as the template' if gcc_exists else 'GCC_CV_FORMAT.doc missing'}</span></div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size:0.74rem;color:var(--text-muted);padding:0 0.35rem;line-height:1.5;'>&copy; 2025 MSR CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-copyright'>&copy; 2025 MSR CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
+
 
 # --- Toolbar action dialogs ---
 @st.dialog("Share this App")
@@ -678,32 +733,35 @@ def _profile_dialog():
     st.write(f"**Processed this session:** {st.session_state.processed_count}")
     st.write(f"**Theme:** {'Dark' if st.session_state.dark_mode else 'Light'}")
 
-# --- TOP TOOLBAR (contains functional action buttons) ---
-with st.container(border=True):
-    _tc, _share_c, _tn_c, _notif_c, _av_c = st.columns([9, 1, 1, 1, 1], vertical_alignment="center")
-    with _tc:
-        st.markdown("""<div class='app-topbar-title'><span class='m m-soft' style='vertical-align:text-bottom;'>dashboard</span> MSR CV Studio</div>
-<div class='app-topbar-sub'>Enterprise CV Parser &amp; Standardizer</div>""", unsafe_allow_html=True)
-    with _share_c:
-        if st.button(":material/share:", key="share_btn", help="Share this app", use_container_width=True):
-            _share_dialog()
-    with _tn_c:
-        theme_clicked = st.button(
-            ":material/dark_mode:" if not st.session_state.dark_mode else ":material/light_mode:",
-            key="theme_toggle_btn",
-            help="Toggle dark mode",
-            use_container_width=True,
-        )
-    with _notif_c:
-        if st.button(":material/notifications:", key="notif_btn", help="Notifications", use_container_width=True):
-            _notifications_dialog()
-    with _av_c:
-        if st.button(":material/person:", key="profile_btn", help="Profile", use_container_width=True):
-            _profile_dialog()
+# --- TOP BAR (reference design + functional controls) ---
+_tb_title, _tb_share, _tb_theme, _tb_notif, _tb_prof, _tb_badge, _tb_av = st.columns([8, 1, 1, 1, 1, 2, 1], vertical_alignment="center")
+with _tb_title:
+    st.markdown("""<div class='tb-title'>CV Studio</div>
+<div class='tb-sub'>Parse, standardize, and export GCC-aligned resumes</div>""", unsafe_allow_html=True)
+with _tb_share:
+    if st.button(":material/share:", key="share_btn", help="Share this app", use_container_width=True):
+        _share_dialog()
+with _tb_theme:
+    theme_clicked = st.button(
+        ":material/dark_mode:" if not st.session_state.dark_mode else ":material/light_mode:",
+        key="theme_toggle_btn",
+        help="Toggle dark mode",
+        use_container_width=True,
+    )
+with _tb_notif:
+    if st.button(":material/notifications:", key="notif_btn", help="Notifications", use_container_width=True):
+        _notifications_dialog()
+with _tb_prof:
+    if st.button(":material/person:", key="profile_btn", help="Profile", use_container_width=True):
+        _profile_dialog()
+with _tb_badge:
+    st.markdown("<span class='tb-badge'><i class='fas fa-circle-check' style='color:#2b6bff;'></i> v2.4.1</span>", unsafe_allow_html=True)
+with _tb_av:
+    st.markdown("<div class='tb-avatar'>RG</div>", unsafe_allow_html=True)
 
-    if theme_clicked:
-        st.session_state.dark_mode = not st.session_state.dark_mode
-        st.rerun()
+if theme_clicked:
+    st.session_state.dark_mode = not st.session_state.dark_mode
+    st.rerun()
 
 # Helper functions
 def parse_docx(file_bytes):
@@ -1656,69 +1714,80 @@ def build_export_zip(items: tuple) -> bytes:
 _VIEW = st.session_state.view
 
 if _VIEW == "Dashboard":
-    # --- UPLOAD PANEL: dropzone + decorative folder illustration ---
-    up_left, up_right = st.columns([5, 2], gap="medium")
-    with up_left:
-        uploaded_files = st.file_uploader(
-            "Upload raw CVs",
-            type=["pdf", "docx", "doc", "txt"],
-            accept_multiple_files=True,
-            help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
-            key=f"cv_uploader_{st.session_state.uploader_key}",
-            label_visibility="collapsed",
-        )
-    with up_right:
-        st.markdown(
-            "<div class='folder-illus'>"
-            "<div class='folder-sheet s1'></div>"
-            "<div class='folder-sheet s2'></div>"
-            "<div class='folder-main'><div class='folder-tab'></div><div class='folder-cv'>CV</div></div>"
-            "<span class='folder-badge b-pdf'>PDF</span>"
-            "<span class='folder-badge b-docx'>DOCX</span>"
-            "<span class='folder-badge b-doc'>DOC</span>"
-            "<span class='folder-badge b-txt'>TXT</span>"
-            "</div>", unsafe_allow_html=True)
+    # --- STATS ROW ---
+    _total = st.session_state.processed_count
+    summary_exists = os.path.exists(SUMMARY_DIR)
+    gcc_exists = os.path.exists(GCC_TEMPLATE_PATH)
+    _dot2 = "" if gcc_exists else " inactive"
+    st.markdown(f"""<div class='stats-row'>
+      <div class='stats-card'>
+        <div class='label'>Processed This Session</div>
+        <div class='number'>{_total} <span>CVs</span></div>
+      </div>
+      <div class='status-card'>
+        <div class='status-item'><span class='dot'></span><span class='label'>Local Folder Status</span><span class='value'>Candidate CV Summary <span class='highlight'>{'active' if summary_exists else 'missing'}</span></span></div>
+        <div class='status-item'><span class='dot{_dot2}'></span><span class='label'>CV Format</span><span class='value'><span class='highlight'>GCC_CV_FORMAT.doc</span> {'loaded' if gcc_exists else 'missing'}</span></div>
+      </div>
+    </div>""", unsafe_allow_html=True)
 
-    # --- DASHBOARD HERO ---
-    st.markdown("<div class='page-heading fade-in' style='margin-top:1.5rem;'>"
-                "<div style='display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;'>"
-                "<div style='width:56px;height:56px;border-radius:14px;background:var(--bg-card);border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;'>"
-                "<span class='m' style='font-size:1.6rem;color:var(--brand);'>description</span>"
-                "</div>"
-                "<div>"
-                "<div class='page-title'>CV Processing &amp; Standardization <span class='accent'>Studio</span></div>"
-                "</div>"
-                "</div>"
-                "<div class='page-sub'>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>"
-                "</div>", unsafe_allow_html=True)
-    st.markdown("<div style='display:flex;gap:0.5rem;margin:0.75rem 0 1.5rem;flex-wrap:wrap;'>"
-                "<span class='format-badge badge-pdf'>PDF</span>"
-                "<span class='format-badge badge-docx'>DOCX</span>"
-                "<span class='format-badge badge-doc'>DOC</span>"
-                "<span class='format-badge badge-txt'>TXT</span>"
-                "</div>", unsafe_allow_html=True)
+    # --- STUDIO CARD ---
+    st.markdown("""<div class='studio-card'>
+      <div class='studio-header'>
+        <div class='title-group'>
+          <h3>CV Processing &amp; Standardization Studio</h3>
+          <p>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</p>
+        </div>
+        <div class='template-badge'><i class='fas fa-file-word'></i> GCC_CV_FORMAT.doc</div>
+      </div>
+      <div class='dz-guide'>
+        <div class='dz-ic'><i class='fas fa-cloud-arrow-up'></i></div>
+        <h4>Drop your CV files here</h4>
+        <p>or click to browse &mdash; supports multiple files</p>
+        <div class='formats'>
+          <span class='format-tag'><i class='fas fa-file-pdf'></i> PDF</span>
+          <span class='format-tag'><i class='fas fa-file-word'></i> DOCX</span>
+          <span class='format-tag'><i class='fas fa-file'></i> DOC</span>
+          <span class='format-tag'><i class='fas fa-file-lines'></i> TXT</span>
+        </div>
+      </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div class='feature-grid fade-in'>"
-                "<div class='feature-card'><div class='feature-icon'><span class='m'>memory</span></div>"
-                "<div class='feature-title'>Local Parser</div><div class='feature-desc'>Fully offline parsing — no external AI or internet required.</div>"
-                "<div><span class='pill ok'><span class='m-filled' style='font-size:0.9em;color:var(--green)'>lock</span> Secure &amp; Private</span></div></div>"
-                "<div class='feature-card'><div class='feature-icon'><span class='m'>track_changes</span></div>"
-                "<div class='feature-title'>GCC Standard</div><div class='feature-desc'>Outputs structured, corporate-aligned CVs matching the official template.</div>"
-                "<div><span class='pill ok'><span class='m-filled' style='font-size:0.9em;color:var(--green)'>verified</span> 100% Compliant</span></div></div>"
-                "<div class='feature-card'><div class='feature-icon'><span class='m'>inventory_2</span></div>"
-                "<div class='feature-title'>Batch Export</div><div class='feature-desc'>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</div>"
-                "<div><span class='pill ok'><span class='m-filled' style='font-size:0.9em;color:var(--green)'>bolt</span> Fast &amp; Reliable</span></div></div>"
-                "</div>", unsafe_allow_html=True)
+    uploaded_files = st.file_uploader(
+        "Upload raw CVs",
+        type=["pdf", "docx", "doc", "txt"],
+        accept_multiple_files=True,
+        help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
+        key=f"cv_uploader_{st.session_state.uploader_key}",
+        label_visibility="collapsed",
+    )
 
-    st.markdown("<div class='page-section'>Why MSR CV Studio</div>", unsafe_allow_html=True)
-    st.markdown("<div class='capability-grid fade-in'>"
-                "<div class='capability'><span class='m'>auto_awesome</span><div><strong>Smart Parsing</strong><span>Extracts data accurately from any CV format.</span></div></div>"
-                "<div class='capability'><span class='m'>description</span><div><strong>Template Driven</strong><span>Uses GCC standard template for consistency.</span></div></div>"
-                "<div class='capability'><span class='m'>shield</span><div><strong>Data Security</strong><span>Your data stays local on this device.</span></div></div>"
-                "<div class='capability'><span class='m'>layers</span><div><strong>Bulk Processing</strong><span>Process multiple CVs in one go.</span></div></div>"
-                "</div>", unsafe_allow_html=True)
+    # --- FEATURE GRID (9 cards) ---
+    st.markdown("""<div class='feature-grid'>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-microchip'></i></span><h5>Local Parser</h5><p>Fully offline parsing &mdash; no external AI or internet required.</p><span class='ftag'><i class='fas fa-shield-halved'></i>Offline</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-flag'></i></span><h5>GCC Standard</h5><p>Outputs structured, corporate-aligned CVs matching the official template.</p><span class='ftag blue'><i class='fas fa-check'></i>Compliant</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-box-archive'></i></span><h5>Batch Export</h5><p>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</p><span class='ftag gold'><i class='fas fa-file-zipper'></i>Bulk</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-lock'></i></span><h5>Secure &amp; Private</h5><p>Your data stays local. Always. 100% compliant.</p><span class='ftag'><i class='fas fa-check-circle'></i>100% Compliant</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-bolt'></i></span><h5>Fast &amp; Reliable</h5><p>Lightning-fast parsing with minimal resource usage.</p><span class='ftag blue'>Manage app</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-brain'></i></span><h5>Smart Parsing</h5><p>Extracts data accurately from any CV format.</p><span class='ftag gold'>AI-ready</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-layer-group'></i></span><h5>Template Driven</h5><p>Uses GCC standard template for consistency.</p><span class='ftag blue'>Structured</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-database'></i></span><h5>Data Security</h5><p>Your data stays local. Always.</p><span class='ftag'><i class='fas fa-lock'></i>Local</span></div>
+      <div class='feature-card'><span class='f-icon'><i class='fas fa-arrow-trend-up'></i></span><h5>Bulk Processing</h5><p>Process multiple CVs in one go.</p><span class='ftag gold'><i class='fas fa-arrow-up'></i>Batch</span></div>
+    </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div class='privacy-note' style='margin:1.25rem 0;'><span class='m'>verified_user</span> Processed locally — your candidate data stays on this device. No external AI or internet required.</div>", unsafe_allow_html=True)
+    # --- BOTTOM META ---
+    _ql = len(uploaded_files or [])
+    _last = st.session_state.get("last_parse", "—")
+    st.markdown(f"""<div class='bottom-meta'>
+      <div class='left'>
+        <span><i class='fas fa-circle-check' style='color:#22c55e;'></i> System ready</span>
+        <span class='pill'><i class='fas fa-clock'></i> Last parse: {_last}</span>
+        <span><i class='fas fa-files'></i> {_ql} files in queue</span>
+      </div>
+      <div class='right'>
+        <i class='fas fa-shield-halved' title='100% secure'></i>
+        <i class='fas fa-circle-nodes' title='Offline mode'></i>
+        <span style='font-weight:500;'>v2.4.1</span>
+      </div>
+    </div></div>""", unsafe_allow_html=True)
 
     # --- UPLOAD QUEUE ---
     if uploaded_files:
@@ -1881,6 +1950,7 @@ if _VIEW == "Dashboard":
                 st.toast(f"{_okn} CV(s) processed. {_errn} failed.", icon="⚠️")
             else:
                 st.toast(f"{_okn} CV(s) processed successfully.", icon="✅")
+            st.session_state.last_parse = datetime.now().strftime("%H:%M")
             st.rerun()
 
         # Check if we have processed data in state
@@ -2246,11 +2316,13 @@ elif _VIEW == "Help & Guide":
 
     st.markdown("<div class='page-section'><span class='m m-soft'>support</span> Supported Formats</div>", unsafe_allow_html=True)
     st.markdown(
+        "<div class='category-view'>"
         "<div class='feature-grid'>"
         "<div class='feature-card'><div class='feature-icon'><span class='m'>picture_as_pdf</span></div><div class='feature-title'>PDF</div><div class='feature-desc'>Text-based PDF CVs are parsed directly.</div></div>"
         "<div class='feature-card'><div class='feature-icon'><span class='m'>description</span></div><div class='feature-title'>DOCX</div><div class='feature-desc'>Microsoft Word files parsed using python-docx.</div></div>"
         "<div class='feature-card'><div class='feature-icon'><span class='m'>article</span></div><div class='feature-title'>DOC</div><div class='feature-desc'>Legacy Word files converted via LibreOffice.</div></div>"
         "<div class='feature-card'><div class='feature-icon'><span class='m'>text_snippet</span></div><div class='feature-title'>TXT</div><div class='feature-desc'>Plain-text CVs read directly.</div></div>"
+        "</div>"
         "</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='page-section'><span class='m m-soft'>privacy_tip</span> Privacy &amp; Security</div>", unsafe_allow_html=True)
