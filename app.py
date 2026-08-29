@@ -12,7 +12,7 @@ import base64
 
 # Set up page config
 st.set_page_config(
-    page_title="MSR CV Processing Studio",
+    page_title="GCC CV Studio",
     page_icon=":material/badge:",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -659,7 +659,7 @@ with st.sidebar:
     # Logo + subtitle
     st.markdown("""<div class='sb-logo'>
       <div class='sb-logo-icon'><i class='fas fa-file-pen'></i></div>
-      <div class='sb-logo-name'>MSR <span>CV</span></div>
+      <div class='sb-logo-name'>GCC <span>CV Studio</span></div>
     </div>
     <div class='sb-subtitle'>Enterprise CV Parser &amp; Standardizer<br/><strong>Developed by Ritche Gerona</strong></div>""", unsafe_allow_html=True)
 
@@ -713,21 +713,21 @@ with st.sidebar:
     </div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='sb-system-divider'></div>", unsafe_allow_html=True)
-    st.markdown("<div class='sb-copyright'>&copy; 2025 MSR CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='sb-copyright'>&copy; 2025 GCC CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
 
 
 # --- Toolbar action dialogs ---
 @st.dialog("Share this App")
 def _share_dialog():
     _s_url = "https://github.com/ritchegerona/CV-Automation"
-    st.markdown("<div class='share-dlg'><span class='m' style='color:var(--brand);font-size:1.7rem;'>share</span><h4 style='margin:0 0 0.2rem;'>Share MSR CV Studio</h4><p style='margin:0;color:var(--text-muted);font-size:0.85rem;'>Invite teammates to this CV processing studio.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div class='share-dlg'><span class='m' style='color:var(--brand);font-size:1.7rem;'>share</span><h4 style='margin:0 0 0.2rem;'>Share GCC CV Studio</h4><p style='margin:0;color:var(--text-muted);font-size:0.85rem;'>Invite teammates to this CV processing studio.</p></div>", unsafe_allow_html=True)
     st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
     st.caption("App link")
     st.code(_s_url, language="text")
     _email_target = st.text_input("Send to (optional)", placeholder="name@company.com")
     st.download_button(
         ":material/link:" "  Download share link (.txt)",
-        data=f"MSR CV Studio\nShare this link:\n{_s_url}",
+        data=f"GCC CV Studio\nShare this link:\n{_s_url}",
         file_name="msr-cv-studio-share.txt",
         mime="text/plain",
         use_container_width=True,
@@ -749,7 +749,7 @@ def _profile_dialog():
       <div class='profile-hero-avatar'><span class='m'>person</span><span class='online-dot'></span></div>
       <div>
         <div class='profile-hero-name'>Ritche Gerona</div>
-        <div class='profile-hero-role'>Developer · MSR CV Studio</div>
+        <div class='profile-hero-role'>Developer · GCC CV Studio</div>
       </div>
     </div>""", unsafe_allow_html=True)
     st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
@@ -1207,7 +1207,7 @@ def generate_pdf_direct(profile_data, output_path, photo_bytes=None, logo_path=N
     doc = SimpleDocTemplate(output_path, pagesize=A4,
                             leftMargin=margin, rightMargin=margin,
                             topMargin=header_pad, bottomMargin=margin,
-                            title="Curriculum Vitae", author="MSR CV Processing Studio")
+                            title="Curriculum Vitae", author="GCC CV Studio")
 
     story = []
     last_name = profile_data.get("lastName", "LAST NAME")
@@ -2029,7 +2029,7 @@ if _VIEW == "Dashboard":
                         st.download_button(
                             label=f"Download All Standardized DOCX ({success_count} files as ZIP)",
                             data=docx_zip_bytes,
-                            file_name="MSR_Standardized_CVs_Word.zip",
+                            file_name="GCC_Standardized_CVs_Word.zip",
                             mime="application/zip",
                             key="dl_docx_zip"
                         )
@@ -2038,7 +2038,7 @@ if _VIEW == "Dashboard":
                             st.download_button(
                                 label=f"Download All Standardized PDFs ({compiled_pdf_count} files as ZIP)",
                                 data=pdf_zip_bytes,
-                                file_name="MSR_Standardized_CVs_PDF.zip",
+                                file_name="GCC_Standardized_CVs_PDF.zip",
                                 mime="application/zip",
                                 key="dl_pdf_zip"
                             )
@@ -2293,7 +2293,7 @@ elif _VIEW == "Settings":
     # --- SETTINGS ---
     st.markdown("<div class='page-heading fade-in'>"
                 "<div class='page-title'>App <span class='accent'>Settings</span></div>"
-                "<div class='page-sub'>Configure MSR CV Studio behaviour.</div>"
+                "<div class='page-sub'>Configure GCC CV Studio behaviour.</div>"
                 "</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='page-section'><span class='m m-soft'>tune</span> Preferences</div>", unsafe_allow_html=True)
@@ -2324,7 +2324,7 @@ elif _VIEW == "Help & Guide":
     # --- HELP & GUIDE ---
     st.markdown("<div class='page-heading fade-in'>"
                 "<div class='page-title'>Help &amp; <span class='accent'>Guide</span></div>"
-                "<div class='page-sub'>Everything you need to get the most out of MSR CV Studio.</div>"
+                "<div class='page-sub'>Everything you need to get the most out of GCC CV Studio.</div>"
                 "</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='page-section'><span class='m m-soft'>play_circle</span> Quick Start</div>", unsafe_allow_html=True)
