@@ -245,8 +245,8 @@ st.markdown("""
         min-width: 250px; padding: 20px 16px 30px;
     }
     [data-testid="stSidebar"] .block-container { padding-top: 0.5rem; padding-right: 8px; padding-left: 8px; }
-    [data-testid="stSidebarCollapseButton"] { z-index: 40 !important; background: #0b1120 !important; border: 1px solid #1e2940 !important; color: #b0bcdb !important; }
-    [data-testid="stSidebarCollapseButton"]:hover { color: #2b6bff !important; }
+    [data-testid="stSidebarCollapseButton"], [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
 
     .sb-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
     .sb-logo-icon {
