@@ -371,6 +371,22 @@ st.markdown("""
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
     /* =========================================================
+       FLOATING MANAGE APP BUTTON
+       ========================================================= */
+    .floating-manage {
+        position: fixed; right: 28px; bottom: 24px; z-index: 999;
+    }
+    .floating-manage > button {
+        height: 48px; padding: 0 20px; border-radius: 14px;
+        background: var(--brand) !important; color: #fff !important;
+        border: none !important; box-shadow: 0 8px 24px rgba(14,165,164,0.25) !important;
+        font-weight: 700 !important; font-size: 0.9rem !important;
+        display: inline-flex !important; align-items: center; gap: 0.5rem;
+        transition: all var(--trans) !important;
+    }
+    .floating-manage > button:hover { background: var(--brand-dark) !important; transform: translateY(-2px); }
+
+    /* =========================================================
        RESPONSIVE
        ========================================================= */
     @media (max-width: 900px) {
@@ -1456,19 +1472,7 @@ def build_export_zip(items: tuple) -> bytes:
 _VIEW = st.session_state.view
 
 if _VIEW == "Dashboard":
-    # --- DASHBOARD HEADER + FEATURE CARDS + CAPABILITY STRIP ---
-    st.markdown("<div class='page-heading fade-in'>"
-                "<div class='page-title'>CV Processing &amp; <span class='accent'>Standardization Studio</span></div>"
-                "<div class='page-sub'>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>"
-                "</div>", unsafe_allow_html=True)
-    st.markdown("<div style='display:flex;gap:0.5rem;margin:0.75rem 0 1.5rem;flex-wrap:wrap;'>"
-                "<span class='format-badge badge-pdf'>PDF</span>"
-                "<span class='format-badge badge-docx'>DOCX</span>"
-                "<span class='format-badge badge-doc'>DOC</span>"
-                "<span class='format-badge badge-txt'>TXT</span>"
-                "</div>", unsafe_allow_html=True)
-
-    # --- UPLOAD DROPZONE (prominent) ---
+    # --- UPLOAD DROPZONE (prominent, at top) ---
     uploaded_files = st.file_uploader(
         "Upload raw CVs",
         type=["pdf", "docx", "doc", "txt"],
@@ -1477,6 +1481,25 @@ if _VIEW == "Dashboard":
         key=f"cv_uploader_{st.session_state.uploader_key}",
         label_visibility="collapsed",
     )
+
+    # --- DASHBOARD HERO ---
+    st.markdown("<div class='page-heading fade-in' style='margin-top:1.5rem;'>"
+                "<div style='display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;'>"
+                "<div style='width:56px;height:56px;border-radius:14px;background:var(--bg-card);border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;'>"
+                "<span class='m' style='font-size:1.6rem;color:var(--brand);'>description</span>"
+                "</div>"
+                "<div>"
+                "<div class='page-title'>CV Processing &amp; <span class='accent'>Standardization Studio</span></div>"
+                "</div>"
+                "</div>"
+                "<div class='page-sub'>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>"
+                "</div>", unsafe_allow_html=True)
+    st.markdown("<div style='display:flex;gap:0.5rem;margin:0.75rem 0 1.5rem;flex-wrap:wrap;'>"
+                "<span class='format-badge badge-pdf'>PDF</span>"
+                "<span class='format-badge badge-docx'>DOCX</span>"
+                "<span class='format-badge badge-doc'>DOC</span>"
+                "<span class='format-badge badge-txt'>TXT</span>"
+                "</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='feature-grid fade-in'>"
                 "<div class='feature-card'><div class='feature-icon'><span class='m'>memory</span></div>"
@@ -2046,3 +2069,10 @@ elif _VIEW == "Help & Guide":
         "<li><strong>No photo extracted</strong> — some raw CVs embed photos in non-standard ways; upload a custom photo when processing a single CV.</li>"
         "<li><strong>PDF export fails</strong> — click 'Generate PDF Export' to compile it on demand.</li>"
         "</ul></div>", unsafe_allow_html=True)
+
+# --- FLOATING MANAGE APP BUTTON (routes to Settings) ---
+st.markdown("<div class='floating-manage'>", unsafe_allow_html=True)
+if st.button(":material/settings:" " Manage App", key="manage_app_btn"):
+    st.session_state.view = "Settings"
+    st.rerun()
+st.markdown("</div>", unsafe_allow_html=True)
