@@ -584,7 +584,7 @@ st.markdown("""
         <div class="upload-left">
             <div class="upload-title"><i class="fa-solid fa-cloud-arrow-up" style="color:#0d9488;margin-right:0.4rem;"></i>Drag & Drop raw CVs here (PDF, DOCX, DOC, or TXT)</div>
             <div class="upload-or">or</div>
-            <button class="cta-button"><i class="fa-solid fa-upload"></i> Upload Files</button>
+            <button class="cta-button"><i class="fa-solid fa-upload"></i> Upload</button>
             <div style="font-size:0.68rem;color:#94a3b8;margin-top:0.4rem;">Max 200MB per file</div>
         </div>
         <div class="upload-right">
