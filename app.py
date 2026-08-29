@@ -12,7 +12,7 @@ import base64
 # Set up page config
 st.set_page_config(
     page_title="MSR CV Processing Studio",
-    page_icon="💼",
+    page_icon=":material/badge:",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -20,11 +20,45 @@ st.set_page_config(
 # Custom Styling (Slate background & Deep Indigo accents)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
     
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
+
+    /* === Material Symbol helper === */
+    .m {
+        font-family: 'Material Symbols Outlined', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        display: inline-block;
+        line-height: 1;
+        vertical-align: -0.125em;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+        font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .m-filled { font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+    .m-soft { color: #199E95; }
+    .m-inline { font-size: 1.1em; }
+
+    /* === Button styling refresh === */
+    .stButton > button { border-radius: 10px; font-weight: 600; transition: all 0.15s ease; }
+    .stButton > button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(25,158,149,0.18); }
+    .stButton > button[kind="primary"] { background-color: #199E95; border-color: #199E95; color: #FFFFFF; }
+    .stButton > button[kind="primary"]:hover { background-color: #0B5F5A; }
+
+    /* === Base component refresh === */
+    .stDownloadButton button, .stButton button { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .stSelectbox, .stTextArea textarea, .stTextInput input { font-family: 'Plus Jakarta Sans', sans-serif; border-radius: 10px; }
+    .stProgress > div > div > div > div { background-color: #199E95; }
     
     /* Main block padding */
     .main .block-container {
@@ -79,15 +113,6 @@ st.markdown("""
         letter-spacing: 0.05em;
     }
     
-    /* Instruction Box */
-    .instruction-box {
-        background-color: #EEF2F6;
-        border-left: 4px solid #199E95;
-        padding: 1rem;
-        border-radius: 0 8px 8px 0;
-        margin-bottom: 1.5rem;
-    }
-
     /* Brand header band mirroring the GCC template */
     .app-header {
         display: flex;
@@ -235,6 +260,7 @@ with st.sidebar:
     st.image(LOGO_PATH, width=64)
     st.markdown("### **MSR CV Studio**")
     st.markdown("Enterprise CV Parser & Standardizer")
+    st.markdown("<div style='font-size:0.8rem;color:#64748B;margin-top:0.25rem;'><span class='m m-soft' style='font-size:0.9em;vertical-align:text-bottom;'>code</span> Developed by <strong>Ritche Gerona</strong></div>", unsafe_allow_html=True)
     st.write("---")
     
     # Session Metrics
@@ -261,9 +287,9 @@ with st.sidebar:
             if _r.get("status") == "Success":
                 _pd = _r.get("profile_data", {})
                 _label = f"{_pd.get('lastName', '?')}, {_pd.get('firstName', '?')}"
-                st.markdown(f"<div class='sidebar-candidate-item'>🧑‍💼 {_label}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='sidebar-candidate-item'><span class='m m-soft'>badge</span> {_label}</div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div class='sidebar-candidate-item'>⚠️ {_fn}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='sidebar-candidate-item'><span class='m'>error</span> {_fn}</div>", unsafe_allow_html=True)
     
     st.markdown("<hr class='sidebar-divider'>", unsafe_allow_html=True)
     
@@ -271,30 +297,18 @@ with st.sidebar:
     summary_exists = os.path.exists(SUMMARY_DIR)
     st.markdown("**Local Folder Status:**")
     if summary_exists:
-        st.success("📁 `Candidate CV Summary/` is active")
+        st.success("`Candidate CV Summary/` is active")
     else:
-        st.warning("⚠️ `Candidate CV Summary/` missing")
+        st.warning("`Candidate CV Summary/` missing")
         
     # Template Checklist
     gcc_exists = os.path.exists(GCC_TEMPLATE_PATH)
     st.markdown("**CV Format:**")
     if gcc_exists:
-        st.success("📄 `GCC_CV_FORMAT.doc` is loaded as the template")
+        st.success("`GCC_CV_FORMAT.doc` is loaded as the template")
     else:
-        st.error("❌ `GCC_CV_FORMAT.doc` is missing in root")
-        st.info("💡 Please place the official GCC CV format file `GCC_CV_FORMAT.doc` in your project root directory.")
-
-# --- INSTRUCTION BLOCK ---
-with st.expander("ℹ️ Local Execution & Project Instructions", expanded=False):
-    st.markdown("""
-    <div class='instruction-box'>
-        <strong>🚀 Local Execution Guide:</strong><br/>
-        1. Keep the Streamlit server running in your terminal: <code>.venv/bin/streamlit run app.py</code>.<br/>
-        2. Verify that <code>GCC_CV_FORMAT.doc</code> is placed in your project root folder.<br/>
-        3. Upload a CV file (Word <code>.docx</code>, <code>.doc</code>, PDF, or plain <code>.txt</code>) in the uploader below.<br/>
-        4. Once standardized, view the split comparison, check the dynamically saved text profile, and download your export documents.
-    </div>
-    """, unsafe_allow_html=True)
+        st.error("`GCC_CV_FORMAT.doc` is missing in root")
+        st.info("Please place the official GCC CV format file `GCC_CV_FORMAT.doc` in your project root directory.")
 
 # --- HEADER TITLE ---
 st.markdown("<div class='dashboard-title'>CV Processing & Standardization Studio</div>", unsafe_allow_html=True)
@@ -1267,9 +1281,9 @@ uploaded_files = st.file_uploader(
 if uploaded_files:
     col_file, col_clear = st.columns([5, 1])
     with col_file:
-        st.markdown(f"<div style='font-size:1.05rem;font-weight:600;color:#0F172A;margin-bottom:0.5rem;'>📂 Loaded: <span style='color:#199E95;'>{len(uploaded_files)} file(s)</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='font-size:1.05rem;font-weight:600;color:#0F172A;margin-bottom:0.5rem;'><span class='m m-soft' style='vertical-align:text-bottom;'>upload_file</span> Loaded: <span style='color:#199E95;'>{len(uploaded_files)} file(s)</span></div>", unsafe_allow_html=True)
     with col_clear:
-        if st.button("✖ Clear All Files", key="clear_files_btn", help="Clear all uploaded files"):
+        if st.button(":material/close:" " Clear All Files", key="clear_files_btn", help="Clear all uploaded files"):
             st.session_state.uploader_key += 1
             for key in ["batch_results", "selected_candidate_idx"]:
                 if key in st.session_state:
@@ -1292,7 +1306,7 @@ if uploaded_files:
         _size_str = f"{_size_kb:.1f} KB" if _size_kb < 1024 else f"{_size_kb/1024:.2f} MB"
         st.markdown(
             f"<div class='file-list-item' style='animation:fadeSlideIn 0.25s ease-out;'>"
-            f"<span class='file-name'>📄 {_uf.name}</span>"
+            f"<span class='file-name'><span class='m m-soft' style='vertical-align:text-bottom;'>description</span> {_uf.name}</span>"
             f"<span class='file-size'>{_ext.upper()} · {_size_str}</span>"
             f"</div>", unsafe_allow_html=True)
 
@@ -1300,19 +1314,19 @@ if uploaded_files:
     uploaded_photo = None
     if len(uploaded_files) == 1:
         uploaded_photo = st.file_uploader(
-            "📷 Optionally upload a custom profile photo (JPEG or PNG)",
+            "Upload a custom profile photo (JPEG or PNG)",
             type=["jpg", "jpeg", "png"],
             help="If not provided, the studio will automatically attempt to extract the candidate photo from the raw CV.",
             key=f"photo_uploader_{st.session_state.uploader_key}"
         )
     
     # Local parsing notice
-    st.info("🔌 Local parser is used for all CVs. No external AI or internet connection required.")
+    st.info("Local parser is used for all CVs. No external AI or internet connection required.")
     
     # Action button to trigger processing
     col_btn_space, col_btn_act = st.columns([5, 1])
     with col_btn_act:
-        process_btn = st.button("PROCEED ➔", type="primary", use_container_width=True)
+        process_btn = st.button(":material/arrow_forward:" " PROCEED", type="primary", use_container_width=True)
         
     if process_btn:
         st.session_state.batch_results = {}
@@ -1328,8 +1342,8 @@ if uploaded_files:
             
             _pc = st.empty()
             _bc = fname_badge.get(file_ext, "badge-txt")
-            _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'>📄 {file_name}</span><span class='process-card-status status-processing pulse'>PROCESSING…</span></div>", unsafe_allow_html=True)
-            status_text.markdown(f"⏳ **Processing file {idx+1} of {len(uploaded_files)}**: `{file_name}`...")
+            _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'><span class='m m-soft'>description</span> {file_name}</span><span class='process-card-status status-processing pulse'><span class='m'>progress_activity</span> PROCESSING</span></div>", unsafe_allow_html=True)
+            status_text.markdown(f"**Processing file {idx+1} of {len(uploaded_files)}**: `{file_name}`...")
             progress_bar.progress(idx / len(uploaded_files))
             
             try:
@@ -1383,7 +1397,7 @@ if uploaded_files:
                     
                 # 6. Pre-generate PDF for candidate
                 pdf_bytes = None
-                status_text.markdown(f"⏳ **Processing file {idx+1} of {len(uploaded_files)}**: Generating PDF for `{file_name}`...")
+                status_text.markdown(f"**Processing file {idx+1} of {len(uploaded_files)}**: Generating PDF for `{file_name}`...")
                 try:
                     import tempfile as _tf
                     with _tf.TemporaryDirectory() as _dir:
@@ -1404,16 +1418,16 @@ if uploaded_files:
                     "pdf_bytes": pdf_bytes,
                     "status": "Success"
                 }
-                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'>📄 {file_name}</span><span class='process-card-status status-success'>✓ SUCCESS</span></div>", unsafe_allow_html=True)
+                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'><span class='m m-soft'>description</span> {file_name}</span><span class='process-card-status status-success'><span class='m'>check_circle</span> SUCCESS</span></div>", unsafe_allow_html=True)
             except Exception as e:
                 st.session_state.batch_results[file_name] = {
                     "status": "Error",
                     "error_message": str(e)
                 }
-                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'>📄 {file_name}</span><span class='process-card-status status-error'>✗ ERROR</span></div>", unsafe_allow_html=True)
+                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'><span class='m m-soft'>description</span> {file_name}</span><span class='process-card-status status-error'><span class='m'>cancel</span> ERROR</span></div>", unsafe_allow_html=True)
                 
         progress_bar.progress(1.0)
-        status_text.markdown(f"✅ **Batch processing completed!** Processed {len(uploaded_files)} files.")
+        status_text.markdown(f"**Batch processing completed!** Processed {len(uploaded_files)} files.")
         st.session_state.processed_count += len(uploaded_files)
         st.rerun()
 
@@ -1468,7 +1482,7 @@ if uploaded_files:
                 b_col1, b_col2 = st.columns(2)
                 with b_col1:
                     st.download_button(
-                        label=f"📦 Download All Standardized DOCX ({success_count} files as ZIP)",
+                        label=f"Download All Standardized DOCX ({success_count} files as ZIP)",
                         data=docx_zip_bytes,
                         file_name="MSR_Standardized_CVs_Word.zip",
                         mime="application/zip",
@@ -1477,14 +1491,14 @@ if uploaded_files:
                 with b_col2:
                     if compiled_pdf_count > 0:
                         st.download_button(
-                            label=f"📦 Download All Standardized PDFs ({compiled_pdf_count} files as ZIP)",
+                            label=f"Download All Standardized PDFs ({compiled_pdf_count} files as ZIP)",
                             data=pdf_zip_bytes,
                             file_name="MSR_Standardized_CVs_PDF.zip",
                             mime="application/zip",
                             key="dl_pdf_zip"
                         )
                     else:
-                        st.info("💡 Compile PDFs for individual candidates below, then download them as a batch ZIP here.")
+                        st.info("Compile PDFs for individual candidates below, then download them as a batch ZIP here.")
                 
                 st.markdown("<div class='section-header'>Candidate Inspection & Single Export</div>", unsafe_allow_html=True)
                 if not is_batch:
@@ -1546,7 +1560,7 @@ if uploaded_files:
             cv_markdown = data.get("auditedCvMarkdown", "")
             
             profile_filename = f"{last_name}, {first_name}.txt"
-            st.info(f"💾 Dynamic Profile saved locally: `{os.path.join('Candidate CV Summary', profile_filename)}`")
+            st.info(f"Dynamic Profile saved locally: `{os.path.join('Candidate CV Summary', profile_filename)}`")
             
             details = data.get("details", {})
             
@@ -1568,7 +1582,7 @@ if uploaded_files:
                 <div class='candidate-avatar' style='width:80px;height:80px;font-size:2rem;'>{first_name[0] if first_name else '?'}{last_name[0] if last_name else '?'}</div>
                 <div style='flex:1;min-width:220px;'>
                   <div class='profile-hero-name'>{full_name}</div>
-                  <div class='profile-hero-sub'>⭐ {years_exp} Years of Experience</div>
+                  <div class='profile-hero-sub'><span class='m m-soft' style='vertical-align:text-bottom;'>workspace_premium</span> {years_exp} Years of Experience</div>
                   <div class='profile-hero-summary'>{exec_summary}</div>
                   <div class='chip-group'>{chip_html}</div>
                 </div>
@@ -1594,7 +1608,7 @@ if uploaded_files:
                 st.markdown(cv_markdown)
                 
             # --- DUAL EXPORT SYSTEM CARD ---
-            st.markdown("<div class='section-header'>📤 Export Options</div>", unsafe_allow_html=True)
+            st.markdown("<div class='section-header'><span class='m m-soft' style='vertical-align:text-bottom;'>file_download</span> Export Options</div>", unsafe_allow_html=True)
             st.markdown("<div class='export-panel'>", unsafe_allow_html=True)
             st.markdown("<div class='export-panel-title'>Download standardized documents for this candidate</div>", unsafe_allow_html=True)
             
@@ -1602,7 +1616,7 @@ if uploaded_files:
             
             with exp_col1:
                 st.download_button(
-                    label="💾 Download Standardized Word (DOCX)",
+                    label="Download Standardized Word (DOCX)",
                     data=docx_bytes,
                     file_name=f"{last_name}, {first_name} - CV.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -1612,14 +1626,14 @@ if uploaded_files:
             with exp_col2:
                 if pdf_bytes is not None:
                     st.download_button(
-                        label="📄 Download Standardized PDF",
+                        label="Download Standardized PDF",
                         data=pdf_bytes,
                         file_name=f"{last_name}, {first_name} - CV.pdf",
                         mime="application/pdf",
                         key=f"dl_pdf_{selected_filename}"
                     )
                 else:
-                    if st.button("📄 Generate PDF Export", key=f"gen_pdf_{selected_filename}", help="Generate and download the CV as a PDF"):
+                    if st.button("Generate PDF Export", key=f"gen_pdf_{selected_filename}", help="Generate and download the CV as a PDF"):
                         with st.spinner("Generating PDF..."):
                             try:
                                 import tempfile as _tf
@@ -1644,13 +1658,13 @@ if uploaded_files:
             if res["status"] == "Error"
         ]
         if errors:
-            st.markdown("<div class='section-header'>⚠️ Processing Failures</div>", unsafe_allow_html=True)
+            st.markdown("<div class='section-header'><span class='m'>warning</span> Processing Failures</div>", unsafe_allow_html=True)
             for filename, err in errors:
                 st.error(f"**{filename}**: {err}")
 else:
     st.markdown("<div class='fade-in'>", unsafe_allow_html=True)
     st.markdown("<div class='landing-container'>", unsafe_allow_html=True)
-    st.markdown("<div class='landing-title'>📄 CV Processing & Standardization Studio</div>", unsafe_allow_html=True)
+    st.markdown("<div class='landing-title'><span class='m m-soft' style='font-size:0.9em;vertical-align:baseline;'>description</span> CV Processing &amp; Standardization Studio</div>", unsafe_allow_html=True)
     st.markdown("<div class='landing-subtitle'>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>", unsafe_allow_html=True)
     st.markdown("<div class='format-badges'>"
                 "<span class='format-badge badge-pdf'>PDF</span>"
@@ -1659,9 +1673,10 @@ else:
                 "<span class='format-badge badge-txt'>TXT</span>"
                 "</div>", unsafe_allow_html=True)
     st.markdown("<div class='feature-grid'>"
-                "<div class='feature-card'><div class='feature-icon'>⚙️</div><div class='feature-title'>Local Parser</div><div class='feature-desc'>Fully offline parsing — no external AI or internet required.</div></div>"
-                "<div class='feature-card'><div class='feature-icon'>🎯</div><div class='feature-title'>GCC Standard</div><div class='feature-desc'>Outputs structured, corporate-aligned CVs matching the official template.</div></div>"
-                "<div class='feature-card'><div class='feature-icon'>📦</div><div class='feature-title'>Batch Export</div><div class='feature-desc'>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</div></div>"
+                "<div class='feature-card'><div class='feature-icon'><span class='m m-soft'>memory</span></div><div class='feature-title'>Local Parser</div><div class='feature-desc'>Fully offline parsing — no external AI or internet required.</div></div>"
+                "<div class='feature-card'><div class='feature-icon'><span class='m m-soft'>track_changes</span></div><div class='feature-title'>GCC Standard</div><div class='feature-desc'>Outputs structured, corporate-aligned CVs matching the official template.</div></div>"
+                "<div class='feature-card'><div class='feature-icon'><span class='m m-soft'>inventory_2</span></div><div class='feature-title'>Batch Export</div><div class='feature-desc'>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</div></div>"
                 "</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:2.5rem;font-size:0.85rem;color:#94A3B8;'><span class='m m-soft' style='vertical-align:text-bottom;'>code</span> Developed by <strong>Ritche Gerona</strong></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
