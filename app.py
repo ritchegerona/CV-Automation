@@ -602,6 +602,18 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Streamlit file uploader (functional)
+uploaded_files = st.file_uploader(
+    "Upload CV files",
+    type=["pdf", "docx", "doc", "txt"],
+    accept_multiple_files=True,
+    help="Drag & drop files here or click to browse",
+)
+if uploaded_files:
+    st.success(f"{len(uploaded_files)} file(s) uploaded.")
+    for uf in uploaded_files:
+        st.write(uf.name)
+
 # ─── SECTION HEADING ──────────────────────────────────────────────────────────
 st.markdown("""
 <div class="section-heading">
