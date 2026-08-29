@@ -153,6 +153,60 @@ st.markdown("""
         margin-top: 1rem;
         margin-bottom: 1rem;
     }
+
+    /* ===== EMPTY STATE / LANDING ===== */
+    .landing-container { text-align: center; padding: 3rem 2rem; }
+    .landing-title { font-size: 2.8rem; font-weight: 800; color: #0F172A; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .landing-subtitle { font-size: 1.2rem; color: #64748B; margin-bottom: 2.5rem; font-weight: 400; }
+    .feature-grid { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .feature-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 1.75rem 1.5rem; width: 260px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .feature-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .feature-title { font-size: 1rem; font-weight: 700; color: #0F172A; margin-bottom: 0.4rem; }
+    .feature-desc { font-size: 0.85rem; color: #64748B; line-height: 1.5; }
+    .format-badges { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; }
+    .format-badge { display: inline-block; padding: 0.35rem 0.9rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em; border: 1.5px solid; }
+    .badge-pdf { color: #C2185B; border-color: #F8BBD0; background: #FFF0F3; }
+    .badge-docx { color: #1565C0; border-color: #90CAF9; background: #F0F7FF; }
+    .badge-doc { color: #E65100; border-color: #FFCC80; background: #FFF3E0; }
+    .badge-txt { color: #2E7D32; border-color: #A5D6A7; background: #F1F8E9; }
+    .file-list-item { display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .file-name { font-weight: 600; color: #0F172A; font-size: 0.9rem; }
+    .file-size { font-size: 0.8rem; color: #90A4AE; }
+    .process-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+    .process-card-name { font-weight: 600; color: #0F172A; font-size: 0.95rem; flex: 1; }
+    .process-card-status { font-size: 0.85rem; font-weight: 600; }
+    .status-success { color: #199E95; }
+    .status-error { color: #D32F2F; }
+    .status-processing { color: #F57C00; }
+    .candidate-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: 0 2px 6px rgba(0,0,0,0.04); cursor: pointer; }
+    .candidate-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-color: #199E95; }
+    .candidate-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #199E95, #009999); display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 1.3rem; font-weight: 700; flex-shrink: 0; }
+    .candidate-info { flex: 1; }
+    .candidate-name { font-size: 1.05rem; font-weight: 700; color: #0F172A; margin-bottom: 0.2rem; }
+    .candidate-meta { font-size: 0.8rem; color: #64748B; }
+    .profile-hero { background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 100%); border: 1px solid #C8E6C9; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(25,158,149,0.08); }
+    .profile-hero-name { font-size: 2rem; font-weight: 800; color: #0F172A; margin-bottom: 0.25rem; }
+    .profile-hero-sub { font-size: 1rem; color: #199E95; font-weight: 600; margin-bottom: 1rem; }
+    .profile-hero-summary { font-size: 0.95rem; color: #455A64; line-height: 1.6; font-style: italic; border-left: 3px solid #199E95; padding-left: 1rem; margin-bottom: 1rem; }
+    .chip-group { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.75rem; }
+    .chip-secondary { background-color: #F1F5F9; color: #475569; border-color: #CBD5E1; }
+    .chip-primary { background-color: rgba(25, 158, 149, 0.15); color: #0B5F5A; border-color: rgba(25, 158, 149, 0.40); }
+    .section-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+    .section-card-title { font-size: 1rem; font-weight: 700; color: #0F172A; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #F1F5F9; }
+    .stat-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .stat-box { flex: 1; text-align: center; padding: 0.75rem; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0; }
+    .stat-number { font-size: 1.4rem; font-weight: 700; color: #199E95; }
+    .stat-label-sm { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .export-panel { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .export-panel-title { font-size: 1.1rem; font-weight: 700; color: #0F172A; margin-bottom: 1rem; }
+    .sidebar-candidate-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.5rem; border-radius: 6px; font-size: 0.8rem; color: #475569; margin-bottom: 0.25rem; }
+    .sidebar-candidate-item:hover { background: #F1F5F9; }
+    .sidebar-divider { border: none; border-top: 1px solid #E2E8F0; margin: 0.75rem 0; }
+    .sidebar-section-title { font-size: 0.75rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeSlideIn 0.3s ease-out forwards; }
+    .pulse { animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 </style>
 """, unsafe_allow_html=True)
 
@@ -188,6 +242,30 @@ with st.sidebar:
     st.markdown(f"<div class='metric-value'>{st.session_state.processed_count}</div>", unsafe_allow_html=True)
     st.markdown("<div class='metric-label'>Processed This Session</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Session stats breakdown
+    _br = st.session_state.get("batch_results", {})
+    if _br:
+        _ok = sum(1 for r in _br.values() if r.get("status") == "Success")
+        _err = sum(1 for r in _br.values() if r.get("status") == "Error")
+        st.markdown("<div class='stat-row'>"
+                    f"<div class='stat-box'><div class='stat-number'>{_ok}</div><div class='stat-label-sm'>Success</div></div>"
+                    f"<div class='stat-box'><div class='stat-number'>{_err}</div><div class='stat-label-sm'>Errors</div></div>"
+                    "</div>", unsafe_allow_html=True)
+    
+    # Recent candidates in the current batch
+    if _br:
+        st.markdown("<hr class='sidebar-divider'>", unsafe_allow_html=True)
+        st.markdown("<div class='sidebar-section-title'>Recent Candidates</div>", unsafe_allow_html=True)
+        for _fn, _r in list(_br.items()):
+            if _r.get("status") == "Success":
+                _pd = _r.get("profile_data", {})
+                _label = f"{_pd.get('lastName', '?')}, {_pd.get('firstName', '?')}"
+                st.markdown(f"<div class='sidebar-candidate-item'>🧑‍💼 {_label}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div class='sidebar-candidate-item'>⚠️ {_fn}</div>", unsafe_allow_html=True)
+    
+    st.markdown("<hr class='sidebar-divider'>", unsafe_allow_html=True)
     
     # Path & Status Information
     summary_exists = os.path.exists(SUMMARY_DIR)
@@ -1189,7 +1267,7 @@ uploaded_files = st.file_uploader(
 if uploaded_files:
     col_file, col_clear = st.columns([5, 1])
     with col_file:
-        st.success(f"📂 Loaded: **{len(uploaded_files)} files**")
+        st.markdown(f"<div style='font-size:1.05rem;font-weight:600;color:#0F172A;margin-bottom:0.5rem;'>📂 Loaded: <span style='color:#199E95;'>{len(uploaded_files)} file(s)</span></div>", unsafe_allow_html=True)
     with col_clear:
         if st.button("✖ Clear All Files", key="clear_files_btn", help="Clear all uploaded files"):
             st.session_state.uploader_key += 1
@@ -1197,6 +1275,26 @@ if uploaded_files:
                 if key in st.session_state:
                     del st.session_state[key]
             st.rerun()
+
+    badge_map = {
+        "pdf": "bg-pdf",
+        "docx": "bg-docx",
+        "doc": "bg-doc",
+        "txt": "bg-txt",
+        "jpg": "bg-docx",
+        "jpeg": "bg-docx",
+        "png": "bg-docx",
+    }
+    for _uf in uploaded_files:
+        _ext = _uf.name.split(".")[-1].lower()
+        _badge_class = badge_map.get(_ext, "bg-txt")
+        _size_kb = _uf.size / 1024 if _uf.size else 0
+        _size_str = f"{_size_kb:.1f} KB" if _size_kb < 1024 else f"{_size_kb/1024:.2f} MB"
+        st.markdown(
+            f"<div class='file-list-item' style='animation:fadeSlideIn 0.25s ease-out;'>"
+            f"<span class='file-name'>📄 {_uf.name}</span>"
+            f"<span class='file-size'>{_ext.upper()} · {_size_str}</span>"
+            f"</div>", unsafe_allow_html=True)
 
     # Photo Uploader (only visible if a single CV is uploaded)
     uploaded_photo = None
@@ -1221,12 +1319,16 @@ if uploaded_files:
         progress_bar = st.progress(0.0)
         status_text = st.empty()
         
+        fname_badge = {"pdf": "badge-pdf", "docx": "badge-docx", "doc": "badge-doc", "txt": "badge-txt"}
         for idx, file in enumerate(uploaded_files):
             file_name = file.name
             file_ext = file_name.split(".")[-1].lower()
             file_bytes = file.read()
             file.seek(0)
             
+            _pc = st.empty()
+            _bc = fname_badge.get(file_ext, "badge-txt")
+            _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'>📄 {file_name}</span><span class='process-card-status status-processing pulse'>PROCESSING…</span></div>", unsafe_allow_html=True)
             status_text.markdown(f"⏳ **Processing file {idx+1} of {len(uploaded_files)}**: `{file_name}`...")
             progress_bar.progress(idx / len(uploaded_files))
             
@@ -1302,11 +1404,13 @@ if uploaded_files:
                     "pdf_bytes": pdf_bytes,
                     "status": "Success"
                 }
+                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'>📄 {file_name}</span><span class='process-card-status status-success'>✓ SUCCESS</span></div>", unsafe_allow_html=True)
             except Exception as e:
                 st.session_state.batch_results[file_name] = {
                     "status": "Error",
                     "error_message": str(e)
                 }
+                _pc.markdown(f"<div class='process-card'><span class='format-badge {_bc}'>{file_ext.upper()}</span><span class='process-card-name'>📄 {file_name}</span><span class='process-card-status status-error'>✗ ERROR</span></div>", unsafe_allow_html=True)
                 
         progress_bar.progress(1.0)
         status_text.markdown(f"✅ **Batch processing completed!** Processed {len(uploaded_files)} files.")
@@ -1388,14 +1492,44 @@ if uploaded_files:
                     st.markdown("<div class='metric-value'>1</div>", unsafe_allow_html=True)
                     st.markdown("<div class='metric-label'>Candidate Processed</div>", unsafe_allow_html=True)
                     st.markdown("</div>", unsafe_allow_html=True)
-                selected_filename = st.selectbox(
-                    "🔍 Select Candidate Profile to Inspect:",
-                    options=list(success_candidates.keys()),
-                    format_func=lambda x: success_candidates[x]
-                )
+                if "selected_candidate_idx" not in st.session_state:
+                    st.session_state.selected_candidate_idx = 0
+                cand_keys = list(success_candidates.keys())
+                sel_idx_holder = st.session_state.selected_candidate_idx
+                if sel_idx_holder >= len(cand_keys):
+                    sel_idx_holder = 0
+                st.markdown(f"<div class='section-card'><div class='section-card-title'>Select a candidate to inspect</div>", unsafe_allow_html=True)
+                cc_cols = st.columns(min(len(cand_keys), 3))
+                for i, cf in enumerate(cand_keys):
+                    _res = st.session_state.batch_results[cf]
+                    _pd = _res.get("profile_data", {})
+                    _ln = _pd.get("lastName", "Lastname")
+                    _fn = _pd.get("firstName", "Firstname")
+                    _ye = _pd.get("yearsOfExperience", 0)
+                    _init = (_fn[0] if _fn else "?") + (_ln[0] if _ln else "?")
+                    _active = " style='border-color:#199E95;box-shadow:0 6px 20px rgba(25,158,149,0.15);'" if i == sel_idx_holder else ""
+                    _c = cc_cols[i % len(cc_cols)]
+                    with _c:
+                        _picked = st.button(
+                            f"👤 {_ln}, {_fn} — {_ye} yrs",
+                            key=f"cand_{i}",
+                            on_click=lambda j=i: setattr(st.session_state, "selected_candidate_idx", j),
+                            use_container_width=True,
+                            help=cf
+                        )
+                        st.markdown(
+                            f"<div class='candidate-card'{_active}>"
+                            f"<div class='candidate-avatar'>{_init}</div>"
+                            f"<div class='candidate-info'>"
+                            f"<div class='candidate-name'>{_ln}, {_fn}</div>"
+                            f"<div class='candidate-meta'>🗂 {cf}</div>"
+                            f"</div>"
+                            f"</div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
+                selected_filename = cand_keys[st.session_state.selected_candidate_idx]
             else:
                 selected_filename = list(success_candidates.keys())[0]
-                
+                st.session_state.selected_candidate_idx = 0
             # Unpack details for selected candidate
             candidate_result = st.session_state.batch_results[selected_filename]
             data = candidate_result["profile_data"]
@@ -1413,6 +1547,34 @@ if uploaded_files:
             
             profile_filename = f"{last_name}, {first_name}.txt"
             st.info(f"💾 Dynamic Profile saved locally: `{os.path.join('Candidate CV Summary', profile_filename)}`")
+            
+            details = data.get("details", {})
+            
+            chip_items = []
+            for _k in ["nationality", "gender", "religion", "maritalStatus", "height", "weight"]:
+                _v = details.get(_k)
+                if _v and str(_v).strip():
+                    chip_items.append((_k.replace("maritalStatus", "Marital Status").replace("_", " ").title(), str(_v).strip()))
+            if details.get("passportNo"):
+                chip_items.append(("Passport No.", str(details["passportNo"]).strip()))
+            
+            chip_html = "".join(
+                f"<span class='chip chip-primary'>{label}: {val}</span>" for label, val in chip_items
+            ) if chip_items else "<span class='chip chip-secondary'>No personal details detected</span>"
+            
+            st.markdown("<div class='fade-in'>", unsafe_allow_html=True)
+            st.markdown(f"""<div class='profile-hero'>
+              <div style='display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;'>
+                <div class='candidate-avatar' style='width:80px;height:80px;font-size:2rem;'>{first_name[0] if first_name else '?'}{last_name[0] if last_name else '?'}</div>
+                <div style='flex:1;min-width:220px;'>
+                  <div class='profile-hero-name'>{full_name}</div>
+                  <div class='profile-hero-sub'>⭐ {years_exp} Years of Experience</div>
+                  <div class='profile-hero-summary'>{exec_summary}</div>
+                  <div class='chip-group'>{chip_html}</div>
+                </div>
+              </div>
+            </div>""", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
             
             # --- SPLIT SCREEN LAYOUT ---
             col1, col2 = st.columns(2)
@@ -1432,7 +1594,9 @@ if uploaded_files:
                 st.markdown(cv_markdown)
                 
             # --- DUAL EXPORT SYSTEM CARD ---
-            st.markdown("<div class='section-header'>Single Export Options</div>", unsafe_allow_html=True)
+            st.markdown("<div class='section-header'>📤 Export Options</div>", unsafe_allow_html=True)
+            st.markdown("<div class='export-panel'>", unsafe_allow_html=True)
+            st.markdown("<div class='export-panel-title'>Download standardized documents for this candidate</div>", unsafe_allow_html=True)
             
             exp_col1, exp_col2 = st.columns(2)
             
@@ -1471,6 +1635,7 @@ if uploaded_files:
                                     st.error("Failed to generate PDF document.")
                             except Exception as e:
                                 st.error(f"Error generating PDF: {e}")
+            st.markdown("</div>", unsafe_allow_html=True)
                                     
         # Display failures if any
         errors = [
@@ -1483,4 +1648,20 @@ if uploaded_files:
             for filename, err in errors:
                 st.error(f"**{filename}**: {err}")
 else:
-    st.info("📂 Please upload one or more candidate CVs in PDF, DOCX, DOC, or TXT format above to begin.")
+    st.markdown("<div class='fade-in'>", unsafe_allow_html=True)
+    st.markdown("<div class='landing-container'>", unsafe_allow_html=True)
+    st.markdown("<div class='landing-title'>📄 CV Processing & Standardization Studio</div>", unsafe_allow_html=True)
+    st.markdown("<div class='landing-subtitle'>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='format-badges'>"
+                "<span class='format-badge badge-pdf'>PDF</span>"
+                "<span class='format-badge badge-docx'>DOCX</span>"
+                "<span class='format-badge badge-doc'>DOC</span>"
+                "<span class='format-badge badge-txt'>TXT</span>"
+                "</div>", unsafe_allow_html=True)
+    st.markdown("<div class='feature-grid'>"
+                "<div class='feature-card'><div class='feature-icon'>⚙️</div><div class='feature-title'>Local Parser</div><div class='feature-desc'>Fully offline parsing — no external AI or internet required.</div></div>"
+                "<div class='feature-card'><div class='feature-icon'>🎯</div><div class='feature-title'>GCC Standard</div><div class='feature-desc'>Outputs structured, corporate-aligned CVs matching the official template.</div></div>"
+                "<div class='feature-card'><div class='feature-icon'>📦</div><div class='feature-title'>Batch Export</div><div class='feature-desc'>Generate DOCX &amp; PDF exports, individually or as a ZIP bundle.</div></div>"
+                "</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
