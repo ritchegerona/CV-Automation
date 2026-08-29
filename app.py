@@ -20,46 +20,50 @@ st.set_page_config(
 # Custom Styling (Slate background & Deep Indigo accents)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
     /* =========================================================
        DESIGN TOKENS  (centralized so colors can be changed here)
        ========================================================= */
     :root {
-        --brand:        #0EA5A4;
-        --brand-dark:   #0B6F6E;
-        --brand-soft:   #E6F5F5;
-        --brand-ink:    #0B5F5A;
-        --text-dark:    #142033;
+        --brand:        #0E9F9A;
+        --brand-dark:   #078C87;
+        --brand-soft:   #E8F7F5;
+        --brand-light:  #F3FBFA;
+        --brand-ink:    #078C87;
+        --text-dark:    #111827;
         --text-body:    #334155;
-        --text-muted:   #64748B;
+        --text-secondary:#60708A;
+        --text-muted:   #8491A5;
         --text-faint:   #94A3B8;
-        --bg-canvas:    #F7F9FB;
+        --bg-canvas:    #F6F9FC;
         --bg-card:      #FFFFFF;
         --bg-subtle:    #F1F5F9;
-        --border:       #E2E8F0;
-        --border-soft:  #EEF2F6;
-        --green:        #16A34A;
-        --green-soft:   #ECFDF3;
-        --amber:        #D97706;
-        --amber-soft:   #FFF7ED;
-        --red:          #DC2626;
-        --red-soft:     #FEF2F2;
+        --border:       #E1E8EF;
+        --border-soft:  #EDF1F5;
+        --green:        #22C55E;
+        --green-soft:   #EAF8F0;
+        --green-ink:    #159447;
+        --amber:        #F59E0B;
+        --amber-soft:   #FFF7E8;
+        --red:          #E91E63;
+        --red-soft:     #FFF0F5;
         --gray:         #6B7280;
-        --radius-sm:    8px;
+        --radii-sm:     8px;
         --radius:       12px;
         --radius-lg:    16px;
-        --shadow-sm:    0 1px 2px rgba(16,32,51,0.06);
-        --shadow:       0 4px 14px rgba(16,32,51,0.07);
-        --shadow-lg:    0 10px 30px rgba(16,32,51,0.10);
+        --radius-xl:    20px;
+        --shadow-sm:    0 1px 3px rgba(15,23,42,0.05);
+        --shadow:       0 4px 18px rgba(15,23,42,0.055);
+        --shadow-lg:    0 8px 28px rgba(15,23,42,0.10);
         --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
-        --sp-6: 24px; --sp-8: 32px; --sp-12: 48px;
+        --sp-6: 24px; --sp-8: 32px; --sp-12: 48px; --sp-16: 64px;
         --trans: 0.2s ease;
     }
 
     html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         color: var(--text-body);
     }
     .stApp { background-color: var(--bg-canvas); }
@@ -107,19 +111,19 @@ st.markdown("""
     .stNumberInput input { border-radius: var(--radius-sm) !important; font-family: 'Plus Jakarta Sans', sans-serif; }
     .stProgress > div > div > div > div { background-color: var(--brand); }
     .stFileUploader [data-testid="stFileUploaderDropzone"] {
-        border: 1.75px dashed #8DD7D3; border-radius: var(--radius-lg);
-        background: linear-gradient(110deg, #F2FBFA 0%, #FFFFFF 55%, #F1FBFB 100%);
-        padding: 1.5rem; min-height: 170px; display: flex;
+        border: 1.5px dashed #86D4D0; border-radius: 14px;
+        background: linear-gradient(110deg, #F3FBFA 0%, #FFFFFF 50%, #F3FBFA 100%);
+        padding: 1.5rem; min-height: 168px; display: flex;
         align-items: center; justify-content: center;
         transition: all var(--trans);
     }
     .stFileUploader [data-testid="stFileUploaderDropzone"]:hover {
-        border-color: var(--brand); background: var(--brand-soft);
+        border-color: var(--brand); background: #E6F7F5;
         box-shadow: 0 0 0 4px rgba(14,165,164,0.08);
     }
     .stFileUploader [data-testid="stFileUploaderDropzone"] button {
-        border-radius: 999px; background: #fff; border: 1px solid #D8E0E8;
-        color: var(--brand); font-weight: 600; padding: 0.25rem 1rem;
+        border-radius: 999px; background: #fff; border: 1px solid #D6DEE7;
+        color: var(--brand); font-weight: 600; padding: 0.3rem 1.2rem; height: 44px;
     }
     .stFileUploader [data-testid="stFileUploaderDropzone"] small {
         font-size: 0.85rem; color: var(--text-body); font-weight: 600;
@@ -143,17 +147,31 @@ st.markdown("""
     .app-topbar-sub { font-size: 0.78rem; color: var(--text-muted); }
     .topbar-actions { display: flex; align-items: center; gap: 0.5rem; }
     .icon-btn {
-        width: 36px; height: 36px; border-radius: 50%;
+        width: 44px; height: 44px; border-radius: 50%;
         display: inline-flex; align-items: center; justify-content: center;
-        background: var(--bg-subtle); color: var(--text-muted);
-        border: 1px solid var(--border-soft); cursor: pointer;
-        font-size: 1.1rem; transition: all var(--trans); text-decoration: none;
+        background: var(--bg-card); color: var(--text-secondary);
+        border: 1px solid #DFE6ED; cursor: pointer;
+        font-size: 1.15rem; transition: all var(--trans); text-decoration: none;
     }
-    .icon-btn:hover { background: var(--brand-soft); color: var(--brand); border-color: var(--brand); }
-    .avatar {
-        width: 36px; height: 36px; border-radius: 50%;
-        background: var(--brand); color: #fff; font-weight: 700; font-size: 0.9rem;
+    .icon-btn:hover { background: var(--bg-subtle); color: var(--brand); border-color: var(--brand); }
+    .share-pill {
+        height: 44px; padding: 0 18px; border-radius: 999px;
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        background: var(--bg-card); color: var(--text-secondary);
+        border: 1px solid #DFE6ED; cursor: pointer;
+        font-size: 0.85rem; font-weight: 600; transition: all var(--trans);
+    }
+    .share-pill:hover { background: var(--bg-subtle); color: var(--brand); border-color: var(--brand); }
+    .profile-avatar {
+        position: relative; width: 44px; height: 44px; border-radius: 50%;
+        background: var(--brand); color: #fff;
         display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer;
+    }
+    .profile-avatar .m { color: #fff; font-size: 1.25rem; }
+    .profile-avatar .online-dot {
+        position: absolute; right: 1px; bottom: 1px; width: 11px; height: 11px;
+        border-radius: 50%; background: var(--green); border: 2px solid #fff;
     }
     .page-heading { margin: 0 0 var(--sp-2); }
     .page-title { font-size: 1.7rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.02em; line-height: 1.15; }
@@ -164,14 +182,19 @@ st.markdown("""
     /* =========================================================
        SIDEBAR  (enterprise nav)
        ========================================================= */
-    [data-testid="stSidebar"] { background: var(--bg-card); border-right: 1px solid var(--border-soft); }
+    [data-testid="stSidebar"] { background: var(--bg-card); border-right: 1px solid var(--border-soft); position: relative; }
+    [data-testid="stSidebar"]::before {
+        content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+        width: 6px; background: linear-gradient(190deg, #0E9F9A 0%, #34C9A0 100%); z-index: 5;
+    }
     [data-testid="stSidebar"] .block-container { padding-top: 1.25rem; }
-    .sb-brand { display: flex; flex-direction: column; gap: 0.25rem; padding: 0 0.35rem 0.9rem; }
-    .sb-brand-row { display: flex; align-items: center; gap: 0.7rem; }
-    .sb-brand-name { font-size: 1.05rem; font-weight: 800; color: var(--text-dark); line-height: 1.1; }
-    .sb-brand-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
-    .sb-divider { border: none; border-top: 1px solid var(--border-soft); margin: 0.75rem 0; }
-    .sb-label { font-size: 0.7rem; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 0.35rem; margin-bottom: 0.4rem; }
+    .sb-brand { display: flex; flex-direction: column; gap: 0.2rem; padding: 0 0.35rem 0.9rem; }
+    .sb-brand-name { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); line-height: 1.15; }
+    .sb-brand-sub { font-size: 0.82rem; color: var(--text-secondary); font-weight: 500; }
+    .sb-dev-badge { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.55rem; background: var(--bg-subtle); border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.72rem; color: var(--text-muted); width: fit-content; }
+    .sb-dev-badge strong { font-weight: 700; color: var(--text-dark); }
+    .sb-divider { border: none; border-top: 1px solid #D9E0E8; margin: 1rem 0; width: 275px; }
+    .sb-label { font-size: 0.7rem; font-weight: 700; color: #61718A; text-transform: uppercase; letter-spacing: 0.08em; padding: 0 0.35rem; margin-bottom: 0.4rem; }
     .sb-nav-item {
         display: flex; align-items: center; gap: 0.65rem;
         padding: 0.52rem 0.7rem; border-radius: var(--radius-sm);
@@ -183,38 +206,49 @@ st.markdown("""
     .sb-nav-item:hover { background: var(--bg-subtle); }
     .sb-nav-item.active { background: var(--brand-soft); color: var(--brand-ink); }
     .sb-nav-item.active .m { color: var(--brand); }
-    /* Radio used as enterprise nav */
+    /* Radio used as enterprise nav (with Material icons) */
     [data-testid="stRadio"] > div { gap: 2px; }
     [data-testid="stRadio"] [role="radiogroup"] { gap: 2px; }
     [data-testid="stRadio"] label {
-        display: flex; align-items: center; gap: 0.6rem;
-        padding: 0.5rem 0.7rem !important; border-radius: var(--radius-sm) !important;
-        font-size: 0.88rem !important; font-weight: 600 !important; color: var(--text-body) !important;
-        transition: all var(--trans) !important; cursor: pointer; margin: 0 !important;
+        display: flex; align-items: center; gap: 0.6rem; height: 48px;
+        width: 275px; max-width: 100%;
+        padding: 0 14px !important; border-radius: 11px !important;
+        font-size: 0.9rem !important; font-weight: 500 !important; color: #52627A !important;
+        transition: background var(--trans) !important; cursor: pointer; margin: 0 !important;
     }
-    [data-testid="stRadio"] label:hover { background: var(--bg-subtle) !important; }
+    [data-testid="stRadio"] label:hover { background: #F5F9FA !important; }
     [data-testid="stRadio"] label:has(input:checked) {
         background: var(--brand-soft) !important; color: var(--brand-ink) !important;
-        border: 1px solid rgba(14,165,164,0.2) !important;
+        font-weight: 600 !important;
     }
+    [data-testid="stRadio"] label > div:first-child { display: none; }
+    [data-testid="stRadio"] label::before {
+        font-family: 'Material Symbols Outlined', sans-serif;
+        font-size: 1.3rem; line-height: 1; color: var(--text-secondary);
+        width: 22px; text-align: center;
+        font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    [data-testid="stRadio"] label:nth-child(1)::before { content: 'home'; }
+    [data-testid="stRadio"] label:nth-child(2)::before { content: 'history'; }
+    [data-testid="stRadio"] label:nth-child(3)::before { content: 'description'; }
+    [data-testid="stRadio"] label:nth-child(4)::before { content: 'settings'; }
+    [data-testid="stRadio"] label:nth-child(5)::before { content: 'help'; }
+    [data-testid="stRadio"] label:has(input:checked)::before { color: var(--brand); font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
     [data-testid="stRadio"] [data-testid="stMarkdownContainer"] { flex: 1; }
-    [data-testid="stRadio"] label > div:first-child { flex: 0 0 18px; }
     .sb-metric {
-        background: var(--bg-subtle); border: 1px solid var(--border-soft);
-        border-radius: var(--radius); padding: 0.9rem 1rem; margin-bottom: 0.75rem;
+        background: transparent; border: none; border-radius: var(--radius);
+        padding: 0 0.35rem; margin-bottom: 0.75rem;
     }
-    .sb-metric-val { font-size: 1.7rem; font-weight: 800; color: var(--brand); line-height: 1; }
-    .sb-metric-lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem; }
-    .sb-progress { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 0.6rem; }
+    .sb-metric-val { font-size: 30px; font-weight: 700; color: var(--brand); line-height: 1; }
+    .sb-metric-lbl { font-size: 11px; color: #65748A; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; font-weight: 600; }
+    .sb-progress { height: 5px; background: #E7EDF3; border-radius: 999px; overflow: hidden; margin-top: 0.6rem; width: 275px; max-width: 100%; }
     .sb-progress > div { height: 100%; background: var(--brand); border-radius: 999px; transition: width 0.4s ease; }
-    .sb-status-item { display: flex; align-items: flex-start; gap: 0.55rem; padding: 0.5rem 0; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 0.35rem; flex-shrink: 0; }
-    .status-dot.ok { background: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
-    .status-dot.warn { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-soft); }
-    .status-dot.err { background: var(--red); box-shadow: 0 0 0 3px var(--red-soft); }
-    .status-dot.gray { background: var(--gray); box-shadow: 0 0 0 3px var(--bg-subtle); }
-    .sb-status-body strong { display: block; font-size: 0.78rem; color: var(--text-dark); font-weight: 600; }
-    .sb-status-body span { font-size: 0.76rem; color: var(--text-muted); }
+    .sb-status-card { display: flex; align-items: flex-start; gap: 0.6rem; background: var(--bg-card); border: 1px solid #E0E7EF; border-radius: var(--radius); padding: 0.8rem 0.9rem; margin-bottom: 0.6rem; box-shadow: var(--shadow-sm); }
+    .sb-status-ic { width: 22px; height: 22px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+    .sb-status-ic .m { font-size: 0.95rem; color: var(--green); }
+    .sb-status-card strong { display: block; font-size: 0.8rem; color: var(--text-dark); font-weight: 700; }
+    .sb-status-card span { font-size: 0.76rem; color: var(--green-ink); line-height: 1.4; }
+    .sb-status-card span.miss { color: var(--red); }
 
     /* =========================================================
        CARDS / BADGES / CHIPS
@@ -224,10 +258,10 @@ st.markdown("""
     .card-title { font-size: 0.98rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
     .card-sub { font-size: 0.82rem; color: var(--text-muted); }
     .format-badge { display: inline-block; padding: 0.28rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; border: 1px solid; }
-    .badge-pdf { color: #C2185B; border-color: #F8BBD0; background: #FFF0F3; }
-    .badge-docx { color: #1565C0; border-color: #90CAF9; background: #F0F7FF; }
-    .badge-doc { color: #E65100; border-color: #FFCC80; background: #FFF3E0; }
-    .badge-txt { color: #2E7D32; border-color: #A5D6A7; background: #F1F8E9; }
+    .badge-pdf { color: #E91E63; border-color: #F8BBD9; background: #FFF0F5; }
+    .badge-docx { color: #3182CE; border-color: #B1D4F2; background: #EEF6FF; }
+    .badge-doc { color: #F59E0B; border-color: #FDE2B3; background: #FFF7E8; }
+    .badge-txt { color: #65B96B; border-color: #C6E8C8; background: #EFF9F0; }
     .pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
     .pill.ok { background: var(--green-soft); color: var(--green); }
     .pill.warn { background: var(--amber-soft); color: var(--amber); }
@@ -269,6 +303,27 @@ st.markdown("""
     .dz-title { font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.25rem; }
     .dz-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; }
     .dz-meta { font-size: 0.78rem; color: var(--text-faint); margin-top: 0.9rem; }
+
+    /* =========================================================
+       DECORATIVE FOLDER ILLUSTRATION (upload dropzone right side)
+       ========================================================= */
+    .folder-illus { position: relative; width: 100%; max-width: 240px; height: 150px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+    .folder-sheet { position: absolute; left: 50%; top: 22px; width: 88px; height: 112px; background: #fff; border: 1px solid #E0E7EF; border-radius: 8px; box-shadow: 0 4px 12px rgba(15,23,42,0.08); transform: translateX(-50%); }
+    .folder-sheet.s1 { left: 39%; transform: rotate(-8deg); }
+    .folder-sheet.s2 { left: 61%; transform: rotate(8deg); }
+    .folder-main { position: relative; width: 150px; height: 102px; background: linear-gradient(180deg, #2FB9B4, #0E9F9A); border-radius: 12px 12px 14px 14px; box-shadow: 0 8px 20px rgba(14,159,154,0.28); display: flex; align-items: center; justify-content: center; z-index: 2; }
+    .folder-tab { position: absolute; top: -14px; left: 14px; width: 46px; height: 18px; background: #0E9F9A; border-radius: 8px 8px 0 0; }
+    .folder-cv { color: #fff; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.02em; font-family: 'Inter', sans-serif; z-index: 3; }
+    .folder-badge { position: absolute; z-index: 5; font-size: 0.62rem; font-weight: 700; border-radius: 999px; padding: 0.22rem 0.55rem; border: 1px solid; box-shadow: 0 2px 6px rgba(15,23,42,0.1); background: #fff; }
+    .folder-badge.b-pdf { top: 4px; right: 8px; color: #E91E63; border-color: #F8BBD9; }
+    .folder-badge.b-docx { top: 40px; left: 0; color: #3182CE; border-color: #B1D4F2; }
+    .folder-badge.b-doc { bottom: 6px; right: 2px; color: #F59E0B; border-color: #FDE2B3; }
+    .folder-badge.b-txt { bottom: -2px; left: 6px; color: #65B96B; border-color: #C6E8C8; }
+
+    @media (max-width: 899px) {
+        .folder-illus { display: none; }
+    }
+
 
     /* =========================================================
        FILE QUEUE / PROCESS CARD
@@ -423,11 +478,6 @@ if "uploader_key" not in st.session_state:
 if "view" not in st.session_state:
     st.session_state.view = "Dashboard"
 
-def status_dot(status):
-    return {
-        "ok": "ok", "warn": "warn", "err": "err", "gray": "gray",
-    }.get(status, "gray")
-
 # --- SIDEBAR (enterprise navigation) ---
 NAV_ITEMS = [
     ("dashboard",        "Dashboard"),
@@ -440,13 +490,10 @@ NAV_ITEMS = [
 with st.sidebar:
     # Brand
     st.markdown(f"""<div class='sb-brand'>
-      <div class='sb-brand-row'>
-        <img src="data:image/png;base64,{_logo_base64()}" width="44" style="border-radius:8px;"/>
-        <div>
-          <div class='sb-brand-name'>MSR CV Studio</div>
-          <div class='sb-brand-sub'>Medical Staffing Resources, Inc.</div>
-        </div>
-      </div>
+      <img src="data:image/png;base64,{_logo_base64()}" width="110" style="border-radius:10px;margin-bottom:0.85rem;"/>
+      <div class='sb-brand-name'>MSR CV Studio</div>
+      <div class='sb-brand-sub'>Enterprise CV Parser &amp; Standardizer</div>
+      <div class='sb-dev-badge'><span class='m' style='font-size:0.95rem;color:var(--brand);vertical-align:text-bottom;'>code</span> <span>Developed by <strong>Ritche Gerona</strong></span></div>
     </div>""", unsafe_allow_html=True)
     st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
 
@@ -487,25 +534,19 @@ with st.sidebar:
     st.markdown("<div class='sb-label'>System Status</div>", unsafe_allow_html=True)
     summary_exists = os.path.exists(SUMMARY_DIR)
     gcc_exists = os.path.exists(GCC_TEMPLATE_PATH)
-    sd = status_dot("ok" if summary_exists else "warn")
-    st.markdown(f"""<div class='sb-status-item'>
-      <div class='status-dot {sd}'></div>
-      <div class='sb-status-body'>
-        <strong>Local Folder Status</strong>
-        <span>{'Candidate CV Summary/ is active' if summary_exists else 'Candidate CV Summary/ missing'}</span>
-      </div>
+    st.markdown(f"""<div class='sb-status-card'>
+      <div class='sb-status-ic'><span class='m'>check</span></div>
+      <div><strong>Local Folder Status</strong>
+      <span>{'Candidate CV Summary/ is active' if summary_exists else 'Candidate CV Summary/ missing'}</span></div>
     </div>""", unsafe_allow_html=True)
-    sd2 = status_dot("ok" if gcc_exists else "err")
-    st.markdown(f"""<div class='sb-status-item'>
-      <div class='status-dot {sd2}'></div>
-      <div class='sb-status-body'>
-        <strong>CV Format</strong>
-        <span>{'GCC_CV_FORMAT.doc loaded' if gcc_exists else 'GCC_CV_FORMAT.doc missing'}</span>
-      </div>
+    st.markdown(f"""<div class='sb-status-card'>
+      <div class='sb-status-ic'><span class='m'>check</span></div>
+      <div><strong>CV Format</strong>
+      <span>{'GCC_CV_FORMAT.doc is loaded as the template' if gcc_exists else 'GCC_CV_FORMAT.doc missing'}</span></div>
     </div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='sb-divider'></div>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size:0.78rem;color:var(--text-muted);padding:0 0.35rem;'><span class='m m-soft' style='font-size:0.9em;vertical-align:text-bottom;'>code</span> Developed by <strong>Ritche Gerona</strong></div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.74rem;color:var(--text-muted);padding:0 0.35rem;line-height:1.5;'>&copy; 2025 MSR CV Studio<br/>All rights reserved.</div>", unsafe_allow_html=True)
 
 # --- TOP TOOLBAR ---
 st.markdown(f"""<div class='app-topbar'>
@@ -514,10 +555,10 @@ st.markdown(f"""<div class='app-topbar'>
     <div class='app-topbar-sub'>Enterprise CV Parser &amp; Standardizer</div>
   </div>
   <div class='topbar-actions'>
-    <span class='icon-btn' title='Theme' style='pointer-events:none;'><span class='m'>dark_mode</span></span>
-    <span class='icon-btn' title='Share' style='pointer-events:none;'><span class='m'>share</span></span>
-    <span class='icon-btn' title='Notifications' style='pointer-events:none;'><span class='m'>notifications</span></span>
-    <span class='avatar' title='MSR'>MS</span>
+    <span class='icon-btn' title='Theme' aria-label='Theme' style='pointer-events:none;'><span class='m'>sunny</span></span>
+    <span class='share-pill' title='Share' role='button' aria-label='Share'><span class='m'>share</span> Share</span>
+    <span class='icon-btn' title='Notifications' role='button' aria-label='Notifications' style='pointer-events:none;'><span class='m'>notifications</span></span>
+    <span class='profile-avatar' title='MSR' role='button' aria-label='Profile'><span class='m'>person</span><span class='online-dot'></span></span>
   </div>
 </div>""", unsafe_allow_html=True)
 
@@ -1472,15 +1513,28 @@ def build_export_zip(items: tuple) -> bytes:
 _VIEW = st.session_state.view
 
 if _VIEW == "Dashboard":
-    # --- UPLOAD DROPZONE (prominent, at top) ---
-    uploaded_files = st.file_uploader(
-        "Upload raw CVs",
-        type=["pdf", "docx", "doc", "txt"],
-        accept_multiple_files=True,
-        help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
-        key=f"cv_uploader_{st.session_state.uploader_key}",
-        label_visibility="collapsed",
-    )
+    # --- UPLOAD PANEL: dropzone + decorative folder illustration ---
+    up_left, up_right = st.columns([5, 2], gap="medium")
+    with up_left:
+        uploaded_files = st.file_uploader(
+            "Upload raw CVs",
+            type=["pdf", "docx", "doc", "txt"],
+            accept_multiple_files=True,
+            help="Supported files: PDF (.pdf), Microsoft Word (.docx, .doc), and plain text (.txt)",
+            key=f"cv_uploader_{st.session_state.uploader_key}",
+            label_visibility="collapsed",
+        )
+    with up_right:
+        st.markdown(
+            "<div class='folder-illus'>"
+            "<div class='folder-sheet s1'></div>"
+            "<div class='folder-sheet s2'></div>"
+            "<div class='folder-main'><div class='folder-tab'></div><div class='folder-cv'>CV</div></div>"
+            "<span class='folder-badge b-pdf'>PDF</span>"
+            "<span class='folder-badge b-docx'>DOCX</span>"
+            "<span class='folder-badge b-doc'>DOC</span>"
+            "<span class='folder-badge b-txt'>TXT</span>"
+            "</div>", unsafe_allow_html=True)
 
     # --- DASHBOARD HERO ---
     st.markdown("<div class='page-heading fade-in' style='margin-top:1.5rem;'>"
@@ -1489,7 +1543,7 @@ if _VIEW == "Dashboard":
                 "<span class='m' style='font-size:1.6rem;color:var(--brand);'>description</span>"
                 "</div>"
                 "<div>"
-                "<div class='page-title'>CV Processing &amp; <span class='accent'>Standardization Studio</span></div>"
+                "<div class='page-title'>CV Processing &amp; Standardization <span class='accent'>Studio</span></div>"
                 "</div>"
                 "</div>"
                 "<div class='page-sub'>Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>"
