@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
 """MSR CV Studio - CV Processing & Standardization Dashboard"""
 
+import html
+import io
+
 import streamlit as st
 from PIL import Image
+
+try:
+    from docx import Document
+    from pypdf import PdfReader
+except ImportError:
+    Document = None
+    PdfReader = None
 
 st.set_page_config(
     page_title="MSR CV Studio",
@@ -732,6 +742,65 @@ st.markdown("""
         cursor: pointer !important;
     }
 
+    /* Post-upload summary + processing results */
+    .format-file { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+    .upload-summary {
+        margin-top: 1rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+        max-width: 521px;
+    }
+    .upload-summary-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .upload-summary-title i { color: #0d9488; }
+    .upload-file-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.5rem 0.55rem;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1px solid #eef2f7;
+        margin-bottom: 0.45rem;
+    }
+    .upload-file-row:last-child { margin-bottom: 0; }
+    .upload-file-row .file-name {
+        flex: 1;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #0f172a;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .upload-file-row .file-size { font-size: 0.7rem; color: #94a3b8; white-space: nowrap; }
+    .upload-status-pill {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+    }
+    .upload-status-pill.status-ready { background: #ecfdf5; color: #047857; }
+    .upload-status-pill.status-ok { background: #ecfdf5; color: #047857; }
+    .upload-status-pill.status-skip { background: #fffbeb; color: #b45309; }
+    .upload-status-pill.status-error { background: #fef2f2; color: #b91c1c; }
+    .process-button-row { margin-top: 0.4rem; }
+    .results-note { font-size: 0.72rem; color: #94a3b8; margin-top: 0.5rem; }
+
     /* === Dark Mode === */
     body.cv-dark { background: #0b1220; color: #dbe4f0; }
     body.cv-dark [data-testid="stAppViewContainer"] { background: #0b1220; }
@@ -775,6 +844,16 @@ st.markdown("""
         border-color: #155e5a;
     }
     body.cv-dark .feature-tag { background: #0e2330; border-color: #155e5a; color: #5eead4; }
+    body.cv-dark .upload-summary {
+        background: #0f1b2d;
+        border-color: #1e293b;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+    body.cv-dark .upload-summary-title { color: #e2e8f0; }
+    body.cv-dark .upload-summary-title i { color: #2dd4bf; }
+    body.cv-dark .upload-file-row { background: #0e2330; border-color: #1e293b; }
+    body.cv-dark .upload-file-row .file-name { color: #e2e8f0; }
+    body.cv-dark .format-file { background: #1e293b; color: #94a3b8; border-color: #334155; }
 
     /* Toast + profile menu */
     .cv-toast {
@@ -970,8 +1049,119 @@ st.html("""
 </script>
 """, unsafe_allow_javascript=True)
 
+# ─── SECTION HEADING ──────────────────────────────────────────────────────────
+st.markdown("""
+<div class="section-heading">
+    <div class="section-icon"><i class="fa-solid fa-file-lines"></i></div>
+    <div>
+        <div class="section-title">CV Processing & Standardization <span>Studio</span></div>
+        <div class="section-desc">Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # ─── UPLOAD CARD ───────────────────────────────────────────────────────────────
 # Card sits on the left; the 3D teal folder is anchored right beside it.
+
+def _human_size(num):
+    """Format a byte count as a short human-readable string."""
+    for unit in ("B", "KB", "MB", "GB"):
+        if num < 1024 or unit == "GB":
+            return f"{int(num)} {unit}" if unit == "B" else f"{num:.1f} {unit}"
+        num /= 1024
+    return f"{num:.1f} GB"
+
+
+def parse_cv(uploaded_file):
+    """Extract plain text from an uploaded CV.
+
+    Returns a (status, meta) tuple; meta carries the extracted text (or None)
+    and a human-readable message. Status is one of ok / skip / error.
+    """
+    name = uploaded_file.name
+    ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    if ext == "docx":
+        try:
+            doc = Document(io.BytesIO(uploaded_file.getvalue()))
+            text = "\n".join(p.text for p in doc.paragraphs)
+        except Exception as exc:
+            return "error", {"text": None, "message": f"Could not read DOCX: {exc}"}
+        return "ok", {"text": text, "message": f"{len(text):,} characters extracted"}
+    if ext == "pdf":
+        try:
+            reader = PdfReader(io.BytesIO(uploaded_file.getvalue()))
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        except Exception as exc:
+            return "error", {"text": None, "message": f"Could not read PDF: {exc}"}
+        return "ok", {"text": text, "message": f"{len(text):,} characters extracted"}
+    if ext == "txt":
+        text = uploaded_file.getvalue().decode("utf-8", errors="replace")
+        return "ok", {"text": text, "message": f"{len(text):,} characters extracted"}
+    return "skip", {"text": None, "message": f".{ext} uploads need LibreOffice installed (only DOCX, PDF, TXT parse on-device)"}
+
+
+def _format_badge(ext):
+    cls = f"format-{ext}" if ext in ("pdf", "docx", "doc", "txt") else "format-file"
+    return f'<span class="format-badge {cls}">{ext.upper()}</span>'
+
+
+def _draw_upload_summary(files):
+    """Styled list of loaded files shown once the user has picked CVs."""
+    rows = []
+    for uf in files:
+        ext = uf.name.rsplit(".", 1)[-1].lower() if "." in uf.name else "file"
+        rows.append(
+            '<div class="upload-file-row">'
+            + _format_badge(ext)
+            + f'<span class="file-name">{html.escape(uf.name)}</span>'
+            + f'<span class="file-size">{_human_size(uf.size)}</span>'
+            + '<span class="upload-status-pill status-ready">Ready</span>'
+            + "</div>"
+        )
+    st.markdown(
+        '<div class="upload-summary">'
+        '<div class="upload-summary-title"><i class="fa-solid fa-circle-check"></i>'
+        f'{len(files)} CV(s) loaded &nbsp;&mdash;&nbsp; review, then process</div>'
+        + "".join(rows)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def _draw_results(results):
+    """Per-file parse status cards plus a raw-text preview per parsed file."""
+    cards = []
+    icons = {"ok": "fa-circle-check", "skip": "fa-triangle-exclamation", "error": "fa-circle-xmark"}
+    labels = {"ok": "Parsed", "skip": "Skipped", "error": "Error"}
+    pills = {"ok": "status-ok", "skip": "status-skip", "error": "status-error"}
+    for uf, (status, meta) in results:
+        ext = uf.name.rsplit(".", 1)[-1].lower() if "." in uf.name else "file"
+        cards.append(
+            '<div class="upload-file-row">'
+            + _format_badge(ext)
+            + f'<span class="file-name">{html.escape(uf.name)}</span>'
+            + f'<span class="file-size">{html.escape(meta["message"])}</span>'
+            + f'<span class="upload-status-pill {pills[status]}">'
+            + f'<i class="fa-solid {icons[status]}"></i>{labels[status]}</span>'
+            + "</div>"
+        )
+    st.markdown(
+        '<div class="upload-summary">'
+        '<div class="upload-summary-title"><i class="fa-solid fa-wand-magic-sparkles"></i>'
+        "Processing complete &mdash; review below</div>"
+        + "".join(cards)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+    for uf, (status, meta) in results:
+        if status == "ok" and meta["text"]:
+            preview = meta["text"].strip()
+            if len(preview) > 5000:
+                preview = preview[:5000] + "\n… (truncated)"
+            with st.expander(f"Raw text preview — {uf.name}"):
+                st.text(preview or "(no extractable text found)")
+
+
 upload_zone = st.container()
 
 with upload_zone:
@@ -1006,10 +1196,8 @@ with upload_zone:
         accept_multiple_files=True,
         help="Drag & drop files here or click to browse",
     )
-    if uploaded_files:
-        st.success(f"{len(uploaded_files)} file(s) uploaded.")
-        for uf in uploaded_files:
-            st.write(uf.name)
+    if not uploaded_files:
+        st.session_state.pop("cv_results", None)
 
     # Decorative 3D teal folder anchored beside the card
     st.markdown("""
@@ -1054,22 +1242,17 @@ with upload_zone:
 </div>
 """, unsafe_allow_html=True)
 
-# ─── SECTION HEADING ──────────────────────────────────────────────────────────
-st.markdown("""
-<div class="section-heading">
-    <div class="section-icon"><i class="fa-solid fa-file-lines"></i></div>
-    <div>
-        <div class="section-title">CV Processing & Standardization <span>Studio</span></div>
-        <div class="section-desc">Upload raw candidate CVs and transform them into polished, corporate-aligned GCC-standard resumes.</div>
-    </div>
-</div>
-<div class="format-badges-row" style="margin-bottom:1.5rem;margin-top:0.75rem;">
-    <span class="format-badge format-pdf">PDF</span>
-    <span class="format-badge format-docx">DOCX</span>
-    <span class="format-badge format-doc">DOC</span>
-    <span class="format-badge format-txt">TXT</span>
-</div>
-""", unsafe_allow_html=True)
+# Post-upload flow lives OUTSIDE the upload zone: the invisible picker overlay
+# covers the whole zone block, so these elements must not sit underneath it.
+if not uploaded_files:
+    st.session_state.pop("cv_results", None)
+
+if uploaded_files:
+    _draw_upload_summary(uploaded_files)
+    if st.button("Process CVs", key="process_cvs", type="primary"):
+        st.session_state["cv_results"] = [(uf, parse_cv(uf)) for uf in uploaded_files]
+    if "cv_results" in st.session_state:
+        _draw_results(st.session_state["cv_results"])
 
 # ─── FEATURE CARDS (3 main) ───────────────────────────────────────────────────
 col1, col2, col3 = st.columns(3)
