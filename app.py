@@ -314,11 +314,6 @@ st.markdown("""
     }
 
     /* Format badges */
-    .format-badges-col {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-    }
     .format-badge {
         padding: 0.2rem 0.65rem;
         border-radius: 20px;
@@ -331,17 +326,6 @@ st.markdown("""
     .format-docx { background: #dbeafe; color: #2563eb; }
     .format-doc { background: #ffedd5; color: #ea580c; }
     .format-txt { background: #d1fae5; color: #059669; }
-
-    .format-badges-row {
-        display: flex;
-        justify-content: center;
-        gap: 0.4rem;
-        margin-top: 0.75rem;
-    }
-    .format-badges-row .format-badge {
-        padding: 0.2rem 0.6rem;
-        font-size: 0.6rem;
-    }
 
     /* CTA button */
     .cta-button {
@@ -1177,12 +1161,6 @@ with upload_zone:
         <div class="upload-right">
             <div class="upload-icon-circle">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-            </div>
-            <div class="format-badges-col">
-                <span class="format-badge format-pdf">PDF</span>
-                <span class="format-badge format-docx">DOCX</span>
-                <span class="format-badge format-doc">DOC</span>
-                <span class="format-badge format-txt">TXT</span>
             </div>
         </div>
     </div>
