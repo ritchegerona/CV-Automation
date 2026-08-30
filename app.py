@@ -27,6 +27,27 @@ st.markdown("""
     [data-testid="stHeader"] { display: none; }
     [data-testid="stToolbar"] { display: none; }
 
+    /* When the sidebar is collapsed, re-show only the expand button
+       (right-pointing arrow) inside the otherwise hidden app header/toolbar. */
+    [data-testid="stHeader"]:has([data-testid="stExpandSidebarButton"]) {
+        display: flex !important;
+        pointer-events: none;
+        background: transparent !important;
+    }
+    [data-testid="stToolbar"]:has([data-testid="stExpandSidebarButton"]) {
+        display: flex !important;
+        pointer-events: none;
+    }
+    [data-testid="stToolbarActions"],
+    [data-testid="stAppDeployButton"],
+    [data-testid="stMainMenu"] {
+        display: none !important;
+    }
+    [data-testid="stExpandSidebarButton"] {
+        pointer-events: auto !important;
+        z-index: 130 !important;
+    }
+
     /* Clean body background */
     .block-container {
         padding: 1.5rem 2rem;
@@ -38,6 +59,55 @@ st.markdown("""
     }
 
     /* === Sidebar Styling === */
+    /* Collapsible sidebar; the hide/reveal controls stay always visible */
+    [data-testid="stSidebarCollapseButton"] {
+        visibility: visible !important;
+        z-index: 120 !important;
+        opacity: 1 !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
+    }
+    [data-testid="stSidebarCollapseButton"]:hover button {
+        border-color: #0d9488 !important;
+        box-shadow: 0 2px 8px rgba(13, 148, 136, 0.2) !important;
+    }
+    [data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"] {
+        color: #0d9488 !important;
+    }
+    [data-testid="stExpandSidebarButton"] {
+        pointer-events: auto !important;
+        z-index: 130 !important;
+    }
+    [data-testid="stExpandSidebarButton"] button,
+    [data-testid="stExpandSidebarButton"] {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18) !important;
+    }
+    [data-testid="stExpandSidebarButton"]:hover button,
+    [data-testid="stExpandSidebarButton"]:hover {
+        border-color: #0d9488 !important;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25) !important;
+    }
+    [data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"] {
+        color: #0d9488 !important;
+    }
+    body.cv-dark [data-testid="stSidebarCollapseButton"] button,
+    body.cv-dark [data-testid="stExpandSidebarButton"] button,
+    body.cv-dark [data-testid="stExpandSidebarButton"] {
+        background: #0f1b2d !important;
+        border-color: #334155 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+    }
+    body.cv-dark [data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"],
+    body.cv-dark [data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"] {
+        color: #5eead4 !important;
+    }
     .css-1d391kg, .css-1v5fmjr, [data-testid="stSidebar"] > div:first-child {
         background: #ffffff !important;
         border-right: 1px solid #e2e8f0 !important;
@@ -661,6 +731,124 @@ st.markdown("""
     [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) [data-testid="stFileUploader"] * {
         cursor: pointer !important;
     }
+
+    /* === Dark Mode === */
+    body.cv-dark { background: #0b1220; color: #dbe4f0; }
+    body.cv-dark [data-testid="stAppViewContainer"] { background: #0b1220; }
+    body.cv-dark [data-testid="stMainViewContainer"] > [data-testid="stAppViewContainer"] { background: #0b1220; }
+    body.cv-dark .block-container { background: #0b1220; }
+    body.cv-dark [data-testid="stSidebar"] > div:first-child,
+    body.cv-dark [data-testid="stSidebar"] [data-testid="stSidebarContent"],
+    body.cv-dark .css-1d391kg, body.cv-dark .css-1v5fmjr {
+        background: #0d1729 !important;
+        border-right-color: #1e293b !important;
+    }
+    body.cv-dark h1, body.cv-dark h2, body.cv-dark h3,
+    body.cv-dark .sidebar-title, body.cv-dark .section-title,
+    body.cv-dark .feature-title, body.cv-dark .bottom-feature-title,
+    body.cv-dark .status-card-title { color: #e2e8f0; }
+    body.cv-dark .sidebar-subtitle, body.cv-dark .sidebar-dev,
+    body.cv-dark .section-desc, body.cv-dark .feature-desc,
+    body.cv-dark .bottom-feature-desc, body.cv-dark .stats-title,
+    body.cv-dark .stat-label, body.cv-dark .upload-or { color: #94a3b8; }
+    body.cv-dark .sidebar-dev { background: #0f1b2d; }
+    body.cv-dark .stats-section { border-top-color: #1e293b; }
+    body.cv-dark .nav-item { color: #94a3b8; }
+    body.cv-dark .nav-item:hover, body.cv-dark .nav-item.active { background: #0e2b33; color: #5eead4; }
+    body.cv-dark .top-bar-btn { background: #0f1b2d; color: #94a3b8; }
+
+    body.cv-dark .upload-card {
+        background: linear-gradient(135deg, #073228 0%, #08263a 60%, #0a1f33 100%);
+        border-color: #134e4a;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    }
+    body.cv-dark .upload-title { color: #cbd5e1; }
+    body.cv-dark .upload-icon-circle { background: #0f2740; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
+    body.cv-dark .feature-card, body.cv-dark .bottom-feature,
+    body.cv-dark .status-card, body.cv-dark .app-footer {
+        background: #0f1b2d;
+        border-color: #1e293b;
+    }
+    body.cv-dark .feature-icon, body.cv-dark .bottom-feature-icon,
+    body.cv-dark .section-icon {
+        background: linear-gradient(135deg, #0e2b33, #123042);
+        border-color: #155e5a;
+    }
+    body.cv-dark .feature-tag { background: #0e2330; border-color: #155e5a; color: #5eead4; }
+
+    /* Toast + profile menu */
+    .cv-toast {
+        position: fixed;
+        left: 50%;
+        bottom: 1.75rem;
+        transform: translateX(-50%) translateY(20px);
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        border: 1px solid #134e4a;
+        z-index: 99999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        max-width: 80vw;
+    }
+    .cv-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .cv-toast::before {
+        content: "\f05a";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        color: #2dd4bf;
+        margin-right: 0.4rem;
+    }
+    .cv-profile-menu {
+        position: fixed;
+        right: 1rem;
+        top: 3.4rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 10px 34px rgba(15, 23, 42, 0.16);
+        width: 190px;
+        z-index: 9999;
+        opacity: 0;
+        transform: translateY(-6px);
+        transition: all 0.18s ease;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    .cv-profile-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .cv-profile-menu .pm-header {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #eef2f7;
+        background: linear-gradient(135deg, #f0fdfa, #ecfeff);
+    }
+    .cv-profile-menu .pm-header b { color: #0f172a; font-size: 0.8rem; display: block; }
+    .cv-profile-menu .pm-header span { color: #64748b; font-size: 0.68rem; }
+    .cv-profile-menu .pm-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.78rem;
+        color: #334155;
+        cursor: pointer;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+    .cv-profile-menu .pm-item:hover { background: #f0fdfa; color: #0d9488; }
+    .cv-profile-menu .pm-item i { width: 16px; text-align: center; }
+    body.cv-dark .cv-profile-menu { background: #0f1b2d; border-color: #1e293b; }
+    body.cv-dark .cv-profile-menu .pm-header {
+        background: linear-gradient(135deg, #0e2b33, #123042);
+        border-color: #1e293b;
+    }
+    body.cv-dark .cv-profile-menu .pm-header b { color: #e2e8f0; }
+    body.cv-dark .cv-profile-menu .pm-header span { color: #94a3b8; }
+    body.cv-dark .cv-profile-menu .pm-item { color: #cbd5e1; }
+    body.cv-dark .cv-profile-menu .pm-item:hover { background: #0e2b33; color: #5eead4; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -673,6 +861,114 @@ st.markdown("""
     <div class="avatar">RG</div>
 </div>
 """, unsafe_allow_html=True)
+
+# ─── UI INTERACTIVITY ─────────────────────────────────────────────────────────
+# Wires up the top-bar buttons (darkmode, share, notifications, profile) and the
+# sidebar nav items. Scripts run in the app document via st.html, so they reach
+# the whole page DOM including the sidebar.
+st.html("""
+<div class="cv-toast" id="cvToast"></div>
+<div class="cv-profile-menu" id="cvProfileMenu">
+    <div class="pm-header"><b>Ritchie Gerona</b><span>Administrator</span></div>
+    <div class="pm-item" data-action="profile"><i class="fa-regular fa-user"></i>My Profile</div>
+    <div class="pm-item" data-action="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</div>
+</div>
+<script>
+(function () {
+    var tries = 0;
+    function toast(msg) {
+        var t = document.getElementById('cvToast');
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._h);
+        t._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
+    }
+    function mount() {
+        if (tries++ > 40) return;
+        var topBar = document.querySelector('.top-bar');
+        var nav = document.querySelectorAll('.nav-item').length;
+        if (!topBar || nav === 0) { setTimeout(mount, 200); return; }
+
+        var moon = topBar.querySelector('[title="Toggle theme"]');
+        if (moon && !moon.dataset.wired) {
+            moon.dataset.wired = 1;
+            moon.addEventListener('click', function () {
+                var dark = document.body.classList.toggle('cv-dark');
+                try { localStorage.setItem('cv-theme', dark ? 'dark' : 'light'); } catch (e) {}
+                toast(dark ? 'Dark mode enabled' : 'Dark mode disabled');
+            });
+        }
+        var share = topBar.querySelector('.share-btn');
+        if (share && !share.dataset.wired) {
+            share.dataset.wired = 1;
+            share.addEventListener('click', function () {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(location.href).then(function () {
+                        toast('Link copied to clipboard');
+                    }).catch(function () { toast(location.href); });
+                } else { toast(location.href); }
+            });
+        }
+        var bell = topBar.querySelector('[title="Notifications"]');
+        if (bell && !bell.dataset.wired) {
+            bell.dataset.wired = 1;
+            bell.addEventListener('click', function () { toast("You're all caught up"); });
+        }
+        var avatar = topBar.querySelector('.avatar');
+        var menu = document.getElementById('cvProfileMenu');
+        if (avatar && menu && !avatar.dataset.wired) {
+            avatar.dataset.wired = 1;
+            avatar.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            menu.querySelectorAll('.pm-item').forEach(function (item) {
+                item.addEventListener('click', function () {
+                    menu.classList.remove('open');
+                    toast(item.dataset.action === 'logout' ? 'Logged out (demo)' : 'My Profile - coming soon');
+                });
+            });
+            document.addEventListener('click', function () { menu.classList.remove('open'); });
+        }
+        document.querySelectorAll('.nav-item').forEach(function (n) {
+            if (n.dataset.wired) return;
+            n.dataset.wired = 1;
+            n.addEventListener('click', function () {
+                document.querySelectorAll('.nav-item').forEach(function (x) { x.classList.remove('active'); });
+                n.classList.add('active');
+                var label = (n.textContent || '').trim();
+                if (label === 'Dashboard') {
+                    toast('Dashboard');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    toast(label + ' - coming soon');
+                }
+            });
+        });
+        var fab = document.querySelector('.manage-fab');
+        if (fab && !fab.dataset.wired) {
+            fab.dataset.wired = 1;
+            fab.addEventListener('click', function () { toast('Manage app - coming soon'); });
+        }
+    }
+    function init() {
+        var saved = null;
+        try { saved = localStorage.getItem('cv-theme'); } catch (e) {}
+        if (saved === 'dark' ||
+            (saved === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('cv-dark');
+        }
+        mount();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+""", unsafe_allow_javascript=True)
 
 # ─── UPLOAD CARD ───────────────────────────────────────────────────────────────
 # Card sits on the left; the 3D teal folder is anchored right beside it.
