@@ -3,6 +3,8 @@
 
 import html
 import io
+import re
+import time
 import zipfile
 
 import streamlit as st
@@ -785,6 +787,156 @@ st.markdown("""
     .upload-status-pill.status-error { background: #fef2f2; color: #b91c1c; }
     .process-button-row { margin-top: 0.4rem; }
     .results-note { font-size: 0.72rem; color: #94a3b8; margin-top: 0.5rem; }
+    .results-file-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #0f172a;
+        padding: 0.55rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .results-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
+        font-size: 0.75rem;
+        color: #475569;
+        margin: 0.35rem 0 0.6rem;
+        padding: 0.6rem 0.8rem;
+        background: #f8fafc;
+        border: 1px solid #eef2f7;
+        border-radius: 10px;
+        max-width: 521px;
+    }
+    .results-stats span i { color: #0d9488; margin-right: 0.3rem; }
+
+    /* Raw vs Parsed comparison */
+    .cv-compare {
+        margin-top: 0.9rem;
+        margin-bottom: 0.35rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.85rem 1rem 1rem;
+    }
+    .cv-compare-head {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #0f766e;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .cv-compare-head b { font-weight: 800; }
+    .cv-compare-cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.85rem;
+    }
+    @media (max-width: 720px) { .cv-compare-cols { grid-template-columns: 1fr; } }
+    .parsed-fields { display: flex; flex-direction: column; gap: 0.5rem; }
+    .pf-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.9rem;
+        background: #ffffff;
+        border: 1px solid #eef2f7;
+        border-radius: 10px;
+        padding: 0.5rem 0.75rem;
+    }
+    .pf-label {
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+        font-weight: 700;
+        padding-top: 0.15rem;
+        white-space: nowrap;
+    }
+    .pf-value {
+        font-size: 0.78rem;
+        color: #0f172a;
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
+    }
+    .pf-missing { font-size: 0.72rem; font-weight: 500; color: #94a3b8; }
+    .pf-skills { display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: flex-end; }
+    .skill-chip {
+        display: inline-block;
+        background: #ecfdf5;
+        color: #0d9488;
+        border: 1px solid #a7f3d0;
+        border-radius: 999px;
+        font-size: 0.66rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+    }
+    .raw-scroll {
+        background: #ffffff;
+        border: 1px solid #eef2f7;
+        border-radius: 10px;
+        padding: 0.75rem;
+        max-height: 260px;
+        overflow: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.72rem;
+        line-height: 1.55;
+        color: #475569;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    /* Processing history */
+    .history-section { margin-top: 1.6rem; }
+    .history-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.7rem;
+    }
+    .history-title i { color: #0d9488; margin-right: 0.35rem; }
+    .history-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 0.95rem;
+        margin-bottom: 0.6rem;
+        box-shadow: 0 1px 6px rgba(15, 23, 42, 0.05);
+        max-width: 521px;
+    }
+    .history-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+    }
+    .history-time { font-size: 0.72rem; color: #94a3b8; }
+    .history-time i { margin-right: 0.3rem; }
+    .history-counts { display: flex; gap: 0.35rem; }
+    .history-meta { font-size: 0.72rem; color: #64748b; margin-bottom: 0.3rem; }
+    .history-meta i { color: #0d9488; margin-right: 0.25rem; }
+    .history-files {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Pulse the Process CVs button while files are loaded */
+    @keyframes cv-btn-pulse {
+        0% { box-shadow: 0 2px 10px rgba(13, 148, 136, 0.3), 0 0 0 0 rgba(13, 148, 136, 0.45); }
+        70% { box-shadow: 0 2px 10px rgba(13, 148, 136, 0.3), 0 0 0 14px rgba(13, 148, 136, 0); }
+        100% { box-shadow: 0 2px 10px rgba(13, 148, 136, 0.3), 0 0 0 0 rgba(13, 148, 136, 0); }
+    }
+    .cv-pulsing {
+        animation: cv-btn-pulse 2s ease-out infinite;
+    }
 
     /* === Dark Mode === */
     body.cv-dark { background: #0b1220; color: #dbe4f0; }
@@ -839,6 +991,25 @@ st.markdown("""
     body.cv-dark .upload-file-row { background: #0e2330; border-color: #1e293b; }
     body.cv-dark .upload-file-row .file-name { color: #e2e8f0; }
     body.cv-dark .format-file { background: #1e293b; color: #94a3b8; border-color: #334155; }
+    body.cv-dark .results-file-label { color: #e2e8f0; }
+    body.cv-dark .results-stats { background: #0e2330; border-color: #1e293b; color: #94a3b8; }
+    body.cv-dark .cv-compare { background: #0f1b2d; border-color: #1e3a5f; }
+    body.cv-dark .cv-compare-head { color: #5eead4; }
+    body.cv-dark .pf-row { background: #0b1526; border-color: #1e3a5f; }
+    body.cv-dark .pf-label { color: #7c8db5; }
+    body.cv-dark .pf-value { color: #e2e8f0; }
+    body.cv-dark .pf-missing { color: #475569; }
+    body.cv-dark .skill-chip { background: #073a33; color: #5eead4; border-color: #115e54; }
+    body.cv-dark .raw-scroll { background: #0b1526; border-color: #1e3a5f; color: #94a3b8; }
+    body.cv-dark .history-title { color: #e2e8f0; }
+    body.cv-dark .history-title i { color: #2dd4bf; }
+    body.cv-dark .history-card {
+        background: #0f1b2d;
+        border-color: #1e293b;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+    }
+    body.cv-dark .history-meta { color: #94a3b8; }
+    body.cv-dark .history-files { color: #64748b; }
 
     /* Toast + profile menu */
     .cv-toast {
@@ -948,6 +1119,15 @@ st.html("""
         clearTimeout(t._h);
         t._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
     }
+    function mainScroller() {
+        var sc = document.querySelector('[data-testid="stMain"]');
+        if (sc && sc.scrollHeight > sc.clientHeight) return sc;
+        return document.scrollingElement || document.documentElement;
+    }
+    function scrollMain(top) {
+        var sc = mainScroller();
+        sc.scrollTo({ top: top, behavior: 'smooth' });
+    }
     function mount() {
         if (tries++ > 40) return;
         var topBar = document.querySelector('.top-bar');
@@ -1004,7 +1184,17 @@ st.html("""
                 var label = (n.textContent || '').trim();
                 if (label === 'Dashboard') {
                     toast('Dashboard');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    scrollMain(0);
+                } else if (label === 'Processing History') {
+                    var historyEl = document.getElementById('cv-history');
+                    if (historyEl) {
+                        toast('Processing History');
+                        var sc = mainScroller();
+                        var target = historyEl.getBoundingClientRect().top + sc.scrollTop - 24;
+                        scrollMain(target);
+                    } else {
+                        toast('No processing history yet');
+                    }
                 } else {
                     toast(label + ' - coming soon');
                 }
@@ -1016,6 +1206,16 @@ st.html("""
             fab.addEventListener('click', function () { toast('Manage app - coming soon'); });
         }
     }
+    function armPulse() {
+        var b = Array.from(document.querySelectorAll('button[kind="primary"]')).filter(function (x) {
+            return (x.textContent || '').indexOf('Process CVs') !== -1;
+        })[0];
+        if (b && !b.dataset.pulse) {
+            b.dataset.pulse = 1;
+            b.classList.add('cv-pulsing');
+        }
+        setTimeout(armPulse, 400);
+    }
     function init() {
         var saved = null;
         try { saved = localStorage.getItem('cv-theme'); } catch (e) {}
@@ -1024,6 +1224,7 @@ st.html("""
             document.body.classList.add('cv-dark');
         }
         mount();
+        armPulse();
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -1090,6 +1291,155 @@ def _format_badge(ext):
     return f'<span class="format-badge {cls}">{ext.upper()}</span>'
 
 
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
+_PHONE_RE = re.compile(r"(?:\+?\d[\s\-()./]?){7,}\d")
+_LINKEDIN_RE = re.compile(r"(?:https?://)?(?:www\.)?linkedin\.com/(?:in|m)/[\w\-]+", re.I)
+_GITHUB_RE = re.compile(r"(?:https?://)?(?:www\.)?github\.com/[\w\-]+", re.I)
+_EXP_RE = re.compile(
+    r"(?:total\s+)?experience\s*:?\s*(\d{1,2})\s*\+?\s*(?:years?|yrs?)"
+    r"|(\d{1,2})\s*\+?\s*(?:years?|yrs?)\s+(?:of\s+)?(?:dedicated\s+|professional\s+|work\s+)?experience",
+    re.I,
+)
+_EDU_RE = re.compile(
+    r"\b(Bachelor|Masters|Master|MBA|Ph\.?D|Doctor|Associate|Diploma|"
+    r"Registered Nurse|BSc|B\.S\.|BS|BA|MS|MA|University|College)\b",
+    re.I,
+)
+_NAME_RE = re.compile(r"^[A-Z][\w.'\-]*(?: [A-Z][\w.'\-]*){1,4}$")
+_SKILL_KEYWORDS = [
+    "patient care", "medication administration", "critical thinking", "care planning",
+    "patient education", "documentation", "nursing", "triage", "emergency response",
+    "wound care", "telemetry", "iv therapy", "cpr", "bcls", "acls", "intubation",
+    "teamwork", "leadership", "communication", "problem solving", "time management",
+    "collaboration", "attention to detail", "multitasking", "adaptability",
+    "python", "javascript", "java", "c++", "sql", "excel", "powerpoint", "word",
+    "outlook", "sharepoint", "tableau", "power bi", "aws", "docker", "kubernetes", "git",
+]
+
+
+def _structured_fields(text):
+    """Best-effort structured CV extraction via regex + keyword heuristics.
+
+    Returns a dict of display-ready fields; missing values are "".
+    """
+    lower = (text or "").lower()
+    fields = {
+        "name": "",
+        "email": "",
+        "phone": "",
+        "linkedin": "",
+        "github": "",
+        "years": "",
+        "education": "",
+        "skills": [],
+    }
+
+    m = _EMAIL_RE.search(text or "")
+    if m:
+        fields["email"] = m.group(0).strip(".")
+
+    m = _PHONE_RE.search(text or "")
+    if m and 7 <= len(re.sub(r"\D", "", m.group(0))) <= 15:
+        fields["phone"] = m.group(0).strip()
+
+    m = _LINKEDIN_RE.search(text or "")
+    if m:
+        fields["linkedin"] = m.group(0).rstrip("/")
+    m = _GITHUB_RE.search(text or "")
+    if m:
+        fields["github"] = m.group(0).rstrip("/")
+
+    years = None
+    for m in _EXP_RE.finditer(text or ""):
+        val = int(m.group(1) or m.group(2) or 0)
+        if years is None or val > years:
+            years = val
+    if years:
+        fields["years"] = f"{years} year{'s' if years != 1 else ''}"
+
+    edu_line = ""
+    for line in (text or "").splitlines():
+        line = line.strip()
+        if line and _EDU_RE.search(line):
+            edu_line = line
+            break
+    if edu_line:
+        fields["education"] = edu_line if len(edu_line) <= 120 else edu_line[:117] + "…"
+
+    name = ""
+    for line in (text or "").splitlines():
+        stripped = line.strip()
+        low = stripped.lower()
+        if low.startswith("candidate"):
+            name = re.sub(r"^candidate\s*:?\s*", "", stripped, flags=re.I).strip()
+            break
+        if not name and _NAME_RE.match(stripped) and len(stripped) <= 40:
+            name = stripped
+    if not name and "/" in (text or "")[:60]:
+        firstline = (text or "").splitlines()[0].strip()
+        if firstline and "," in firstline:
+            parts = [p.strip() for p in firstline.split(",")]
+            if all(parts) and len(parts) <= 3:
+                name = firstline
+    if name:
+        fields["name"] = name
+
+    counts = {}
+    for kw in _SKILL_KEYWORDS:
+        pos = re.search(rf"\b{re.escape(kw)}\b", lower)
+        if pos:
+            counts[kw] = (lower.count(kw), pos.start())
+    top = sorted(counts.items(), key=lambda kv: (-kv[1][0], kv[1][1]))[:8]
+    fields["skills"] = [kw.title() for kw, _ in top]
+
+    return fields
+
+
+def _field_row(label, value, missing="Not found"):
+    if value:
+        return (
+            f'<div class="pf-row"><span class="pf-label">{label}</span>'
+            f'<span class="pf-value">{html.escape(value)}</span></div>'
+        )
+    return (
+        f'<div class="pf-row"><span class="pf-label">{label}</span>'
+        f'<span class="pf-missing">{missing}</span></div>'
+    )
+
+
+def _render_compare(name, fields, text):
+    """Raw vs Parsed split: extracted fields card beside a raw text pane."""
+    skills_html = (
+        "".join(f'<span class="skill-chip">{html.escape(s)}</span>' for s in fields["skills"])
+        or '<span class="pf-missing">None detected</span>'
+    )
+    parsed = (
+        '<div class="parsed-fields">'
+        + _field_row("Name", fields["name"])
+        + _field_row("Email", fields["email"])
+        + _field_row("Phone", fields["phone"])
+        + _field_row("LinkedIn", fields["linkedin"])
+        + _field_row("GitHub", fields["github"])
+        + _field_row("Experience", fields["years"])
+        + _field_row("Education", fields["education"])
+        + f'<div class="pf-row"><span class="pf-label">Top Skills</span>'
+        + f'<span class="pf-value pf-skills">{skills_html}</span></div>'
+        + "</div>"
+    )
+    raw = (text or "").strip()
+    if len(raw) > 4000:
+        raw = raw[:4000] + "\n… (truncated)"
+    return (
+        '<div class="cv-compare">'
+        '<div class="cv-compare-head"><i class="fa-solid fa-code-compare"></i>'
+        f'Raw vs Parsed &mdash; <b>{html.escape(fields["name"] or name)}</b></div>'
+        '<div class="cv-compare-cols">'
+        f'<div class="cv-compare-col">{parsed}</div>'
+        f'<div class="cv-compare-col"><div class="raw-scroll">{html.escape(raw)}</div></div>'
+        "</div></div>"
+    )
+
+
 def _draw_upload_summary(files):
     """Styled list of loaded files shown once the user has picked CVs."""
     rows = []
@@ -1113,8 +1463,51 @@ def _draw_upload_summary(files):
     )
 
 
-def _draw_results(results):
-    """Per-file parse status cards plus a raw-text preview per parsed file."""
+def _make_pdf_bytes(stem, text):
+    """Build a minimal PDF export from extracted CV text via reportlab."""
+    from reportlab.lib.colors import HexColor
+    from reportlab.lib.enums import TA_CENTER
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import mm
+    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+
+    safe = text.encode("latin-1", "replace").decode("latin-1")
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buf,
+        pagesize=A4,
+        rightMargin=18 * mm, leftMargin=18 * mm,
+        topMargin=18 * mm, bottomMargin=18 * mm,
+    )
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        "CvTitle", parent=styles["Title"],
+        fontSize=16, spaceAfter=14, alignment=TA_CENTER, textColor=HexColor("#0d9488"),
+    )
+    body_style = ParagraphStyle("CvBody", parent=styles["BodyText"], fontSize=10, leading=14)
+    story = [Paragraph(html.escape(stem or "CV"), title_style), Spacer(1, 2)]
+    for line in safe.splitlines():
+        if line.strip():
+            story.append(Paragraph(html.escape(line), body_style))
+    doc.build(story)
+    return buf.getvalue()
+
+
+def _make_docx_bytes(stem, text):
+    """Build a Word (.docx) export from extracted CV text via python-docx."""
+    doc = Document()
+    doc.add_heading(stem or "CV", level=0)
+    for line in text.splitlines():
+        if line.strip():
+            doc.add_paragraph(line)
+    buf = io.BytesIO()
+    doc.save(buf)
+    return buf.getvalue()
+
+
+def _draw_results(results, elapsed=None):
+    """Per-file parse status cards, run stats, export buttons and raw previews."""
     cards = []
     icons = {"ok": "fa-circle-check", "skip": "fa-triangle-exclamation", "error": "fa-circle-xmark"}
     labels = {"ok": "Parsed", "skip": "Skipped", "error": "Error"}
@@ -1139,31 +1532,58 @@ def _draw_results(results):
         unsafe_allow_html=True,
     )
 
+    ok_chars = sum(len(meta["text"]) for _, (status, meta) in results if status == "ok" and meta["text"])
+    ok_words = sum(len(meta["text"].split()) for _, (status, meta) in results if status == "ok" and meta["text"])
+    stats = (
+        f'<div class="results-stats">'
+        f'<span><i class="fa-solid fa-files"></i> {len(results)} file(s)</span>'
+        f'<span><i class="fa-solid fa-text-height"></i> {ok_chars:,} chars</span>'
+        f'<span><i class="fa-solid fa-signature"></i> {ok_words:,} words</span>'
+        + (f'<span><i class="fa-solid fa-bolt"></i> {elapsed:.2f}s</span>' if elapsed else "")
+        + "</div>"
+    )
+    st.markdown(stats, unsafe_allow_html=True)
+
     ok_items = [(uf, meta) for uf, (status, meta) in results if status == "ok" and meta["text"]]
     if ok_items:
-        for start in range(0, len(ok_items), 2):
-            cols = st.columns(2)
-            for col, (uf, meta) in zip(cols, ok_items[start:start + 2]):
-                with col:
-                    stem = uf.name.rsplit(".", 1)[0]
-                    st.download_button(
-                        f"Download .txt — {stem}",
-                        data=meta["text"],
-                        file_name=f"{stem}.txt",
-                        mime="text/plain",
-                        key=f"dl_{stem}_{start}",
-                    )
+        for idx, (uf, meta) in enumerate(ok_items):
+            stem = uf.name.rsplit(".", 1)[0]
+            name_col, pdf_col, docx_col = st.columns([3, 1, 1])
+            with name_col:
+                st.markdown(
+                    f'<div class="results-file-label">{html.escape(stem)}</div>',
+                    unsafe_allow_html=True,
+                )
+            with pdf_col:
+                st.download_button(
+                    "PDF",
+                    data=_make_pdf_bytes(stem, meta["text"]),
+                    file_name=f"{stem}.pdf",
+                    mime="application/pdf",
+                    key=f"pdf_{idx}",
+                )
+            with docx_col:
+                st.download_button(
+                    "DOCX",
+                    data=_make_docx_bytes(stem, meta["text"]),
+                    file_name=f"{stem}.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    key=f"docx_{idx}",
+                )
+            fields = _structured_fields(meta["text"])
+            st.markdown(_render_compare(stem, fields, meta["text"]), unsafe_allow_html=True)
         st.markdown(
-            '<div class="results-note">Text exports contain the raw extracted content — '
-            "GCC-standard DOCX/PDF template exports are coming next.</div>",
+            '<div class="results-note">Exports are basic text-format files built from the raw '
+            "extracted content &mdash; polished GCC-standard templates come next.</div>",
             unsafe_allow_html=True,
         )
         if len(ok_items) > 1:
             buf = io.BytesIO()
             with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
-                for uf, meta in ok_items:
+                for idx, (uf, meta) in enumerate(ok_items):
                     stem = uf.name.rsplit(".", 1)[0]
-                    archive.writestr(f"{stem}.txt", meta["text"])
+                    archive.writestr(f"{stem}.pdf", _make_pdf_bytes(stem, meta["text"]))
+                    archive.writestr(f"{stem}.docx", _make_docx_bytes(stem, meta["text"]))
             st.download_button(
                 "Export All (ZIP)",
                 data=buf.getvalue(),
@@ -1179,6 +1599,39 @@ def _draw_results(results):
                 preview = preview[:5000] + "\n… (truncated)"
             with st.expander(f"Raw text preview — {uf.name}"):
                 st.text(preview or "(no extractable text found)")
+
+
+def _draw_history():
+    """Most recent processing runs as cards, anchored for sidebar navigation."""
+    history = st.session_state.get("cv_history", [])
+    if not history:
+        return
+    cards = []
+    for entry in reversed(history[-6:]):
+        pills = (
+            f'<span class="upload-status-pill status-ok">{entry["ok"]} parsed</span>'
+            + (f'<span class="upload-status-pill status-skip">{entry["skip"]} skipped</span>' if entry["skip"] else "")
+            + (f'<span class="upload-status-pill status-error">{entry["error"]} failed</span>' if entry["error"] else "")
+        )
+        files = ", ".join(html.escape(name) for name in entry["files"])
+        cards.append(
+            '<div class="history-card">'
+            f'<div class="history-card-top">'
+            f'<span class="history-time"><i class="fa-regular fa-clock"></i>{entry["time"]}</span>'
+            f'<span class="history-counts">{pills}</span>'
+            "</div>"
+            f'<div class="history-meta"><i class="fa-solid fa-text-height"></i>{entry["chars"]:,} chars'
+            f' &nbsp;&middot;&nbsp; <i class="fa-solid fa-signature"></i>{entry["words"]:,} words'
+            f' &nbsp;&middot;&nbsp; {len(entry["files"])} file(s)</div>'
+            f'<div class="history-files">{files}</div>'
+            "</div>"
+        )
+    st.markdown(
+        '<div id="cv-history" class="history-section">'
+        '<div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Processing History</div>'
+        '<div class="history-list">' + "".join(cards) + "</div></div>",
+        unsafe_allow_html=True,
+    )
 
 
 upload_zone = st.container()
@@ -1263,9 +1716,26 @@ if not uploaded_files:
 if uploaded_files:
     _draw_upload_summary(uploaded_files)
     if st.button("Process CVs", key="process_cvs", type="primary"):
-        st.session_state["cv_results"] = [(uf, parse_cv(uf)) for uf in uploaded_files]
+        started = time.perf_counter()
+        cv_results = [(uf, parse_cv(uf)) for uf in uploaded_files]
+        elapsed = time.perf_counter() - started
+        ok = sum(1 for _, (status, _) in cv_results if status == "ok")
+        skip = sum(1 for _, (status, _) in cv_results if status == "skip")
+        error = sum(1 for _, (status, _) in cv_results if status == "error")
+        chars = sum(len(meta["text"]) for _, (status, meta) in cv_results if status == "ok" and meta["text"])
+        words = sum(len(meta["text"].split()) for _, (status, meta) in cv_results if status == "ok" and meta["text"])
+        st.session_state["cv_results"] = cv_results
+        st.session_state["cv_last_elapsed"] = elapsed
+        st.session_state.setdefault("cv_history", []).append({
+            "time": time.strftime("%Y-%m-%d %H:%M"),
+            "files": [uf.name for uf, _ in cv_results],
+            "ok": ok, "skip": skip, "error": error,
+            "chars": chars, "words": words,
+        })
     if "cv_results" in st.session_state:
-        _draw_results(st.session_state["cv_results"])
+        _draw_results(st.session_state["cv_results"], st.session_state.get("cv_last_elapsed"))
+
+_draw_history()
 
 # ─── FEATURE CARDS (3 main) ───────────────────────────────────────────────────
 col1, col2, col3 = st.columns(3)
@@ -1394,11 +1864,12 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # Stats
-st.sidebar.markdown("""
+total_processed = sum(entry["ok"] for entry in st.session_state.get("cv_history", []))
+st.sidebar.markdown(f"""
 <div class="stats-section">
     <div class="stats-title">STATS</div>
     <div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.15rem;">
-        <span class="stat-number">0</span>
+        <span class="stat-number">{total_processed}</span>
     </div>
     <div class="stat-label">PROCESSED THIS SESSION</div>
 </div>
