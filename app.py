@@ -3,6 +3,7 @@
 
 import html
 import io
+import zipfile
 
 import streamlit as st
 from PIL import Image
@@ -1137,6 +1138,40 @@ def _draw_results(results):
         + "</div>",
         unsafe_allow_html=True,
     )
+
+    ok_items = [(uf, meta) for uf, (status, meta) in results if status == "ok" and meta["text"]]
+    if ok_items:
+        for start in range(0, len(ok_items), 2):
+            cols = st.columns(2)
+            for col, (uf, meta) in zip(cols, ok_items[start:start + 2]):
+                with col:
+                    stem = uf.name.rsplit(".", 1)[0]
+                    st.download_button(
+                        f"Download .txt — {stem}",
+                        data=meta["text"],
+                        file_name=f"{stem}.txt",
+                        mime="text/plain",
+                        key=f"dl_{stem}_{start}",
+                    )
+        st.markdown(
+            '<div class="results-note">Text exports contain the raw extracted content — '
+            "GCC-standard DOCX/PDF template exports are coming next.</div>",
+            unsafe_allow_html=True,
+        )
+        if len(ok_items) > 1:
+            buf = io.BytesIO()
+            with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
+                for uf, meta in ok_items:
+                    stem = uf.name.rsplit(".", 1)[0]
+                    archive.writestr(f"{stem}.txt", meta["text"])
+            st.download_button(
+                "Export All (ZIP)",
+                data=buf.getvalue(),
+                file_name="cv_exports.zip",
+                mime="application/zip",
+                type="primary",
+            )
+
     for uf, (status, meta) in results:
         if status == "ok" and meta["text"]:
             preview = meta["text"].strip()
