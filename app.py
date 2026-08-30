@@ -323,18 +323,24 @@ st.markdown("""
         animation: upload-btn-ripple 0.5s ease-out;
     }
 
-    /* Decorative teal folder that fills the blank space beside the upload card */
+    /* Decorative 3D teal folder, anchored right beside the upload card */
     .upload-folder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        min-height: 180px;
+        position: absolute;
+        top: 0;
+        left: calc(100% + 24px);
+        width: 246px;
+        z-index: 60;
     }
     .upload-folder svg {
         width: 100%;
-        max-width: 246px;
         height: auto;
+    }
+    @media (max-width: 960px) {
+        .upload-folder {
+            position: static;
+            margin: 0.5rem 0 1.5rem;
+            width: 200px;
+        }
     }
 
     /* Section headings */
@@ -669,10 +675,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ─── UPLOAD CARD ───────────────────────────────────────────────────────────────
-# Card sits on the left; a big decorative teal folder fills the blank space.
-col_card, col_folder = st.columns([2, 1], gap="large")
+# Card sits on the left; the 3D teal folder is anchored right beside it.
+upload_zone = st.container()
 
-with col_card:
+with upload_zone:
     st.markdown("""
 <div class="upload-card">
     <div class="upload-card-content">
@@ -709,35 +715,45 @@ with col_card:
         for uf in uploaded_files:
             st.write(uf.name)
 
-# Decorative teal folder beside the card
-with col_folder:
+    # Decorative 3D teal folder anchored beside the card
     st.markdown("""
 <div class="upload-folder" aria-hidden="true">
-    <svg viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <linearGradient id="uflBack" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#0d9488"/>
-                <stop offset="1" stop-color="#0f766e"/>
-            </linearGradient>
             <linearGradient id="uflFront" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stop-color="#2dd4bf"/>
                 <stop offset="1" stop-color="#0d9488"/>
             </linearGradient>
+            <linearGradient id="uflGloss" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+                <stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+            </linearGradient>
         </defs>
-        <ellipse cx="138" cy="164" rx="92" ry="8" fill="rgba(13,148,136,0.15)"/>
+        <ellipse cx="188" cy="216" rx="118" ry="12" fill="rgba(13,148,136,0.16)"/>
         <g>
-            <rect x="88" y="20" width="30" height="48" rx="3" fill="#ffffff" opacity="0.9"/>
-            <rect x="102" y="10" width="30" height="54" rx="3" fill="#ffffff"/>
-            <rect x="116" y="24" width="30" height="50" rx="3" fill="#f0fdfa"/>
-            <rect x="110" y="24" width="14" height="3" rx="1.5" fill="#99f6e4"/>
-            <rect x="110" y="32" width="14" height="3" rx="1.5" fill="#99f6e4"/>
-            <rect x="124" y="32" width="14" height="3" rx="1.5" fill="#5eead4"/>
-            <rect x="124" y="40" width="14" height="3" rx="1.5" fill="#5eead4"/>
+            <rect x="104" y="50" width="34" height="60" rx="3" fill="#ffffff"/>
+            <rect x="140" y="50" width="6" height="60" rx="2" fill="#cbd5e1"/>
+            <rect x="112" y="62" width="18" height="3" rx="1.5" fill="#99f6e4"/>
+            <rect x="112" y="70" width="18" height="3" rx="1.5" fill="#99f6e4"/>
+            <rect x="122" y="42" width="34" height="64" rx="3" fill="#ffffff"/>
+            <rect x="158" y="42" width="6" height="64" rx="2" fill="#cbd5e1"/>
+            <rect x="130" y="56" width="18" height="3" rx="1.5" fill="#5eead4"/>
+            <rect x="130" y="64" width="18" height="3" rx="1.5" fill="#5eead4"/>
+            <rect x="140" y="58" width="34" height="58" rx="3" fill="#f0fdfa"/>
+            <rect x="176" y="58" width="6" height="58" rx="2" fill="#99f6e4"/>
+            <rect x="148" y="72" width="18" height="3" rx="1.5" fill="#14b8a6"/>
+            <rect x="148" y="80" width="18" height="3" rx="1.5" fill="#14b8a6"/>
         </g>
-        <path d="M46 58h38l14 20h114a8 8 0 0 1 8 8v56a8 8 0 0 1-8 8H54a8 8 0 0 1-8-8V58z" fill="url(#uflBack)"/>
-        <path d="M62 82h148a10 10 0 0 1 10 10v48a10 10 0 0 1-10 10H62a10 10 0 0 1-10-10V92a10 10 0 0 1 10-10z" fill="url(#uflFront)"/>
-        <rect x="86" y="100" width="92" height="26" rx="4" fill="rgba(255,255,255,0.18)"/>
-        <path d="M62 82h148" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+        <rect x="84" y="76" width="48" height="32" rx="6" fill="#5eead4" fill-opacity="0.95"/>
+        <rect x="84" y="76" width="48" height="32" rx="6" fill="url(#uflGloss)"/>
+        <path d="M84 104h48" stroke="#0f766e" stroke-width="2"/>
+        <path d="M72 104h150a10 10 0 0 1 10 10v66a10 10 0 0 1-10 10H72a10 10 0 0 1-10-10V114a10 10 0 0 1 10-10z" fill="url(#uflFront)"/>
+        <path d="M222 104 L222 190 L252 202 L252 116 Z" fill="#0f766e"/>
+        <path d="M72 190 L222 190 L252 202 L102 202 Z" fill="#115e59"/>
+        <path d="M222 190 L252 202" stroke="#134e4a" stroke-width="2"/>
+        <rect x="76" y="110" width="128" height="34" rx="7" fill="url(#uflGloss)"/>
+        <path d="M72 104h150" stroke="rgba(255,255,255,0.5)" stroke-width="3"/>
+        <path d="M222 104v86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
     </svg>
 </div>
 """, unsafe_allow_html=True)
