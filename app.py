@@ -273,7 +273,9 @@ st.markdown("""
         font-size: 0.88rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
         box-shadow: 0 2px 10px rgba(13, 148, 136, 0.25);
         display: inline-flex;
         align-items: center;
@@ -283,8 +285,56 @@ st.markdown("""
         transform: translateY(-1px);
         box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
     }
+    /* Hover is also intercepted by the covering dropzone, so drive the lift
+       from the dropzone's :hover to get feedback anywhere on the card. */
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card):has([data-testid="stFileUploaderDropzone"]:hover) .cta-button {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+    }
     .cta-button i {
         font-size: 0.85rem;
+    }
+    /* Click ripple: white circle that expands across the button. Hidden by
+       default; triggered while the covering dropzone is held down. */
+    .cta-button::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.85);
+        opacity: 0;
+        pointer-events: none;
+    }
+    @keyframes upload-btn-ripple {
+        0% { transform: scale(1); opacity: 0.7; }
+        100% { transform: scale(22); opacity: 0; }
+    }
+    /* Click-press animation. The invisible dropzone covers the card, so it
+       receives the pointer events; :active on the dropzone drives this. */
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card):has([data-testid="stFileUploaderDropzone"]:active) .cta-button {
+        transform: scale(0.92) translateY(1px);
+        box-shadow: 0 1px 4px rgba(13, 148, 136, 0.4), inset 0 2px 6px rgba(2, 44, 41, 0.25);
+        filter: brightness(1.1);
+    }
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card):has([data-testid="stFileUploaderDropzone"]:active) .cta-button::after {
+        animation: upload-btn-ripple 0.5s ease-out;
+    }
+
+    /* Decorative teal folder that fills the blank space beside the upload card */
+    .upload-folder {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100%;
+        min-height: 180px;
+    }
+    .upload-folder svg {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
     }
 
     /* Section headings */
@@ -574,9 +624,13 @@ st.markdown("""
        The uploader's clickable surface is its dropzone, so the dropzone is
        stretched across the whole card (the uploader div alone would leave large
        dead zones). Only the container block that directly holds the card is
-       targeted, so nested stVerticalBlocks elsewhere are unaffected. */
+       targeted, so nested stVerticalBlocks elsewhere are unaffected. The
+       container is capped in width and left-aligned (the decorative folder
+       sits in the blank space to its right). */
     [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) {
         position: relative;
+        max-width: 720px;
+        margin-right: auto;
     }
     [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) > [data-testid="stElementContainer"] {
         position: static !important;
@@ -615,10 +669,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ─── UPLOAD CARD ───────────────────────────────────────────────────────────────
-# Wrap the custom card and the native picker in one container so the invisible
-# uploader can overlay the card and open the file browser when clicked anywhere.
-upload_zone = st.container()
-with upload_zone:
+# Card sits on the left; a big decorative teal folder fills the blank space.
+col_card, col_folder = st.columns([2, 1], gap="large")
+
+with col_card:
     st.markdown("""
 <div class="upload-card">
     <div class="upload-card-content">
@@ -654,6 +708,39 @@ with upload_zone:
         st.success(f"{len(uploaded_files)} file(s) uploaded.")
         for uf in uploaded_files:
             st.write(uf.name)
+
+# Decorative teal folder beside the card
+with col_folder:
+    st.markdown("""
+<div class="upload-folder" aria-hidden="true">
+    <svg viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="uflBack" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#0d9488"/>
+                <stop offset="1" stop-color="#0f766e"/>
+            </linearGradient>
+            <linearGradient id="uflFront" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2dd4bf"/>
+                <stop offset="1" stop-color="#0d9488"/>
+            </linearGradient>
+        </defs>
+        <ellipse cx="138" cy="164" rx="92" ry="8" fill="rgba(13,148,136,0.15)"/>
+        <g>
+            <rect x="88" y="20" width="30" height="48" rx="3" fill="#ffffff" opacity="0.9"/>
+            <rect x="102" y="10" width="30" height="54" rx="3" fill="#ffffff"/>
+            <rect x="116" y="24" width="30" height="50" rx="3" fill="#f0fdfa"/>
+            <rect x="110" y="24" width="14" height="3" rx="1.5" fill="#99f6e4"/>
+            <rect x="110" y="32" width="14" height="3" rx="1.5" fill="#99f6e4"/>
+            <rect x="124" y="32" width="14" height="3" rx="1.5" fill="#5eead4"/>
+            <rect x="124" y="40" width="14" height="3" rx="1.5" fill="#5eead4"/>
+        </g>
+        <path d="M46 58h38l14 20h114a8 8 0 0 1 8 8v56a8 8 0 0 1-8 8H54a8 8 0 0 1-8-8V58z" fill="url(#uflBack)"/>
+        <path d="M62 82h148a10 10 0 0 1 10 10v48a10 10 0 0 1-10 10H62a10 10 0 0 1-10-10V92a10 10 0 0 1 10-10z" fill="url(#uflFront)"/>
+        <rect x="86" y="100" width="92" height="26" rx="4" fill="rgba(255,255,255,0.18)"/>
+        <path d="M62 82h148" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+    </svg>
+</div>
+""", unsafe_allow_html=True)
 
 # ─── SECTION HEADING ──────────────────────────────────────────────────────────
 st.markdown("""
