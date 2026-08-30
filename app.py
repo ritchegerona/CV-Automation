@@ -327,13 +327,13 @@ st.markdown("""
     .upload-folder {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         height: 100%;
         min-height: 180px;
     }
     .upload-folder svg {
         width: 100%;
-        max-width: 320px;
+        max-width: 246px;
         height: auto;
     }
 
@@ -629,7 +629,7 @@ st.markdown("""
        sits in the blank space to its right). */
     [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) {
         position: relative;
-        max-width: 720px;
+        max-width: 521px;
         margin-right: auto;
     }
     [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) > [data-testid="stElementContainer"] {
