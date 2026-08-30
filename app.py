@@ -559,10 +559,47 @@ st.markdown("""
     }
 
     /* File uploader override */
-    .stFileUploader > div {
+    .stFileUploader > div,
+    [data-testid="stFileUploader"] > div {
         background: transparent !important;
         border: none !important;
         padding: 0 !important;
+    }
+    [data-testid="stFileUploader"] > div:first-child {
+        min-height: 0 !important;
+    }
+
+    /* Make the custom upload card fully clickable: cover it with the invisible
+       native picker so clicking anywhere on the card opens the file browser.
+       The uploader's clickable surface is its dropzone, so the dropzone is
+       stretched across the whole card (the uploader div alone would leave large
+       dead zones). Only the container block that directly holds the card is
+       targeted, so nested stVerticalBlocks elsewhere are unaffected. */
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) {
+        position: relative;
+    }
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) > [data-testid="stElementContainer"] {
+        position: static !important;
+    }
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) [data-testid="stFileUploader"] {
+        position: absolute !important;
+        inset: 0 !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+        z-index: 50 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) [data-testid="stFileUploaderDropzone"] {
+        position: absolute !important;
+        inset: 0 !important;
+        min-height: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        cursor: pointer !important;
+    }
+    [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .upload-card) [data-testid="stFileUploader"] * {
+        cursor: pointer !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -578,7 +615,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ─── UPLOAD CARD ───────────────────────────────────────────────────────────────
-st.markdown("""
+# Wrap the custom card and the native picker in one container so the invisible
+# uploader can overlay the card and open the file browser when clicked anywhere.
+upload_zone = st.container()
+with upload_zone:
+    st.markdown("""
 <div class="upload-card">
     <div class="upload-card-content">
         <div class="upload-left">
@@ -602,17 +643,17 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Streamlit file uploader (functional) – placed under the upload card
-uploaded_files = st.file_uploader(
-    "Upload Files",
-    type=["pdf", "docx", "doc", "txt"],
-    accept_multiple_files=True,
-    help="Drag & drop files here or click to browse",
-)
-if uploaded_files:
-    st.success(f"{len(uploaded_files)} file(s) uploaded.")
-    for uf in uploaded_files:
-        st.write(uf.name)
+    # Streamlit file uploader (functional) – covers the custom card via CSS overlay
+    uploaded_files = st.file_uploader(
+        "Upload Files",
+        type=["pdf", "docx", "doc", "txt"],
+        accept_multiple_files=True,
+        help="Drag & drop files here or click to browse",
+    )
+    if uploaded_files:
+        st.success(f"{len(uploaded_files)} file(s) uploaded.")
+        for uf in uploaded_files:
+            st.write(uf.name)
 
 # ─── SECTION HEADING ──────────────────────────────────────────────────────────
 st.markdown("""
