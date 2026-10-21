@@ -34,7 +34,7 @@ cat << 'EOF' > "$PKG_DIR/usr/share/applications/cv-automation.desktop"
 Version=1.0
 Type=Application
 Name=MSR CV Processing Studio
-Comment=Process and summarize candidate CVs using Gemini API
+Comment=Process and standardize candidate CVs (fully local parser)
 Exec=cv-automation
 Icon=document-send
 Terminal=true
@@ -52,9 +52,9 @@ Architecture: amd64
 Depends: libreoffice-core, libreoffice-writer, python3
 Maintainer: Ritche Gerona <chie.msr@example.com>
 Description: MSR CV Processing Studio
- A Streamlit-based web application to automate parsing, summarization, and
- report generation of CVs using the Gemini API. Automatically converts doc
- and pdf formats.
+ A Streamlit-based web application to parse, standardize, and export candidate
+ CVs into the official GCC format using a fully local parser (no API keys or
+ internet access required).
 EOF
 
 # 6. Build the debian package

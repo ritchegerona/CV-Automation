@@ -13,20 +13,19 @@ project_root = os.path.dirname(SPECPATH)
 datas_st, binaries_st, hiddenimports_st = collect_all('streamlit')
 datas_docx, binaries_docx, hiddenimports_docx = collect_all('docx')
 datas_pypdf, binaries_pypdf, hiddenimports_pypdf = collect_all('pypdf')
-datas_dotenv, binaries_dotenv, hiddenimports_dotenv = collect_all('dotenv')
 
 datas = [
     (os.path.join(project_root, 'app.py'), '.'),
     (os.path.join(project_root, '.streamlit'), '.streamlit'),
-    (os.path.join(project_root, 'MSR_CV_Template.docx'), '.'),
-    (os.path.join(project_root, 'MSR_CV_Template.pdf'), '.'),
-] + datas_st + datas_docx + datas_pypdf + datas_dotenv
+    (os.path.join(project_root, 'GCC_CV_FORMAT.doc'), '.'),
+    (os.path.join(project_root, 'GCC_Header.png'), '.'),
+] + datas_st + datas_docx + datas_pypdf
 
-binaries = binaries_st + binaries_docx + binaries_pypdf + binaries_dotenv
+binaries = binaries_st + binaries_docx + binaries_pypdf
 
 hiddenimports = [
     'streamlit.web.bootstrap',
-] + hiddenimports_st + hiddenimports_docx + hiddenimports_pypdf + hiddenimports_dotenv
+] + hiddenimports_st + hiddenimports_docx + hiddenimports_pypdf
 
 a = Analysis(
     [os.path.join(SPECPATH, 'launcher.py')],
