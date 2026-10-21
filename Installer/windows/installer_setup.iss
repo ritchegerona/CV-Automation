@@ -28,8 +28,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\MSR_CV_Template.docx"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\MSR_CV_Template.pdf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\GCC_CV_FORMAT.doc"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\GCC_Header.png"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

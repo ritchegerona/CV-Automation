@@ -5,15 +5,15 @@ This folder contains the build files, configurations, and scripts required to co
 ---
 
 ## Folder Contents
-- [launcher.py](file:///Users/ritchegerona/Documents/PROJECTS/CV%20Automation/Installer/launcher.py): Programmatic Python script that starts the Streamlit server from inside the PyInstaller bundle and copies template files to the current directory on launch.
-- [launcher.spec](file:///Users/ritchegerona/Documents/PROJECTS/CV%20Automation/Installer/launcher.spec): PyInstaller specification configuration that collects and packages all Streamlit, docx, pypdf, and template assets.
-- [windows/](file:///Users/ritchegerona/Documents/PROJECTS/CV%20Automation/Installer/windows/): 
+- [launcher.py](launcher.py): Programmatic Python script that starts the Streamlit server from inside the PyInstaller bundle and copies template files to the current directory on launch.
+- [launcher.spec](launcher.spec): PyInstaller specification configuration that collects and packages all Streamlit, docx, pypdf, and template assets.
+- [windows/](windows/): 
   - `build_win.bat`: Builds the Windows `.exe` using PyInstaller.
   - `installer_setup.iss`: Inno Setup file to create the setup `.exe` installer (installs the app and offers silent download/install of LibreOffice if missing).
-- [macos/](file:///Users/ritchegerona/Documents/PROJECTS/CV%20Automation/Installer/macos/):
+- [macos/](macos/):
   - `build_mac.sh`: Builds the macOS executable and wraps it inside a `.dmg` installer.
   - `install_mac_deps.sh`: Installs Homebrew and LibreOffice on client macOS systems.
-- [linux/](file:///Users/ritchegerona/Documents/PROJECTS/CV%20Automation/Installer/linux/):
+- [linux/](linux/):
   - `build_linux.sh`: Builds the Linux executable using PyInstaller.
   - `build_deb.sh`: Packages the executable into a `.deb` file with declared dependencies (`libreoffice-core`, `libreoffice-writer`).
 
@@ -85,6 +85,6 @@ sudo apt install ./cv-automation_1.0.0_amd64.deb
 
 ## Runtime Usage Notes
 Upon running the installer-created executable on any operating system:
-1. The app automatically creates a template `.env` file in the user's current directory (if not already present). The user should edit this file and add their `GEMINI_API_KEY`.
-2. The app copies `MSR_CV_Template.docx` and `MSR_CV_Template.pdf` to the folder it runs from.
-3. It sets up the `Candidate CV Summary/` directory automatically to store output summaries.
+1. The app copies `GCC_CV_FORMAT.doc` (the official GCC CV template) and `GCC_Header.png` (the MSR letterhead) to the folder it runs from.
+2. It sets up the `Candidate CV Summary/` directory automatically to store output summaries.
+3. No API key or internet connection is required — all parsing and export happens locally.

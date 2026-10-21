@@ -56,8 +56,8 @@ hdiutil attach "$TEMP_DMG" -mountpoint "$MNT_DIR"
 # 3. Copy application binary and resources to the mounted drive
 echo "Copying files to mounted disk image..."
 cp "Installer/macos/dist/CV_Automation" "$MNT_DIR/"
-cp "MSR_CV_Template.docx" "$MNT_DIR/"
-cp "MSR_CV_Template.pdf" "$MNT_DIR/"
+cp "GCC_CV_FORMAT.doc" "$MNT_DIR/"
+cp "GCC_Header.png" "$MNT_DIR/"
 cp "Installer/macos/install_mac_deps.sh" "$MNT_DIR/"
 
 # Ensure helper script is executable
